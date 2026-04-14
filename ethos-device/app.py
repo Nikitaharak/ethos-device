@@ -12939,6 +12939,23 @@ def report_print():
 
     threading.Thread(target=_bg_print, daemon=True).start()
     return jsonify(success=True, message="Printing...")
+@app.route('/api/report/filters')
+def report_filters():
+    """Return distinct shift names, slot names, and item names for filter dropdowns."""
+    conn = get_db_connection()
+    try:
+        shifts = [r['shift_name'] for r in conn.execute(
+            "SELECT DISTINCT shift_name FROM shifts ORDER BY shift_name"
+        ).fetchall()]
+        slots = [r['slot_name'] for r in conn.execute(
+            "SELECT DISTINCT slot_name FROM time_slots ORDER BY slot_name"
+        ).fetchall()]
+        items = [r['item_name'] for r in conn.execute(
+            "SELECT DISTINCT item_name FROM items ORDER BY item_name"
+        ).fetchall()]
+        return jsonify({'shifts': shifts, 'slots': slots, 'items': items})
+    finally:
+        conn.close()
 if __name__ == '__main__':
     # 1. Early migration on raw sqlite (before persistent connection opens)
     migrate_sqlite_schema()
