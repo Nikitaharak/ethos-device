@@ -1,0 +1,921 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Device Configuration</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css" />
+
+    <style>
+      :root {
+        --sb-inset-right: 0px;
+        --sb-width: 22px;
+        --sb-radius: 12px;
+        --sb-track: rgba(0, 0, 0, 0.06);
+        --sb-thumb: #bfbfbf;
+        --sb-min-thumb: 48px;
+      }
+
+      body { background: #f9f6ef; margin: 0; font-size: 18px; }
+
+      .header { display: flex; align-items: center; justify-content: space-between; padding: 8px 20px 0; min-height: 48px; box-sizing: border-box; }
+      .logo-main { height: 36px; display: block; }
+      .logo-right { height: 36px; display: block; }
+      .menu-back-btn { background: #eee; color: #205081; padding: 6px 14px; font-size: 0.85rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.16s; min-width: 72px; margin-right: 8px; }
+      .menu-back-btn:hover { background: #ffa500; color: #fff; }
+
+      .form-section { background: #fff; border-radius: 16px; box-shadow: 0 4px 18px rgba(32,80,129,0.1); max-width: 440px; width: calc(100% - 32px); margin: 10px auto; padding: 14px 16px; text-align: center; box-sizing: border-box; }
+      h2 { color: #205081; font-weight: 700; margin-bottom: 8px; margin-top: 8px; font-size: 1.1rem; }
+
+      input, select { font-size: 1rem; border-radius: 7px; border: 1.5px solid #ddd; box-sizing: border-box; margin-bottom: 0; }
+      input:focus, select:focus { outline: none; border-color: #205081; box-shadow: 0 0 0 2px rgba(32,80,129,0.15); }
+
+      .btn { padding: 8px 16px; font-size: 0.9rem; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s ease; }
+      .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .btn-main { background: #205081; color: #fff; }
+      .btn-main:hover { background: #ffa500; }
+      .btn-secondary { background: #e9eef7; color: #205081; }
+      .btn-secondary:hover { background: #d0d8ec; }
+      .msg { margin-top: 4px; font-size: 0.82rem; color: #205081; min-height: 1em; }
+      .msg.ok { color: #0c7a3e; }
+      .msg.err { color: #b00020; }
+
+      .form-section .row{
+        display:flex;
+        align-items:center;
+        gap:8px;
+        margin-bottom:6px;
+      }
+
+      .form-section .row select,
+      .form-section .row input{
+        font-size:16px;
+        height:30px;
+      }
+
+      .form-section .row label{
+        width:120px;
+        font-weight:600;
+        font-size:16px;
+      }
+
+      #device_id:hover { border-color: #205081; background-color: #f8fbff; }
+      #device_id:focus { outline: none; border-color: #205081; background-color: #fff; box-shadow: 0 0 0 3px rgba(32,80,129,0.18); }
+      #device_id:disabled { background-color: #f6f8fb; color: #6b7c93; cursor: not-allowed; }
+      #device_id:disabled:hover { border-color: #eee; background-color: #f6f8fb; box-shadow: none; }
+
+      .mssql-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; width: 100%; box-sizing: border-box; margin-bottom: 6px; }
+      .mssql-full { width: 100%; box-sizing: border-box; margin-bottom: 6px; }
+
+      .mssql-grid input,
+      .mssql-full input { width: 100% !important; height: 32px; padding: 0 10px !important; border-radius: 8px !important; border: 1.5px solid #ddd !important; font-size: 0.85rem !important; box-sizing: border-box !important; margin: 0 !important; }
+      .mssql-grid input:focus,
+      .mssql-full input:focus { border-color: #205081 !important; box-shadow: 0 0 0 2px rgba(32,80,129,0.15) !important; }
+
+      .password-wrap { position: relative; width: 100%; box-sizing: border-box; }
+      .password-wrap input { width: 100% !important; height: 32px !important; padding: 0 36px 0 12px !important; border-radius: 8px !important; border: 1.5px solid #ddd !important; font-size: 0.85rem !important; box-sizing: border-box !important; margin: 0 !important; }
+      .eye-btn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); width: 26px; height: 26px; border: none; background: transparent; cursor: pointer; color: #6c757d; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+      .eye-btn:hover { color: #205081; }
+
+      .mssql-actions { margin-top: 8px; display: flex; justify-content: center; gap: 14px; }
+      .test-btn { background: #d0d6e2; color: #2c3e50; min-width: 90px; }
+      .save-btn { background: #2f5c8f; color: #fff; min-width: 90px; }
+
+      .scroll-area { height: calc(100vh - 48px); overflow-y: auto; overflow-x: hidden; padding-bottom: 10px; box-sizing: border-box; }
+      @media (max-width: 768px) { .scroll-area { padding-bottom: 10px; } }
+
+      .sb-track { position: fixed; right: var(--sb-inset-right); width: var(--sb-width); top: 48px; height: calc(100vh - 48px); z-index: 9998; background: var(--sb-track); border-radius: var(--sb-radius); box-sizing: border-box; display: none; }
+      .sb-thumb { position: absolute; left: 2px; right: 0px; top: 0; height: 80px; background: var(--sb-thumb); border-radius: calc(var(--sb-radius) - 2px); box-shadow: 0 1px 2px rgba(0,0,0,0.25); cursor: grab; touch-action: none; }
+      .sb-thumb:active { cursor: grabbing; }
+
+      html, body { height: 100%; overflow: hidden !important; }
+      html::-webkit-scrollbar, body::-webkit-scrollbar, .scroll-area::-webkit-scrollbar { width: 0 !important; display: none !important; }
+      html, body, .scroll-area { scrollbar-width: none !important; }
+
+      .popup-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 9999; }
+      .popup-box { background: white; padding: 30px 40px; border-radius: 16px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+      .popup-box i { font-size: 40px; color: #28a745; margin-bottom: 12px; }
+
+      .wifi-section { margin-top: 12px; text-align: center; }
+      .wifi-password-wrap input{
+        width:100%;
+        padding-right:40px;
+        box-sizing:border-box;
+      }
+      .wifi-password-wrap{
+        position: relative;
+        width: 220px;
+      }
+
+      #edit-device-btn,
+      #save-device-btn{
+        height:30px;
+        padding:0 10px;
+        font-size:13px;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+      }
+
+      button:not(.menu-back-btn):not(.eye-btn):not(.wifi-eye-btn) {
+        background: #ffa500 !important;
+        color: #fff !important;
+        border: none;
+      }
+
+      button:not(.menu-back-btn):not(.eye-btn):not(.wifi-eye-btn):hover {
+        background: #ff8c00 !important;
+        color: #fff !important;
+      }
+
+      #wifi_ssid,
+      .wifi-password-wrap input{
+        height:32px;
+        padding:0 10px;
+        font-size:13px;
+      }
+      .wifi-password-wrap input {
+        width: 100% !important;
+        padding-right: 40px !important;
+        box-sizing: border-box !important;
+        margin-bottom: 0 !important;
+      }
+      .wifi-eye-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        color: #6c757d;
+        font-size: 1rem;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+      .wifi-eye-btn:hover { color: #205081; }
+      .wifi-connect-btn {
+        margin-top: 10px;
+        background: #205081;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 24px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.16s;
+      }
+      .wifi-connect-btn:hover { background: #ffa500; }
+
+      .device-id-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+
+      #osk { position:fixed; left:0; right:0; bottom:0; z-index:99999; margin:0!important; padding:0!important; overflow:hidden!important; height:auto!important; max-height:none!important; }
+      .simple-keyboard { margin:0!important; padding:4px 4px 0!important; border-radius:0!important; box-shadow:none!important; }
+      .simple-keyboard .hg-rows { margin:0!important; padding:0!important; display:flex!important; flex-direction:column!important; gap:0!important; }
+      .simple-keyboard .hg-row  { margin:0!important; margin-bottom:4px!important; padding:0!important; }
+      .simple-keyboard .hg-row:last-child { margin-bottom:0!important; }
+      .simple-keyboard .hg-button { margin-bottom:0!important; }
+
+      /* ===== CANTEEN MAPPING SECTION ===== */
+      .canteen-section {
+        display: none;
+        margin-top: 6px;
+      }
+      .canteen-section.show { display: block; }
+    </style>
+  </head>
+  <body>
+
+    <div class="header" id="pageHeader">
+      <div class="left">
+        <button class="menu-back-btn" onclick="window.location.href='/menu'">← Menu</button>
+      </div>
+      <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+        <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo" />
+      </div>
+      <div class="right">
+        <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage" />
+      </div>
+    </div>
+
+    <!-- SAVE POPUP -->
+    <div id="savePopup" class="popup-overlay">
+      <div class="popup-box">
+        <i class="fa fa-check-circle"></i>
+        <p id="popupText">Saved Successfully</p>
+      </div>
+    </div>
+
+    <div class="scroll-area" id="scrollArea">
+
+      <div class="form-section tab-content active" id="device-config">
+        <h2>Device Configuration</h2>
+
+        <!-- Device ID Section -->
+        <div style="margin-bottom:8px;">
+          <div class="row">
+            <label style="font-weight:600; white-space:nowrap; margin:0; font-size:0.95rem; flex-shrink:0;">Device ID</label>
+            <select id="device_type" style="padding:5px 6px; border-radius:7px; border:1.5px solid #ddd; width:90px; flex-shrink:0; margin:0; font-size:0.88rem; box-sizing:border-box;">
+              <option value="IN">IN</option>
+              <option value="OUT">OUT</option>
+              <option value="Canteen">Canteen</option>
+            </select>
+            <input id="device_id" type="text" placeholder="IN_001" autocomplete="off" enterkeyhint="done" disabled
+              style="width:85px !important; padding:5px 7px !important; font-size:0.88rem !important; margin:0 !important; flex-shrink:0; box-sizing:border-box !important;" />
+            <button class="btn btn-secondary" type="button" id="edit-device-btn" onclick="toggleDeviceEdit()"
+              style="white-space:nowrap; padding:5px 12px; font-size:0.85rem; min-height:unset; flex-shrink:0;">
+              <i class="fa fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-main" type="button" id="save-device-btn" onclick="saveDeviceConfig()"
+              style="display:none; white-space:nowrap; padding:5px 12px; font-size:0.85rem; min-height:unset; flex-shrink:0;">
+              <i class="fa fa-save"></i> Save
+            </button>
+          </div>
+          <div class="msg" id="dev-msg"></div>
+          <div class="msg" id="dev-current" style="font-size:.85rem; color:#555;"></div>
+        </div>
+
+        <!-- ===== CANTEEN ID MAPPING SECTION ===== -->
+        <div class="canteen-section" id="canteen-section">
+
+          <div class="row">
+            <label style="font-weight:600; white-space:nowrap; margin:0; font-size:0.95rem; flex-shrink:0;">Canteen ID</label>
+            <input id="canteen_id" type="text" placeholder="e.g. Hall A" autocomplete="off" disabled
+              style="width:100px !important; padding:5px 7px !important; font-size:0.88rem !important; margin:0 !important; flex-shrink:0; box-sizing:border-box !important;" />
+            <button class="btn btn-secondary" type="button" id="canteen-edit-btn" onclick="toggleCanteenEdit()"
+              style="white-space:nowrap; padding:5px 12px; font-size:0.85rem; min-height:unset; flex-shrink:0; height:34px; display:flex; align-items:center; justify-content:center;">
+              <i class="fa fa-edit"></i> Edit
+            </button>
+            <button class="btn btn-main" type="button" id="canteen-save-btn" onclick="saveCanteenMapping()"
+              style="display:none; white-space:nowrap; padding:5px 12px; font-size:0.85rem; min-height:unset; flex-shrink:0; height:34px; align-items:center; justify-content:center;">
+              <i class="fa fa-save"></i> Save
+            </button>
+          </div>
+
+          <div class="msg" id="canteen-msg"></div>
+          <div class="msg" id="canteen-current" style="font-size:.85rem; color:#555;"></div>
+        </div>
+
+        <!-- Network Section -->
+        <div style="margin-top:6px;">
+         <div class="row">
+            <label style="font-weight:600; white-space:nowrap; flex-shrink:0; font-size:0.95rem;">Network</label>
+            <select id="network_select" style="padding:5px 6px; border-radius:7px; border:1.5px solid #ddd; width:90px; flex-shrink:0; margin:0; font-size:0.88rem; box-sizing:border-box;">
+              <option value="lan">LAN</option>
+              <option value="wlan">WLAN</option>
+            </select>
+            <div id="network_status_box" style="flex:1; min-width:0; padding:6px 10px; border-radius:8px; background:#e9eef7; color:#205081; font-weight:600; text-align:center; font-size:0.82rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; transition:background 0.3s, color 0.3s;">
+              Checking network…
+            </div>
+          </div>
+
+          <!-- WiFi Section — shown only when WLAN is selected -->
+          <div id="wifi-section" style="display:none; margin-top:12px; text-align:center;">
+            <div style="display:flex; justify-content:center; align-items:center; gap:6px; margin-bottom:8px;">
+              <select id="wifi_ssid" style="width:220px; padding:8px 12px; border-radius:8px; border:1.5px solid #ddd; font-size:1rem; margin-bottom:0;">
+                <option value="">Select Network...</option>
+              </select>
+              <button type="button" id="wifi-scan-btn" onclick="scanWiFiNetworks()" title="Scan for WiFi networks"
+                style="width:38px; height:38px; border-radius:8px; border:1.5px solid #ddd; background:#f0f4f8; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fa fa-rotate" id="wifi-scan-icon" style="font-size:1rem; color:#205081;"></i>
+              </button>
+            </div>
+            <div style="display:flex; justify-content:center; align-items:center; gap:6px; margin-bottom:6px;">
+              <div class="wifi-password-wrap">
+                <input type="password" id="wifi_password" placeholder="WiFi Password (min 8 chars)" oninput="onWifiPassChange()" />
+                <button type="button" class="wifi-eye-btn" onclick="toggleWifiPass()">
+                  <i class="fa fa-eye" id="wifi-eye-icon"></i>
+                </button>
+              </div>
+              <button type="button" id="wifi-connect-btn" onclick="saveWiFi()" title="Connect to WiFi"
+                style="width:38px; height:38px; border-radius:8px; border:none; cursor:pointer; display:none; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fa fa-plug" style="font-size:1rem;"></i>
+              </button>
+            </div>
+            <div id="wifi-msg" class="msg"></div>
+          </div>
+
+          <h2 style="margin-top:10px;">MSSQL Database Connection</h2>
+
+          <div class="mssql-grid">
+            <input id="mssql_server" type="text" placeholder="Server" />
+            <input id="mssql_port" type="text" placeholder="Port (1433)" />
+          </div>
+          <div class="mssql-grid">
+            <input id="mssql_database" type="text" placeholder="Database" />
+            <div class="password-wrap">
+              <input id="mssql_password" type="password" placeholder="Password" />
+              <button class="eye-btn" type="button" onclick="toggleMssqlPass()">
+                <i class="fa fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mssql-full">
+            <input id="mssql_user" type="text" placeholder="Username" />
+          </div>
+
+          <div id="mssql-status" class="msg"></div>
+          <div id="mssql-msg" class="msg"></div>
+
+          <div class="mssql-actions">
+            <button class="btn test-btn" onclick="testMssql()">Test</button>
+            <button class="btn save-btn" onclick="saveMssql()">Save</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end .scroll-area -->
+
+    <!-- On-Screen Keyboard -->
+    <div id="osk" class="simple-keyboard"></div>
+    <link rel="stylesheet" href="/static/css/osk.css">
+    <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+    <script src="/static/js/osk.js" defer></script>
+
+    <script>
+      // ===== HELPERS =====
+      function setMsg(elId, text, ok = null) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        el.textContent = text || "";
+        el.classList.remove("ok", "err");
+        if (ok === true)  el.classList.add("ok");
+        if (ok === false) el.classList.add("err");
+      }
+
+      async function respFetch(url, payload) {
+        const r = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload || {}),
+          credentials: "same-origin"
+        });
+        const ct = (r.headers.get("content-type") || "").toLowerCase();
+        let data = null;
+        if (ct.includes("application/json")) {
+          data = await r.json();
+        } else {
+          const t = await r.text();
+          throw new Error(`Non-JSON response (${r.status}): ${t.slice(0, 200)}`);
+        }
+        if (!r.ok) throw new Error(data?.message || `HTTP ${r.status}`);
+        return data;
+      }
+
+      function showPopup(message) {
+        const popup = document.getElementById("savePopup");
+        const text  = document.getElementById("popupText");
+        text.innerText = message;
+        popup.style.display = "flex";
+        setTimeout(() => { popup.style.display = "none"; }, 2000);
+      }
+
+      // ===== DEVICE CONFIG =====
+      const typeSelect = document.getElementById("device_type");
+
+      async function loadDeviceConfig() {
+        try {
+          const r = await fetch('/api/device_config');
+          const j = await r.json();
+          if (j && j.success) {
+            const deviceId   = j.device_id   || 'IN_001';
+            const deviceType = j.device_type || 'IN';
+
+            document.getElementById('device_id').value = deviceId;
+            typeSelect.value = deviceType;
+
+            const direction = deviceId.split('_')[0];
+            setMsg('dev-current', `Current: ${deviceId} | Type: ${deviceType} | Direction: ${direction}`);
+
+            // Show/hide canteen section based on device type
+            toggleCanteenSection(deviceType);
+          }
+        } catch(e) {
+          setMsg('dev-msg', 'Failed to load device config', false);
+        }
+      }
+
+      typeSelect.addEventListener("change", async () => {
+        await suggestDeviceId();
+        await autoSaveDeviceType();
+        toggleCanteenSection(typeSelect.value);
+      });
+
+      /* ===== CANTEEN SECTION VISIBILITY ===== */
+      function toggleCanteenSection(deviceType) {
+        const section = document.getElementById('canteen-section');
+        if (deviceType === 'Canteen') {
+          section.classList.add('show');
+          loadCanteenMapping();
+        } else {
+          section.classList.remove('show');
+        }
+      }
+
+      /* ===== CANTEEN MAPPING ===== */
+
+      async function loadCanteenMapping() {
+        try {
+          const r = await fetch('/api/canteen_mapping');
+          const j = await r.json();
+          const canteenIdInput = document.getElementById('canteen_id');
+
+          if (j.success && j.canteen_id) {
+            canteenIdInput.value = j.canteen_id;
+            setMsg('canteen-current', `Current: ${j.canteen_id}`);
+          } else {
+            canteenIdInput.value = '';
+            setMsg('canteen-current', '');
+          }
+        } catch(e) {
+          console.warn('Failed to load canteen mapping:', e);
+        }
+      }
+
+      function toggleCanteenEdit() {
+        const idInput = document.getElementById('canteen_id');
+        const editBtn = document.getElementById('canteen-edit-btn');
+        const saveBtn = document.getElementById('canteen-save-btn');
+
+        if (idInput.disabled) {
+          idInput.disabled = false;
+          idInput.focus();
+          editBtn.style.display = 'none';
+          saveBtn.style.display = 'flex';
+          setMsg('canteen-msg', 'Edit mode — update Canteen ID.', true);
+        }
+      }
+
+      async function saveCanteenMapping() {
+        const canteenId = document.getElementById('canteen_id').value.trim();
+
+        if (!canteenId) {
+          setMsg('canteen-msg', 'Please enter a Canteen ID (e.g. Hall A)', false);
+          return;
+        }
+
+        setMsg('canteen-msg', 'Saving canteen mapping...');
+
+        try {
+          const j = await respFetch('/api/canteen_mapping', {
+            canteen_id: canteenId
+          });
+
+          if (j.success) {
+            setMsg('canteen-msg', 'Canteen ID saved!', true);
+            showPopup(`Saved: ${canteenId}`);
+
+            document.getElementById('canteen_id').disabled = true;
+            document.getElementById('canteen-edit-btn').style.display = 'flex';
+            document.getElementById('canteen-save-btn').style.display = 'none';
+
+            await loadCanteenMapping();
+          } else {
+            setMsg('canteen-msg', j.message || 'Failed to save', false);
+          }
+        } catch(e) {
+          setMsg('canteen-msg', 'Save failed: ' + e.message, false);
+        }
+      }
+
+      // ===== REST OF ORIGINAL CODE (unchanged) =====
+
+      async function autoSaveDeviceType() {
+        const deviceId = document.getElementById('device_id').value || generateFallbackId();
+        try {
+          const response = await fetch('/api/device_config', {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ device_id: deviceId, device_type: typeSelect.value })
+          });
+          const data = await response.json();
+          if (data.success) {
+            setMsg('dev-current', `Current: ${deviceId} | Type: ${typeSelect.value} | Direction: ${deviceId.split('_')[0]}`);
+          }
+        } catch (error) {
+          console.warn('Auto-save device type failed:', error);
+        }
+      }
+
+      function generateFallbackId() {
+        return `${typeSelect.value}_001`;
+      }
+
+      async function suggestDeviceId() {
+        const prefix = typeSelect.value;
+        const input  = document.getElementById('device_id');
+        try {
+          const response = await fetch('/api/next_device_number?prefix=' + encodeURIComponent(prefix));
+          const data     = await response.json();
+          if (data && data.success) {
+            const suggestedId = `${prefix}_${String(data.next_number).padStart(3, '0')}`;
+            input.value = suggestedId;
+            if (!input.disabled) {
+              setMsg('dev-msg', `Suggested ID: ${suggestedId}. You can modify if needed.`, true);
+            }
+          }
+        } catch(err) {
+          input.value = `${prefix}_001`;
+        }
+      }
+
+      function toggleDeviceEdit() {
+        const input   = document.getElementById('device_id');
+        const editBtn = document.getElementById('edit-device-btn');
+        const saveBtn = document.getElementById('save-device-btn');
+
+        if (input.disabled) {
+          input.disabled = false;
+          input.focus();
+          editBtn.style.display = 'none';
+          saveBtn.style.display = 'inline-block';
+          setMsg('dev-msg', 'Edit mode enabled.', true);
+        }
+      }
+
+      async function saveDeviceConfig() {
+        const deviceId   = document.getElementById('device_id').value.trim();
+        const deviceType = typeSelect.value;
+
+        if (!deviceType) {
+          setMsg('dev-msg', 'Please select a device type (IN/OUT/Canteen)', false);
+          return;
+        }
+        if (!deviceId) {
+          setMsg('dev-msg', 'Please enter a device ID', false);
+          return;
+        }
+
+        const pattern = /^[A-Za-z\/]+_[0-9]{3}$/;
+        if (!pattern.test(deviceId)) {
+          setMsg('dev-msg', 'Invalid format. Use TYPE_001 (e.g., IN_001, OUT_002)', false);
+          return;
+        }
+
+        setMsg('dev-msg', 'Checking for duplicate device IDs on network...');
+        try {
+          const checkResponse = await fetch('/api/check_device_id?device_id=' + encodeURIComponent(deviceId.toUpperCase()));
+          const checkData     = await checkResponse.json();
+          if (checkData && checkData.duplicate) {
+            setMsg('dev-msg', `Device ID already exists on network at ${checkData.ip_address || 'another device'}!`, false);
+            return;
+          }
+        } catch(err) {
+          console.warn('Network validation failed, proceeding with save:', err);
+        }
+
+        setMsg('dev-msg', 'Saving device configuration...');
+
+        try {
+          const j = await respFetch('/api/device_config', {
+            device_id:   deviceId.toUpperCase(),
+            device_type: deviceType
+          });
+          setMsg('dev-msg', j.message || (j.success ? 'Saved successfully' : 'Failed to save'), !!j.success);
+
+          if (j.success) {
+            const input   = document.getElementById('device_id');
+            const editBtn = document.getElementById('edit-device-btn');
+            const saveBtn = document.getElementById('save-device-btn');
+
+            input.disabled       = true;
+            editBtn.style.display = 'inline-block';
+            saveBtn.style.display = 'none';
+
+            showPopup(`Saved: ${deviceId.toUpperCase()}`);
+            await loadDeviceConfig();
+          }
+        } catch(e) {
+          setMsg('dev-msg', 'Save failed: ' + e.message, false);
+        }
+      }
+
+      // ===== NETWORK =====
+      let _inputHasFocus = false;
+      document.addEventListener('focusin',  e => { if (e.target.matches('input,select,textarea')) _inputHasFocus = true;  }, true);
+      document.addEventListener('focusout', e => { if (e.target.matches('input,select,textarea')) _inputHasFocus = false; }, true);
+
+      async function loadNetworkStatus(force) {
+        if (_inputHasFocus && !force) return;
+
+        const box  = document.getElementById('network_status_box');
+        const type = document.getElementById('network_select').value;
+        if (!box) return;
+
+        const wifiSection = document.getElementById('wifi-section');
+        if (wifiSection) wifiSection.style.display = (type === 'wlan') ? 'block' : 'none';
+
+        box.innerHTML = 'Checking network…';
+        box.style.background = '#e9eef7';
+        box.style.color = '#205081';
+
+        try {
+          const r = await fetch('/api/network_info');
+          if (!r.ok) throw new Error('Server error');
+          const j = await r.json();
+
+          if (type === 'lan') {
+            if (j.lan && j.lan.connected && j.lan.ip) {
+              box.innerHTML = `<i class="fa fa-circle" style="font-size:0.65rem; vertical-align:middle; margin-right:5px;"></i>LAN Connected &mdash; ${j.lan.ip}`;
+              box.style.background = '#d3f9d8';
+              box.style.color = '#2b8a3e';
+
+              const ssid = document.getElementById('wifi_ssid');
+              const pw   = document.getElementById('wifi_password');
+              if (ssid) ssid.disabled = true;
+              if (pw)   pw.disabled   = true;
+              setMsg('wifi-msg', 'WiFi disabled — LAN connection is active', false);
+            } else {
+              box.innerHTML = '<i class="fa fa-circle" style="font-size:0.65rem; vertical-align:middle; margin-right:5px;"></i>LAN Not Connected';
+              box.style.background = '#ffe0e0';
+              box.style.color = '#b02a37';
+
+              const ssid = document.getElementById('wifi_ssid');
+              const pw   = document.getElementById('wifi_password');
+              if (ssid) ssid.disabled = false;
+              if (pw)   pw.disabled   = false;
+              setMsg('wifi-msg', '');
+            }
+          } else if (type === 'wlan') {
+            const w = j.wifi || j.wlan;
+            if (w && w.connected && w.ip) {
+              box.innerHTML = `<i class="fa fa-wifi" style="margin-right:5px;"></i>WLAN Connected &mdash; ${w.ip}${w.ssid ? ' (' + w.ssid + ')' : ''}`;
+              box.style.background = '#d3f9d8';
+              box.style.color = '#2b8a3e';
+            } else {
+              box.innerHTML = '<i class="fa fa-wifi" style="margin-right:5px;"></i>WLAN Not Connected';
+              box.style.background = '#ffe0e0';
+              box.style.color = '#b02a37';
+            }
+          }
+        } catch (e) {
+          box.innerHTML = '<i class="fa fa-plug" style="margin-right:5px;"></i>Could not reach server';
+          box.style.background = '#fff3cd';
+          box.style.color = '#856404';
+        }
+      }
+
+      // ===== WIFI =====
+      async function fetchWiFiNetworks() {
+        try {
+          const res      = await fetch('/api/wifi_scan');
+          const networks = await res.json();
+          const ssidList = document.getElementById('wifi_ssid');
+          if (!ssidList) return;
+          const prev = ssidList.value;
+          ssidList.innerHTML = '<option value="">Select Network...</option>';
+          networks.forEach(ssid => {
+            const opt   = document.createElement('option');
+            opt.value   = ssid;
+            opt.text    = ssid;
+            ssidList.add(opt);
+          });
+          if (prev) ssidList.value = prev;
+        } catch (e) {
+          console.warn('WiFi scan failed:', e);
+        }
+      }
+
+      async function scanWiFiNetworks() {
+        const btn  = document.getElementById('wifi-scan-btn');
+        const icon = document.getElementById('wifi-scan-icon');
+        if (!btn) return;
+        btn.disabled = true;
+        icon.classList.add('fa-spin');
+        setMsg('wifi-msg', 'Scanning for networks...');
+        try {
+          await fetchWiFiNetworks();
+          const count = document.getElementById('wifi_ssid').options.length - 1;
+          setMsg('wifi-msg', count > 0 ? `Found ${count} network(s)` : 'No networks found', count > 0);
+        } catch(e) {
+          setMsg('wifi-msg', 'Scan failed', false);
+        } finally {
+          btn.disabled = false;
+          icon.classList.remove('fa-spin');
+        }
+      }
+
+      async function saveWiFi() {
+        const ssid     = document.getElementById('wifi_ssid').value;
+        const password = document.getElementById('wifi_password').value;
+        if (!ssid) {
+          setMsg('wifi-msg', 'Please select a WiFi network first', false);
+          return;
+        }
+        setMsg('wifi-msg', 'Connecting...');
+        try {
+          const resp = await respFetch('/api/wifi_save', { ssid, password });
+          setMsg('wifi-msg', resp.message || (resp.success ? 'Connected!' : 'Failed'), !!resp.success);
+          if (resp.success) setTimeout(loadNetworkStatus, 1500);
+        } catch (err) {
+          setMsg('wifi-msg', 'Failed to save Wi-Fi', false);
+        }
+      }
+
+      function toggleWifiPass() {
+        const inp  = document.getElementById('wifi_password');
+        const icon = document.getElementById('wifi-eye-icon');
+        if (inp.type === 'password') {
+          inp.type       = 'text';
+          icon.className = 'fa fa-eye-slash';
+        } else {
+          inp.type       = 'password';
+          icon.className = 'fa fa-eye';
+        }
+      }
+
+      function onWifiPassChange() {
+        const btn = document.getElementById('wifi-connect-btn');
+        btn.style.display = document.getElementById('wifi_password').value.length >= 8 ? 'flex' : 'none';
+      }
+
+      // ===== MSSQL =====
+      async function loadMssqlConfig() {
+        try {
+          const r = await fetch('/api/mssql_config');
+          const j = await r.json();
+          if (j && j.success && j.config) {
+            const cfg = j.config;
+            document.getElementById('mssql_server').value   = cfg.server   || '';
+            document.getElementById('mssql_port').value     = cfg.port     || '1433';
+            document.getElementById('mssql_database').value = cfg.database || '';
+            document.getElementById('mssql_user').value     = cfg.user     || '';
+            document.getElementById('mssql_password').value = cfg.password || '';
+            if (cfg.server && cfg.database) {
+              const status = cfg.available ? 'Library available' : 'Library not installed (pip install pymssql)';
+              setMsg('mssql-status', `Current: ${cfg.user}@${cfg.server}:${cfg.port}/${cfg.database} | ${status}`);
+            }
+          }
+        } catch(e) {
+          setMsg('mssql-msg', 'Failed to load MSSQL config', false);
+        }
+      }
+
+      function toggleMssqlPass() {
+        const inp = document.getElementById('mssql_password');
+        const btn = event.target.closest('button');
+        if (inp.type === 'password') {
+          inp.type = 'text';
+          btn.innerHTML = '<i class="fa fa-eye-slash"></i>';
+        } else {
+          inp.type = 'password';
+          btn.innerHTML = '<i class="fa fa-eye"></i>';
+        }
+      }
+
+      async function testMssql() {
+        setMsg('mssql-msg', 'Testing connection...');
+        const payload = {
+          server:   document.getElementById('mssql_server').value.trim(),
+          port:     document.getElementById('mssql_port').value.trim(),
+          database: document.getElementById('mssql_database').value.trim(),
+          user:     document.getElementById('mssql_user').value.trim(),
+          password: document.getElementById('mssql_password').value
+        };
+        try {
+          const j = await respFetch('/api/mssql_test', payload);
+          setMsg('mssql-msg', j.message || (j.success ? 'Connected!' : 'Failed'), !!j.success);
+        } catch(e) {
+          setMsg('mssql-msg', 'Test failed: ' + e.message, false);
+        }
+      }
+
+      async function saveMssql() {
+        setMsg('mssql-msg', 'Saving configuration...');
+        const payload = {
+          server:   document.getElementById('mssql_server').value.trim(),
+          port:     document.getElementById('mssql_port').value.trim(),
+          database: document.getElementById('mssql_database').value.trim(),
+          user:     document.getElementById('mssql_user').value.trim(),
+          password: document.getElementById('mssql_password').value
+        };
+        try {
+          const j = await respFetch('/api/mssql_config', payload);
+          setMsg('mssql-msg', j.message || (j.success ? 'Saved' : 'Failed'), !!j.success);
+          if (j.success) await loadMssqlConfig();
+        } catch(e) {
+          setMsg('mssql-msg', 'Save failed: ' + e.message, false);
+        }
+      }
+
+      // ===== INSET SCROLLBAR =====
+      function initInsetScroll() {
+        const area  = document.getElementById('scrollArea');
+        const head  = document.getElementById('pageHeader');
+        const track = document.getElementById('sbTrack');
+        const thumb = document.getElementById('sbThumb');
+        if (!area) return;
+
+        let dragging = false, startY = 0, startScrollTop = 0;
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+        function layout() {
+          const hb = Math.ceil(head.getBoundingClientRect().bottom);
+          const h  = window.innerHeight - hb;
+          if (track) {
+            track.style.top = hb + 'px';
+            track.style.height = h + 'px';
+          }
+          area.style.height = h + 'px';
+          toggleTrack(); refreshThumb();
+        }
+        function toggleTrack() {
+          if (track) track.style.display = area.scrollHeight > area.clientHeight + 1 ? 'block' : 'none';
+        }
+        function refreshThumb() {
+          if (!track || !thumb) return;
+          const trackH   = track.clientHeight;
+          const maxScroll = Math.max(0, area.scrollHeight - area.clientHeight);
+          const ratio     = area.clientHeight / (area.scrollHeight || 1);
+          const minH      = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--sb-min-thumb')) || 48;
+          let th = Math.round(trackH * ratio);
+          th = clamp(th, minH, trackH);
+          thumb.style.height = th + 'px';
+          const maxTop = trackH - th;
+          const t = maxScroll ? (area.scrollTop / maxScroll) * maxTop : 0;
+          thumb.style.transform = 'translateY(' + t + 'px)';
+        }
+
+        if (thumb) {
+          thumb.addEventListener('pointerdown', e => {
+            dragging = true; thumb.setPointerCapture(e.pointerId);
+            startY = e.clientY; startScrollTop = area.scrollTop; e.preventDefault();
+          });
+          function endDrag(e) { if (!dragging) return; dragging = false; try { thumb.releasePointerCapture(e.pointerId); } catch(_) {} }
+          thumb.addEventListener('pointerup', endDrag);
+          thumb.addEventListener('pointercancel', endDrag);
+          thumb.addEventListener('lostpointercapture', () => dragging = false);
+          thumb.addEventListener('pointermove', e => {
+            if (!dragging) return;
+            const trackH   = track.clientHeight;
+            const th       = thumb.offsetHeight;
+            const maxTop   = Math.max(1, trackH - th);
+            const maxScroll = Math.max(1, area.scrollHeight - area.clientHeight);
+            area.scrollTop = clamp(startScrollTop + (e.clientY - startY) * (maxScroll / maxTop), 0, maxScroll);
+          });
+        }
+        if (track) {
+          track.addEventListener('pointerdown', e => {
+            if (e.target !== track) return;
+            const rect   = track.getBoundingClientRect();
+            const th     = thumb.offsetHeight;
+            const trackH = track.clientHeight;
+            const maxTop = Math.max(1, trackH - th);
+            const maxScr = Math.max(1, area.scrollHeight - area.clientHeight);
+            area.scrollTop = (clamp(e.clientY - rect.top - th / 2, 0, maxTop) / maxTop) * maxScr;
+          });
+        }
+        area.addEventListener('scroll', refreshThumb, { passive: true });
+        window.addEventListener('resize', layout);
+        window.addEventListener('load', layout);
+        setTimeout(layout, 300);
+      }
+
+      // ===== INIT =====
+      document.addEventListener('DOMContentLoaded', () => {
+        loadDeviceConfig();
+        loadMssqlConfig();
+        loadNetworkStatus(true);
+        fetchWiFiNetworks();
+        setInterval(() => loadNetworkStatus(false), 5000);
+
+        document.getElementById('network_select').addEventListener('change', () => {
+          loadNetworkStatus(true);
+          const type = document.getElementById('network_select').value;
+          if (type === 'wlan') fetchWiFiNetworks();
+        });
+
+        initInsetScroll();
+      });
+
+      // ===== INACTIVITY TIMER =====
+      let inactivityTimer = null;
+      const INACTIVITY_TIMEOUT = 60000;
+      function resetInactivityTimer() {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => { window.location.href = "/"; }, INACTIVITY_TIMEOUT);
+      }
+      ["mousemove","mousedown","keypress","scroll","touchstart","click"].forEach(evt => {
+        document.addEventListener(evt, resetInactivityTimer, { passive: true });
+      });
+      resetInactivityTimer();
+
+      // ===== AUTO SCROLL ON FOCUS =====
+      document.querySelectorAll("input, select").forEach(el => {
+        el.addEventListener("focus", () => {
+          setTimeout(() => { el.scrollIntoView({ behavior: "smooth", block: "center" }); }, 300);
+        });
+      });
+    </script>
+  </body>
+</html>

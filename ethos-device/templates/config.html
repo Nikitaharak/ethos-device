@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Config</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="/static/js/rbac_helpers.js"></script>
+  <style>
+    html, body {
+      height:100%; margin:0;
+      background:#f9f6ef;
+      overflow:hidden;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      -webkit-user-select:none; user-select:none;
+    }
+    .header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 32px 0; max-width:800px; margin:0 auto; box-sizing:border-box;
+    }
+    .logo-main { height:48px; }
+    .logo-right { height:48px; }
+    .header-back-btn {
+      background:transparent; border:none; min-width:42px; height:34px;
+      display:flex; align-items:center; gap:4px; color:#205081;
+      font-size:0.9rem; font-weight:600; cursor:pointer; border-radius:8px; padding:0 8px;
+      transition:background .2s, color .2s;
+    }
+    .header-back-btn:hover { background:#ffa500; color:#fff; }
+    .header-back-btn:active { background:#e69500; transform:scale(0.96); }
+
+    .scroll-area {
+      height:calc(100vh - 90px); overflow-y:auto; scrollbar-width:none;
+    }
+    .scroll-area::-webkit-scrollbar { width:0; height:0; }
+
+    .page-title {
+      text-align:center; color:#205081; font-size:1.3rem; font-weight:700;
+      margin:24px 0 6px;
+    }
+    .page-sub {
+      text-align:center; color:#8a96a8; font-size:0.92rem; margin-bottom:22px;
+    }
+
+    .main-menu {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:16px;
+      padding:0 12px 20px; max-width:720px; margin:0 auto; box-sizing:border-box;
+    }
+    .menu-card {
+      background:#fff; border-radius:16px; padding:10px 6px;
+      box-shadow:0 3px 8px rgba(0,0,0,.12);
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; cursor:pointer; aspect-ratio:1/1;
+      transition:transform .12s, box-shadow .15s;
+    }
+    .menu-card:active { transform:scale(0.93); }
+    .menu-card:hover { box-shadow:0 8px 32px rgba(32,80,129,.13); background:#faf8f3; }
+    .menu-icon { font-size:3rem; margin-bottom:20px; color:#ffa500; line-height:1; }
+    .menu-title { font-size:0.90rem; font-weight:600; color:#205081; line-height:1.15; }
+
+    @media (max-width:480px) {
+      .main-menu { gap:12px; padding:8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="header-back-btn" onclick="window.location.href='/menu'" aria-label="Back to Menu">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span>Menu</span>
+    </button>
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Company" />
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage" />
+  </div>
+
+  <div class="scroll-area">
+    <div class="page-title">Config</div>
+    <div class="page-sub">Device & user configuration</div>
+
+    <div class="main-menu">
+
+      <div class="menu-card" data-rbac-page="userconfig" onclick="location.href='/userconfig'">
+        <div class="menu-icon"><i class="fa-solid fa-users-gear"></i></div>
+        <div class="menu-title">User Config</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="device_config" onclick="location.href='/device_config'">
+        <div class="menu-icon"><i class="fa-solid fa-microchip"></i></div>
+        <div class="menu-title">Device Config</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="device_console" onclick="location.href='/device-console'">
+        <div class="menu-icon"><i class="fa-solid fa-server"></i></div>
+        <div class="menu-title">Device Console</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let inactivityTimer = null;
+    function resetInactivityTimer(){
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => { window.location.href = '/'; }, 60000);
+    }
+    ['mousemove','mousedown','keypress','scroll','touchstart','click']
+      .forEach(e => document.addEventListener(e, resetInactivityTimer, {passive:true}));
+    resetInactivityTimer();
+  </script>
+</body>
+</html>

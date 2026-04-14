@@ -1,0 +1,158 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Export</title>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<link rel="stylesheet" href="/static/css/styles.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+
+/* ───────── BODY ───────── */
+body{
+  margin:0;
+  background:#f9f6ef;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* ───────── HEADER (copied theme) ───────── */
+.header{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 38px 0;
+  min-height:60px;
+  box-sizing:border-box;
+}
+
+.logo-main{ height:44px; }
+.logo-right{ height:44px; }
+
+.menu-back-btn{
+  background:#eee;
+  color:#205081;
+  padding:9px 18px;
+  font-size:1rem;
+  border:none;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .16s;
+  min-width:92px;
+}
+
+.menu-back-btn:hover{
+  background:#ffa500;
+  color:#fff;
+}
+
+/* ───────── CONTENT AREA ───────── */
+.page-content{
+  width:100%;
+  max-width:480px;
+  margin-top:40px;
+  display:flex;
+  justify-content:center;
+}
+
+/* ───────── TILE GRID ───────── */
+.tile-grid{
+  display:flex;
+  gap:30px;
+}
+
+/* ───────── TILE STYLE ───────── */
+.tile{
+  width:150px;
+  height:120px;
+  background:#ffa500;
+  border-radius:8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:all .25s ease;
+}
+
+.tile:hover{
+  background:#e69500;
+  transform:translateY(-5px);
+  box-shadow:0 8px 18px rgba(0,0,0,0.2);
+}
+
+.tile i{
+  font-size:36px;
+  margin-bottom:10px;
+  color:#fff;
+  transition:transform .25s ease;
+}
+
+.tile:hover i{
+  transform:scale(1.1);
+}
+
+.tile span{
+  font-size:15px;
+  font-weight:600;
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <button class="menu-back-btn"
+      onclick="window.location.href='/user_data'">
+      ← back
+    </button>
+
+    </div>
+  
+  <div>
+    <img src="/static/img/logo_company.png"
+         class="logo-main"
+         alt="Company Logo">
+  </div>
+
+  <div>
+    <img src="/static/img/logo_epitage.png"
+         class="logo-right"
+         alt="Epitage Logo">
+  </div>
+</div>
+
+<!-- PAGE CONTENT -->
+<div class="page-content">
+
+  <div class="tile-grid">
+
+    <div class="tile"
+         onclick="window.location.href='/userlog_export'">
+      <i class="bi bi-person"></i>
+      <span>User Log</span>
+    </div>
+
+    <div class="tile"
+         onclick="window.location.href='/datalog_export'">
+      <i class="bi bi-database"></i>
+      <span>Data Log</span>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

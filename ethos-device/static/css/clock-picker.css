@@ -1,0 +1,159 @@
+/* ============================================================
+   24-Hour Circular Clock Picker — Dark Theme
+   ============================================================ */
+
+/* ── Overlay ── */
+.cp-overlay {
+  position: fixed; inset: 0; z-index: 15000;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(3px);
+  display: none; align-items: center; justify-content: center;
+  padding: 20px;
+  -webkit-user-select: none; user-select: none;
+}
+.cp-overlay.cp-open { display: flex; }
+
+/* ── Container ── */
+.cp-container {
+  width: 320px; border-radius: 24px;
+  background: #1a2332;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  padding: 24px 20px 18px;
+  animation: cpPop 0.2s ease-out;
+}
+@keyframes cpPop {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Header: HH : MM ── */
+.cp-header {
+  display: flex; align-items: center; justify-content: center;
+  gap: 4px; margin-bottom: 20px;
+}
+.cp-hh, .cp-mm {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.8rem; font-weight: 700;
+  min-width: 80px; text-align: center;
+  padding: 4px 8px; border-radius: 12px;
+  cursor: pointer; transition: background 0.15s, color 0.15s;
+  color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.06);
+  line-height: 1.1;
+}
+.cp-hh.cp-active, .cp-mm.cp-active {
+  color: #fff;
+  background: #F5A623;
+}
+.cp-sep {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.5rem; font-weight: 700;
+  color: rgba(255,255,255,0.35);
+  margin: 0 2px;
+}
+
+/* ── Clock Face ── */
+.cp-face {
+  position: relative;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: #243447;
+  margin: 0 auto 20px;
+  touch-action: none;
+}
+
+/* ── Clock Hand ── */
+.cp-hand-wrap {
+  position: absolute;
+  left: 50%; bottom: 50%;
+  width: 2px;
+  transform-origin: bottom center;
+  transition: transform 0.2s ease, height 0.2s ease;
+  pointer-events: none;
+}
+.cp-hand-line {
+  width: 2px; height: 100%;
+  background: #F5A623;
+  border-radius: 1px;
+}
+.cp-hand-tip {
+  position: absolute; top: -3px; left: 50%;
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #F5A623;
+  transform: translateX(-50%);
+}
+
+/* ── Center Dot ── */
+.cp-center-dot {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #F5A623;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ── Clock Numbers ── */
+.cp-num {
+  position: absolute;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+}
+/* Outer ring numbers (hours 12-23 or minutes) */
+.cp-num-outer {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.85);
+}
+/* Inner ring numbers (hours 0-11) */
+.cp-num-inner {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  width: 32px; height: 32px;
+}
+/* Selected state */
+.cp-num.cp-selected {
+  background: #F5A623;
+  color: #fff !important;
+}
+
+/* ── Action Buttons ── */
+.cp-actions {
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.cp-btn {
+  padding: 10px 24px; border-radius: 12px;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; border: none;
+  transition: background 0.12s, transform 0.1s;
+}
+.cp-btn:active { transform: scale(0.95); }
+.cp-btn-cancel {
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  border: 1.5px solid rgba(255,255,255,0.15);
+}
+.cp-btn-cancel:active { background: rgba(255,255,255,0.08); }
+.cp-btn-ok {
+  background: #F5A623;
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(245,166,35,0.3);
+}
+.cp-btn-ok:active { background: #E8940A; }
+
+/* ── Transition for mode switch ── */
+.cp-face.cp-switching .cp-num {
+  opacity: 0; transform: translate(-50%, -50%) scale(0.85);
+}
+.cp-num {
+  transition: opacity 0.15s, transform 0.15s, background 0.15s, color 0.15s;
+}

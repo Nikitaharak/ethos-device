@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/static/css/styles.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/osk.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@3/build/css/index.css"/>
+<title>Settings</title>
+<style>
+/* ── CSS VARIABLES ── */
+:root {
+  --bg-main:      #f9f6ef;
+  --card-bg:      #ffffff;
+  --text-main:    #205081;
+  --text-sub:     #6b7890;
+  --border:       #eef1f6;
+  --shadow:       0 3px 8px rgba(0,0,0,0.12);
+  --icon-color:   #ffa500;
+  --btn-bg:       #205081;
+  --btn-hover:    #ffa500;
+  --input-bg:     #ffffff;
+  --input-border: #eee;
+}
+body {
+  margin: 0;
+  background: var(--bg-main);
+  font-family: Georgia, serif;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+/* ── HEADER ── */
+.header {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+  background: var(--bg-main);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  z-index: 1000;
+  transition: background 0.3s ease;
+}
+.header-left {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.menu-back-btn {
+  background: #eee;
+  color: #205081;
+  padding: 9px 18px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.16s;
+  min-width: 92px;
+}
+.menu-back-btn:hover { background: #ffa500; color: #fff; }
+
+/* ── Power Buttons ── */
+.power-btn {
+  width: 38px; height: 38px;
+  border: none; border-radius: 10px;
+  display: grid; place-items: center;
+  cursor: pointer; font-size: 0.9rem;
+  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+.power-btn:active { transform: scale(0.92); }
+.power-btn.restart {
+  background: #205081; color: #fff;
+}
+.power-btn.restart:hover { background: #2a6aaa; box-shadow: 0 3px 10px rgba(32,80,129,0.3); }
+.power-btn.shutdown {
+  background: #D94040; color: #fff;
+}
+.power-btn.shutdown:hover { background: #c0392b; box-shadow: 0 3px 10px rgba(217,64,64,0.3); }
+
+.logo-main {
+  height: 44px;
+  display: block;
+  object-fit: contain;
+  max-width: 140px;
+}
+.logo-right {
+  height: 44px;
+  display: block;
+  object-fit: contain;
+  max-width: 120px;
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+/* ── SCROLL AREA ── */
+.scroll-area {
+  margin-top: 65px;
+  height: calc(100vh - 65px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px 40px;
+}
+.scroll-area::-webkit-scrollbar { display: none; }
+/* ── CARD ── */
+.card {
+  background: var(--card-bg);
+  width: 100%;
+  max-width: 400px;
+  padding: 22px 20px;
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+/* ── ROW ── */
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.row h2 {
+  color: var(--text-main);
+  font-size: 16px;
+  margin: 0;
+  line-height: 1;
+  transition: color 0.3s;
+}
+/* ── TOGGLE SWITCH ── */
+.switch {
+  position: relative;
+  width: 55px;
+  height: 30px;
+  flex-shrink: 0;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider-toggle {
+  position: absolute;
+  cursor: pointer;
+  background-color: #cfd4dc;
+  border-radius: 34px;
+  top: 0; left: 0; right: 0; bottom: 0;
+  transition: 0.3s;
+}
+.slider-toggle:before {
+  position: absolute;
+  content: "";
+  height: 24px; width: 24px;
+  left: 3px; top: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+input:checked + .slider-toggle { background-color: #28a745; }
+input:checked + .slider-toggle:before { transform: translateX(25px); }
+/* ── AUTH ICONS ── */
+.auth-icons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 20px;
+  margin: 35px 0 30px;
+}
+.auth-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.auth-item i {
+  font-size: 26px;
+  color: var(--text-main);
+  transition: color 0.2s ease;
+}
+.auth-item input:checked + .slider-toggle { background-color: #28a745; }
+/* ── VOLUME ── */
+.volume-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.volume-container input[type="range"] {
+  width: 120px;
+  accent-color: #2c4f78;
+  cursor: pointer;
+}
+.volume-value {
+  font-weight: 600;
+  color: var(--text-main);
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+/* ── ADMIN / PASSWORD CARD ── */
+.admin-card {
+  background: var(--card-bg);
+  max-width: 400px;
+  width: 100%;
+  margin: 16px 0 0;
+  padding: 18px 20px 22px;
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+h2 {
+  color: #205081;
+  font-size: 16px;
+  font-weight: 600;
+}
+/* Input */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.admin-form input {
+  width: 85%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: 1.5px solid #ddd;
+  font-size: 14px;
+  font-family: Georgia, serif;
+  background: #fff;
+  color: #222;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+.admin-form input:hover {
+  border-color: #205081;
+}
+.admin-form input:focus {
+  border-color: #ffa500;
+  box-shadow: 0 0 0 3px rgba(255,165,0,0.2);
+}
+/* Button */
+.admin-btn {
+  display: block;
+  margin: 12px auto 0;
+  width: 140px;
+  padding: 10px 0;
+  border-radius: 10px;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: Georgia, serif;
+  cursor: pointer;
+  background: #ffa500;
+  color: #ffffff;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.admin-btn:hover {
+  background: #ff8c00;
+}
+.admin-btn:active {
+  transform: scale(0.96);
+}
+/* Feedback message */
+.pw-msg {
+  margin-top: 12px;
+  font-size: 13px;
+  min-height: 1.3em;
+  text-align: center;
+  font-family: Georgia, serif;
+  transition: color 0.2s;
+}
+/* Toast */
+.toast {
+  position: fixed; left: 50%; transform: translateX(-50%);
+  bottom: 26px; background: #205081; color: #fff; padding: 10px 16px;
+  border-radius: 10px; box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  display: none; z-index: 9999; font-weight: 700;
+}
+.toast.ok { background: #24b300; }
+.toast.err { background: #e2472f; }
+
+/* ── Confirm Modal ── */
+.confirm-overlay {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(32,80,129,0.25); backdrop-filter: blur(2px);
+  display: none; align-items: center; justify-content: center;
+}
+.confirm-overlay.show { display: flex; }
+.confirm-box {
+  background: #fff; border-radius: 20px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+  padding: 28px 28px 22px; width: 320px; text-align: center;
+  animation: confirmPop 0.2s ease-out;
+}
+@keyframes confirmPop { from{opacity:0;transform:scale(0.93);}to{opacity:1;transform:scale(1);} }
+.confirm-icon {
+  width: 54px; height: 54px; border-radius: 50%;
+  display: inline-grid; place-items: center;
+  font-size: 1.3rem; margin-bottom: 14px;
+}
+.confirm-icon.restart-icon { background: #E8F0FE; color: #205081; }
+.confirm-icon.shutdown-icon { background: #FFEBEE; color: #D94040; }
+.confirm-title { font-size: 1.1rem; font-weight: 700; color: #205081; margin-bottom: 6px; }
+.confirm-sub { font-size: 0.85rem; color: #6b7890; margin-bottom: 20px; line-height: 1.5; }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; }
+.btn-confirm {
+  padding: 10px 24px; border-radius: 10px; font-weight: 700;
+  font-size: 0.85rem; cursor: pointer; border: none;
+  font-family: Georgia, serif; transition: transform 0.1s;
+}
+.btn-confirm:active { transform: scale(0.95); }
+.btn-confirm.yes-restart { background: #205081; color: #fff; }
+.btn-confirm.yes-restart:hover { background: #2a6aaa; }
+.btn-confirm.yes-shutdown { background: #D94040; color: #fff; }
+.btn-confirm.yes-shutdown:hover { background: #c0392b; }
+.btn-confirm.cancel { background: #F0F1F4; color: #6b7890; border: 1px solid #E4E7EC; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header" id="pageHeader">
+  <div class="header-left">
+    <button class="menu-back-btn" onclick="window.location.href='/menu'">← Menu</button>
+  </div>
+  <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo">
+  <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+</div>
+
+<!-- ── CONFIRM MODAL ── -->
+<div class="confirm-overlay" id="confirmModal">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon"><i id="confirmIconI" class="fa fa-rotate-right"></i></div>
+    <div class="confirm-title" id="confirmTitle">Restart Device?</div>
+    <div class="confirm-sub" id="confirmSub">The device will restart. This may take a moment.</div>
+    <div class="confirm-actions">
+      <button class="btn-confirm" id="confirmYes" onclick="execPower()">Yes, Restart</button>
+      <button class="btn-confirm cancel" onclick="hideConfirm()"><i class="fa fa-times"></i> Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCROLL AREA ── -->
+<div class="scroll-area" id="scrollArea">
+
+  <!-- MAIN CARD -->
+  <div class="card">
+
+    <!-- Restart / Shutdown -->
+    <div class="row">
+      <h2>Power</h2>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <button class="power-btn restart" onclick="showConfirm('restart')" title="Restart"><i class="fa fa-rotate-right"></i></button>
+        <button class="power-btn shutdown" onclick="showConfirm('shutdown')" title="Shutdown"><i class="fa fa-power-off"></i></button>
+      </div>
+    </div>
+
+    <!-- Relay Control -->
+    <div class="row">
+      <h2>Relay Control</h2>
+      <label class="switch">
+        <input type="checkbox" id="relaySwitch">
+        <span class="slider-toggle"></span>
+      </label>
+    </div>
+
+    <!-- Authentication -->
+    <div class="row">
+      <h2>Authentication</h2>
+      <div class="auth-icons">
+        <div class="auth-item">
+          <i class="fa fa-user"></i>
+          <label class="switch">
+            <input type="checkbox" id="auth_face" onchange="saveModes()">
+            <span class="slider-toggle"></span>
+          </label>
+        </div>
+        <div class="auth-item">
+          <i class="fa fa-fingerprint"></i>
+          <label class="switch">
+            <input type="checkbox" id="auth_finger" onchange="saveModes()">
+            <span class="slider-toggle"></span>
+          </label>
+        </div>
+        <div class="auth-item">
+          <i class="fa fa-id-card"></i>
+          <label class="switch">
+            <input type="checkbox" id="auth_rfid" onchange="saveModes()">
+            <span class="slider-toggle"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Volume -->
+    <div class="row">
+      <h2>Volume</h2>
+      <div class="volume-container">
+        <input type="range" min="0" max="100" value="100"
+               id="volumeSlider" oninput="document.getElementById('volumeValue').textContent = this.value">
+        <span class="volume-value">
+          <span id="volumeValue">100</span>%
+        </span>
+      </div>
+    </div>
+
+  <!-- /card -->
+
+  <!-- PASSWORD CARD -->
+    <h2>Change Password</h2>
+    <form class="admin-form" id="pw-form" onsubmit="return changePassword(event)" autocomplete="off">
+      <input type="password" id="current_password"       placeholder="Current Password"     required autocomplete="off">
+      <input type="password" id="admin_password"         placeholder="New Password"         required autocomplete="off">
+      <input type="password" id="admin_password_confirm" placeholder="Confirm New Password" required autocomplete="off">
+      <button type="submit" class="admin-btn">Update Password</button>
+    </form>
+    <div class="pw-msg" id="pw-msg"></div>
+  </div>
+  </div>
+
+</div><!-- /scroll-area -->
+
+<!-- Toast -->
+<div id="toast" class="toast">Saved</div>
+
+<!-- OSK (single instance) -->
+<div id="osk" class="simple-keyboard hg-theme-default"></div>
+<script src="https://cdn.jsdelivr.net/npm/simple-keyboard@3/build/index.js"></script>
+<script src="/static/js/osk.js"></script>
+
+<script>
+/* ════════════════════════════════════════════
+   HELPERS
+════════════════════════════════════════════ */
+function setMsg(elId, text, ok) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.textContent = text || "";
+  el.style.color = ok === true  ? "#0c7a3e"
+                 : ok === false ? "#b00020"
+                 : "#205081";
+}
+
+function toast(msg, type="ok"){
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'toast ' + (type === 'ok' ? 'ok' : (type === 'err' ? 'err' : ''));
+  t.style.display = 'block';
+  setTimeout(()=> t.style.display = 'none', 1100);
+}
+
+/* ════════════════════════════════════════════
+   RESTART / SHUTDOWN  (confirm modal)
+   API: POST /api/reboot   → { ok, message }
+        POST /api/shutdown  → { ok, message }
+════════════════════════════════════════════ */
+var _pendingPower = null;
+
+function showConfirm(action) {
+  _pendingPower = action;
+  var modal = document.getElementById('confirmModal');
+  var icon  = document.getElementById('confirmIcon');
+  var iconI = document.getElementById('confirmIconI');
+  var title = document.getElementById('confirmTitle');
+  var sub   = document.getElementById('confirmSub');
+  var yesBtn = document.getElementById('confirmYes');
+
+  if (action === 'restart') {
+    icon.className  = 'confirm-icon restart-icon';
+    iconI.className = 'fa fa-rotate-right';
+    title.textContent = 'Restart Device?';
+    sub.textContent   = 'The device will restart. This may take a moment.';
+    yesBtn.className  = 'btn-confirm yes-restart';
+    yesBtn.innerHTML  = '<i class="fa fa-rotate-right"></i> Yes, Restart';
+  } else {
+    icon.className  = 'confirm-icon shutdown-icon';
+    iconI.className = 'fa fa-power-off';
+    title.textContent = 'Shutdown Device?';
+    sub.textContent   = 'The device will power off completely.';
+    yesBtn.className  = 'btn-confirm yes-shutdown';
+    yesBtn.innerHTML  = '<i class="fa fa-power-off"></i> Yes, Shutdown';
+  }
+  modal.classList.add('show');
+}
+
+function hideConfirm() {
+  _pendingPower = null;
+  document.getElementById('confirmModal').classList.remove('show');
+}
+
+async function execPower() {
+  var action = _pendingPower;
+  hideConfirm();
+  if (!action) return;
+
+  var endpoint = action === 'restart' ? '/api/reboot' : '/api/shutdown';
+  try {
+    var r = await fetch(endpoint, { method: 'POST' });
+    var j = await r.json();
+    toast(j.message || (action === 'restart' ? 'Restarting...' : 'Shutting down...'), 'ok');
+  } catch (e) {
+    toast('Command sent', 'ok');
+  }
+}
+
+// Close modal on overlay click
+document.getElementById('confirmModal').addEventListener('click', function(e) {
+  if (e.target === this) hideConfirm();
+});
+
+/* ════════════════════════════════════════════
+   RELAY CONTROL  (toggle switch)
+   API: GET  /api/relay/state  → { on: bool }
+        POST /api/relay/on
+        POST /api/relay/off
+════════════════════════════════════════════ */
+const relayToggle = document.getElementById("relaySwitch");
+
+async function loadRelayState() {
+  try {
+    const r = await fetch('/api/relay/state');
+    const j = await r.json();
+    relayToggle.checked = !!(j && j.on);
+  } catch (e) {
+    console.warn("Failed to load relay state", e);
+  }
+}
+
+relayToggle.addEventListener("change", async function () {
+  try {
+    const action = relayToggle.checked ? "on" : "off";
+    await fetch('/api/relay/' + action, { method: 'POST' });
+  } catch (e) {
+    console.warn("Failed to change relay", e);
+    relayToggle.checked = !relayToggle.checked;
+  }
+});
+
+/* ════════════════════════════════════════════
+   VOLUME
+   API: GET  /api/get_volume → { success, volume }
+        POST /api/set_volume { volume }
+════════════════════════════════════════════ */
+const volSlider = document.getElementById('volumeSlider');
+
+async function loadVolume() {
+  try {
+    const r = await fetch('/api/get_volume');
+    const data = await r.json();
+    if (data.success) {
+      volSlider.value = data.volume;
+      document.getElementById('volumeValue').textContent = data.volume;
+    }
+  } catch (e) {
+    console.warn("Failed to load volume", e);
+  }
+}
+
+/* Auto-save volume — debounced to handle both touch drag and click */
+let _volSaveTimer = null;
+function _saveVolume() {
+  clearTimeout(_volSaveTimer);
+  _volSaveTimer = setTimeout(async () => {
+    try {
+      const resp = await fetch("/api/set_volume", {
+        method: "POST",
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ volume: parseInt(volSlider.value) })
+      });
+      const data = await resp.json();
+      if (!data.success) console.warn("Volume save response:", data.message);
+    } catch (e) {
+      console.warn("Failed to save volume", e);
+    }
+  }, 200);
+}
+/* 'input' fires continuously during drag (works on touch); 'change' fires on release */
+volSlider.addEventListener('input', _saveVolume);
+volSlider.addEventListener('change', _saveVolume);
+
+/* ════════════════════════════════════════════
+   AUTHENTICATION MODES
+   API: GET  /api/modes_get  → { auth_face, auth_finger, auth_rfid }
+        POST /api/modes_set  { auth_face, auth_finger, auth_rfid }
+════════════════════════════════════════════ */
+async function loadModes(){
+  try {
+    const r = await fetch('/api/modes_get');
+    const m = await r.json();
+    for (const id of ["auth_face","auth_finger","auth_rfid"]) {
+      const el = document.getElementById(id);
+      if (el) el.checked = !!m[id];
+    }
+  } catch (e) {
+    console.warn('Failed to load modes', e);
+  }
+}
+
+async function saveModes(){
+  const payload = {};
+  for (const id of ["auth_face","auth_finger","auth_rfid"]) {
+    const el = document.getElementById(id);
+    if (el) payload[id] = !!el.checked;
+  }
+  try {
+    const r = await fetch('/api/modes_set', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const j = await r.json();
+    toast(j && j.success ? 'Saved' : 'Save failed', j && j.success ? 'ok' : 'err');
+  } catch (e) {
+    toast('Save failed', 'err');
+    console.warn(e);
+  }
+}
+
+/* ════════════════════════════════════════════
+   CHANGE PASSWORD
+   API: POST /api/change_password
+        { current_password, new_password, confirm_password }
+        → { success, message }
+════════════════════════════════════════════ */
+async function changePassword(e) {
+  e.preventDefault();
+
+  const current_password = document.getElementById("current_password").value.trim();
+  const new_password     = document.getElementById("admin_password").value.trim();
+  const confirm_password = document.getElementById("admin_password_confirm").value.trim();
+
+  if (!current_password || !new_password || !confirm_password) {
+    setMsg("pw-msg", "All fields are required.", false);
+    return false;
+  }
+  if (new_password !== confirm_password) {
+    setMsg("pw-msg", "New passwords do not match.", false);
+    return false;
+  }
+  if (new_password.length < 4) {
+    setMsg("pw-msg", "Password must be at least 4 characters.", false);
+    return false;
+  }
+
+  setMsg("pw-msg", "Updating password…");
+
+  try {
+    const r = await fetch('/api/change_password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_password, new_password, confirm_password })
+    });
+    const data = await r.json();
+
+    if (data && data.success) {
+      setMsg("pw-msg", data.message || "Password updated successfully.", true);
+      document.getElementById("current_password").value = "";
+      document.getElementById("admin_password").value = "";
+      document.getElementById("admin_password_confirm").value = "";
+    } else {
+      setMsg("pw-msg", (data && data.message) || "Password update failed.", false);
+    }
+  } catch (err) {
+    setMsg("pw-msg", "Server error. Please try again.", false);
+  }
+
+  return false;
+}
+
+/* ════════════════════════════════════════════
+   INACTIVITY TIMER — 1 minute
+════════════════════════════════════════════ */
+let inactTimer = null;
+function resetTimer() {
+  clearTimeout(inactTimer);
+  inactTimer = setTimeout(() => window.location.href = '/', 60000);
+}
+['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart', 'click'].forEach(ev => {
+  document.addEventListener(ev, resetTimer, { passive: true });
+});
+
+/* ════════════════════════════════════════════
+   INIT — load all states on page open
+════════════════════════════════════════════ */
+loadRelayState();
+loadVolume();
+loadModes();
+resetTimer();
+</script>
+</body>
+</html>

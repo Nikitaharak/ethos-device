@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>{% block title %}App{% endblock %}</title>
+
+  <!-- Global styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- On-screen keyboard styles (local, offline safe) -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/vendors/simple-keyboard.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/osk.css') }}">
+
+  <style>
+  /* ===== MOBILE-STYLE TOUCH SCROLLING ===== */
+  html, body {
+    overflow: hidden;
+    height: 100%;
+    margin: 0;
+    touch-action: manipulation; /* ✅ Enable touch gestures */
+  }
+
+  /* Make all scroll containers touch-scrollable */
+  .scroll-area,
+  .page-shell,
+  #scrollArea {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch !important; /* ✅ iOS momentum scrolling */
+    touch-action: pan-y !important; /* ✅ Allow vertical finger drag */
+    overscroll-behavior: contain; /* ✅ Prevent scroll chaining */
+    scroll-behavior: smooth; /* ✅ Smooth scrolling */
+  }
+
+  /* Hide scrollbars but keep functionality */
+  .scroll-area::-webkit-scrollbar,
+  .page-shell::-webkit-scrollbar,
+  #scrollArea::-webkit-scrollbar {
+    width: 0 !important;
+    height: 0 !important;
+    display: none !important;
+  }
+
+  /* Firefox */
+  .scroll-area,
+  .page-shell,
+  #scrollArea {
+    scrollbar-width: none !important;
+  }
+
+  /* ===== OPTIONAL: Keep custom scrollbar visible but touchable ===== */
+  .sb-track {
+    pointer-events: auto; /* ✅ Still allows clicking scrollbar */
+  }
+
+  {% block page_css %}{% endblock %}
+  </style>
+  
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  {% block body %}{% endblock %}
+
+  <!-- Keyboard container -->
+  <div id="osk" class="simple-keyboard" style="display:none;"></div>
+
+  <!-- On-screen keyboard scripts (local, offline safe) -->
+  <script src="{{ url_for('static', filename='js/vendors/simple-keyboard.umd.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/osk.js') }}"></script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

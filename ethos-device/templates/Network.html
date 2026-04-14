@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Network Discovery - Ethos Device</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #205081;
+      --accent:  #7187ec;
+      --success: #51cf66;
+      --danger:  #e03131;
+      --muted:   #6c757d;
+      --hdrH:    64px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      height: 100%; margin: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      background: #f0ece4;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 20px; height: var(--hdrH); background: transparent;
+    }
+    .menu-back-btn {
+      background: #e8e8e8; color: var(--primary);
+      padding: 8px 16px; border: none; border-radius: 8px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
+      transition: background .15s;
+    }
+    .menu-back-btn:hover { background: #ffa500; color: #fff; }
+    .logo-main  { height: 40px; }
+    .logo-right { height: 40px; }
+
+    .page-shell {
+      padding: 10px 16px 20px; display: flex; justify-content: center;
+      min-height: calc(100vh - var(--hdrH));
+    }
+
+    .card {
+      width: min(600px, 98vw); background: #fff;
+      border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+      padding: 0 0 20px 0; overflow: hidden;
+    }
+
+    /* Alert */
+    .alert {
+      display: none; margin: 10px 20px 0;
+      padding: 9px 14px; border-radius: 8px;
+      font-size: 13px; font-weight: 500;
+    }
+    .alert.show    { display: block; }
+    .alert-success { background: #d3f9d8; color: #2b8a3e; border-left: 4px solid #2b8a3e; }
+    .alert-error   { background: #ffe0e0; color: #b02a37; border-left: 4px solid #b02a37; }
+    .alert-warning { background: #fff3bf; color: #856404; border-left: 4px solid #856404; }
+
+    /* Device IP */
+    .device-ip-header {
+      text-align: center; padding: 20px 16px 14px;
+      border-bottom: 1px solid #eef0f3;
+    }
+    .device-ip-title { font-size: 18px; font-weight: 700; color: var(--primary); }
+    .device-ip-value { margin-top: 5px; font-size: 14px; font-weight: 600; font-family: monospace; color: #333; min-height: 20px; }
+
+    /* Scan status bar */
+    .scan-status {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 10px 20px; border-bottom: 1px solid #eef0f3;
+      background: #f8f9fa; font-size: 13px; color: var(--muted); font-weight: 500;
+    }
+    .scan-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: #adb5bd; flex-shrink: 0; transition: background .3s;
+    }
+    .scan-dot.scanning { background: var(--accent); animation: pulse 1s ease-in-out infinite; }
+    .scan-dot.done     { background: var(--success); }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: .5; transform: scale(.75); }
+    }
+    .scan-countdown {
+      font-family: monospace; font-weight: 700;
+      color: var(--accent); min-width: 18px; text-align: center;
+    }
+
+    /* Dual panels */
+    .dual-wrapper { display: flex; gap: 16px; margin: 14px 20px 0; }
+
+    .device-panel {
+      flex: 1; min-width: 0; background: #fff;
+      border-radius: 14px; box-shadow: 0 4px 16px rgba(0,0,0,.08);
+      border: 1px solid #e8eaf0; display: flex; flex-direction: column;
+      height: 440px; overflow: hidden;
+    }
+
+    .panel-title {
+      font-weight: 700; font-size: 14px; padding: 13px 16px;
+      border-bottom: 1px solid #eef0f3; background: #f8f9fa;
+      text-align: center; color: #222;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .panel-count {
+      color: #fff; border-radius: 999px; padding: 1px 8px;
+      font-size: 11px; font-weight: 700; background: var(--accent);
+    }
+    .panel-count.green { background: var(--success); }
+
+    .device-scroll { flex: 1; overflow-y: auto; padding: 8px; }
+    .device-scroll::-webkit-scrollbar { width: 4px; }
+    .device-scroll::-webkit-scrollbar-thumb { background: rgba(113,135,236,.3); border-radius: 10px; }
+
+    .panel-footer {
+      padding: 10px 14px; border-top: 1px solid #eef0f3; background: #fafafa;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13px; font-weight: 600; color: #444;
+    }
+    .panel-footer input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
+    .panel-footer label { cursor: pointer; user-select: none; }
+    .footer-sel-count   { margin-left: auto; font-size: 11px; color: var(--muted); font-weight: 500; }
+
+    /* Device items */
+    .device-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 10px; border-radius: 8px;
+      border: 1px solid transparent; margin-bottom: 4px;
+      transition: background .12s, border-color .12s;
+    }
+    .device-item:last-child { margin-bottom: 0; }
+    .device-item:hover { background: #f4f6fb; border-color: #dde1f0; }
+
+    .dev-checkbox { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; flex-shrink: 0; }
+    .dev-info     { flex: 1; min-width: 0; }
+    .dev-ip       { font-family: monospace; font-weight: 700; font-size: 13px; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dev-details  { font-size: 11.5px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dev-actions  { display: flex; gap: 5px; align-items: center; flex-shrink: 0; flex-wrap: wrap; }
+
+    .badge { padding: 3px 8px; border-radius: 999px; font-weight: 700; font-size: 11px; white-space: nowrap; }
+    .badge-online    { background: #d3f9d8; color: #2b8a3e; }
+    .badge-saved     { background: #d0ebff; color: #1864ab; }
+    .badge-connected { background: #b2f2bb; color: #087f5b; }
+    .badge-duplicate { background: #ffe0e0; color: #b02a37; }
+
+    /* Connect / Disconnect buttons */
+    .btn-sm {
+      padding: 4px 9px; font-size: 11px; border-radius: 6px;
+      border: none; cursor: pointer; font-weight: 600;
+      transition: background .12s, transform .08s;
+    }
+    .btn-sm:active { transform: scale(.94); }
+    .btn-sm-connect    { background: #51cf66; color: #fff; }
+    .btn-sm-connect:hover    { background: #40c057; }
+    .btn-sm-disconnect { background: var(--danger); color: #fff; }
+    .btn-sm-disconnect:hover { background: #c92a2a; }
+
+    /* Empty / loading */
+    .empty-state { padding: 30px 12px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .empty-icon  { font-size: 32px; margin-bottom: 8px; }
+    .spinner {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 3px solid rgba(113,135,236,.15);
+      border-top-color: var(--accent); margin: 0 auto 10px;
+      animation: spin .9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      .dual-wrapper { flex-direction: row; gap: 10px; }
+      .device-panel { height: 520px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <button class="menu-back-btn" onclick="window.location.href='/menu'">
+      <i class="fa fa-arrow-left"></i> Menu
+    </button>
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Logo" onerror="this.style.display='none'">
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Partner" onerror="this.style.display='none'">
+  </div>
+
+  <div class="page-shell">
+    <div class="card">
+
+      <div id="alertBox" class="alert" role="status" aria-live="polite"></div>
+
+      <div class="device-ip-header">
+        <div class="device-ip-title">Device IP</div>
+        <div class="device-ip-value" id="selfIp">Loading…</div>
+      </div>
+
+      <div class="scan-status">
+        <span class="scan-dot" id="scanDot"></span>
+        <span id="scanLabel">Initialising…</span>
+        <span class="scan-countdown" id="scanCountdown"></span>
+      </div>
+
+      <div class="dual-wrapper">
+
+        <!-- Connected Devices Panel -->
+        <div class="device-panel">
+          <div class="panel-title">
+            Connected Devices
+            <span class="panel-count green" id="connectedCount">0</span>
+          </div>
+          <div class="device-scroll" id="connectedDeviceList">
+            <div class="empty-state"><div class="spinner"></div><div>Loading…</div></div>
+          </div>
+          <div class="panel-footer">
+            <input type="checkbox" id="selectAllConnected">
+            <label for="selectAllConnected">Select All</label>
+            <span class="footer-sel-count" id="connSelCount"></span>
+          </div>
+        </div>
+
+        <!-- Available Devices Panel -->
+        <div class="device-panel">
+          <div class="panel-title">
+            Available Devices
+            <span class="panel-count" id="availableCount">0</span>
+          </div>
+          <div class="device-scroll" id="availableDeviceList">
+            <div class="empty-state"><div class="empty-icon">📡</div><div>Auto-scanning your network…</div></div>
+          </div>
+          <div class="panel-footer">
+            <input type="checkbox" id="selectAllAvailable">
+            <label for="selectAllAvailable">Select All</label>
+            <span class="footer-sel-count" id="availSelCount"></span>
+          </div>
+        </div>
+
+      </div><!-- /dual-wrapper -->
+    </div><!-- /card -->
+  </div><!-- /page-shell -->
+
+
+<script>
+  // ============================================================
+  //  STATE
+  // ============================================================
+  let discoveredDevices  = [];
+  let savedDeviceIPs     = [];
+  let selfIP             = '';
+
+  // ── KEY FIX ─────────────────────────────────────────────────
+  // connectedDeviceIPs is a LOCAL-ONLY list.
+  // • Loaded from server ONCE on page startup.
+  // • After that, ONLY connectDevice() and disconnectDevice()
+  //   can change it — the auto-scan loop NEVER touches it.
+  // • This is what prevents a disconnected device from coming
+  //   back automatically on the next scan cycle.
+  // ────────────────────────────────────────────────────────────
+  let connectedDeviceIPs = [];
+
+  const SCAN_INTERVAL_SEC = 5;
+  let countdownTimer = null;
+  let countdownVal   = SCAN_INTERVAL_SEC;
+  let isScanning     = false;
+
+  // ============================================================
+  //  INIT
+  // ============================================================
+  (async function init() {
+    await loadSelfIP();
+    await loadSavedDevices();
+
+    // Load connection state once from server at startup only
+    await loadConnectedDevicesFromServer();
+
+    // Render immediately — panels never stay stuck on spinner
+    renderBothPanels();
+
+    // First scan
+    await runScan();
+
+    // Auto-scan loop
+    startCountdown();
+  })();
+
+  // ============================================================
+  //  AUTO-SCAN LOOP — discovers devices only, never touches connectedDeviceIPs
+  // ============================================================
+  function startCountdown() {
+    countdownVal = SCAN_INTERVAL_SEC;
+    updateScanUI('idle', 'Next scan in');
+
+    countdownTimer = setInterval(async () => {
+      countdownVal--;
+      updateScanUI('idle', 'Next scan in');
+      if (countdownVal <= 0) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+        await runScan();
+        startCountdown();
+      }
+    }, 1000);
+  }
+
+  async function runScan() {
+    if (isScanning) return;
+    isScanning = true;
+    updateScanUI('scanning', 'Scanning network…');
+
+    try {
+      // Trigger broadcast — ignore if it fails
+      fetch('/api/discover_now', { method: 'GET' }).catch(() => {});
+
+      // Poll /api/devices for 4 seconds
+      const deadline = Date.now() + 4000;
+      while (Date.now() < deadline) {
+        await sleep(500);
+        await fetchDevicesOnce();
+      }
+
+      // Only refresh saved list — NOT connection state
+      await loadSavedDevices();
+
+    } catch (err) {
+      console.warn('Scan error:', err);
+    } finally {
+      // Always render even if APIs failed
+      renderBothPanels();
+      updateScanUI('done', `Found ${discoveredDevices.length} device(s) · Last scan`);
+      isScanning = false;
+    }
+  }
+
+  // ============================================================
+  //  Load connection state from server — startup only
+  // ============================================================
+  async function loadConnectedDevicesFromServer() {
+    try {
+      const d = await fetch('/api/connected_devices').then(r => r.json());
+      connectedDeviceIPs = (d.devices || []).map(dev => dev.ip);
+    } catch {
+      connectedDeviceIPs = [];
+    }
+  }
+
+  // ============================================================
+  //  SCAN STATUS UI
+  // ============================================================
+  function updateScanUI(state, label) {
+    const dot = document.getElementById('scanDot');
+    const lbl = document.getElementById('scanLabel');
+    const cd  = document.getElementById('scanCountdown');
+
+    dot.className = 'scan-dot' +
+      (state === 'scanning' ? ' scanning' : state === 'done' ? ' done' : '');
+    lbl.textContent = label;
+
+    if (state === 'idle') {
+      cd.textContent = countdownVal + 's';
+    } else if (state === 'scanning') {
+      cd.textContent = '';
+    } else {
+      const now = new Date();
+      cd.textContent =
+        now.getHours().toString().padStart(2,'0') + ':' +
+        now.getMinutes().toString().padStart(2,'0') + ':' +
+        now.getSeconds().toString().padStart(2,'0');
+    }
+  }
+
+  // ============================================================
+  //  ALERT
+  // ============================================================
+  function showAlert(msg, type = 'success', timeout = 4000) {
+    const box = document.getElementById('alertBox');
+    box.className = 'alert';
+    box.textContent = msg;
+    if (!msg) { box.style.display = 'none'; return; }
+    const map = { success: 'alert-success', error: 'alert-error', warning: 'alert-warning' };
+    box.style.display = 'block';
+    box.classList.add(map[type] || 'alert-success', 'show');
+    if (timeout) setTimeout(() => {
+      box.classList.remove('show');
+      box.style.display = 'none';
+    }, timeout);
+  }
+
+  // ============================================================
+  //  API: SELF IP
+  // ============================================================
+  async function loadSelfIP() {
+    try {
+      const d = await fetch('/api/my_ip').then(r => r.json());
+      selfIP = d.ip || '';
+      document.getElementById('selfIp').textContent = selfIP || 'Unknown';
+    } catch { document.getElementById('selfIp').textContent = 'Error'; }
+  }
+
+  // ============================================================
+  //  API: SAVED DEVICES
+  // ============================================================
+  async function loadSavedDevices() {
+    try {
+      const d = await fetch('/api/saved_mesh').then(r => r.json());
+      savedDeviceIPs = (d && d.success) ? (d.saved || []) : [];
+    } catch { savedDeviceIPs = []; }
+  }
+
+  // ============================================================
+  //  API: FETCH /api/devices — device discovery only
+  //  Does NOT touch connectedDeviceIPs
+  // ============================================================
+  async function fetchDevicesOnce() {
+    try {
+      const d = await fetch('/api/devices').then(r => r.json());
+      let arr = [];
+
+      if      (Array.isArray(d?.devices)) arr = d.devices;
+      else if (Array.isArray(d))          arr = d;
+      else if (d && typeof d === 'object') {
+        for (const [ip, info] of Object.entries(d))
+          arr.push(typeof info === 'object' ? Object.assign({ ip }, info) : { ip });
+      }
+
+      // Merge: update known, keep previously seen
+      const freshMap = new Map();
+      arr
+        .filter(x => x.ip && x.ip !== selfIP)
+        .forEach(x => {
+          const m = (x.info && typeof x.info === 'object') ? x.info : x;
+          freshMap.set(x.ip, {
+            ip:        x.ip,
+            device_id: m.device_id || null,
+            name:      m.device_name || m.name || null,
+            last_seen: x.last_seen || m.last_seen || Math.floor(Date.now() / 1000)
+          });
+        });
+
+      discoveredDevices.forEach(dev => {
+        if (!freshMap.has(dev.ip)) freshMap.set(dev.ip, dev);
+      });
+
+      discoveredDevices = Array.from(freshMap.values());
+      return true;
+    } catch { return false; }
+  }
+
+  // ============================================================
+  //  RENDER BOTH PANELS
+  // ============================================================
+  function renderBothPanels() {
+    const connDevs  = discoveredDevices.filter(d =>  connectedDeviceIPs.includes(d.ip));
+    const availDevs = discoveredDevices.filter(d => !connectedDeviceIPs.includes(d.ip));
+
+    renderPanel('connectedDeviceList',  connDevs,  true);
+    renderPanel('availableDeviceList', availDevs, false);
+
+    document.getElementById('connectedCount').textContent = connDevs.length;
+    document.getElementById('availableCount').textContent = availDevs.length;
+
+    resetSelectAll('selectAllConnected');
+    resetSelectAll('selectAllAvailable');
+    updateFooterCounts();
+  }
+
+  function renderPanel(listId, devices, isConnectedPanel) {
+    const list = document.getElementById(listId);
+
+    if (!devices.length) {
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">${isConnectedPanel ? '🔗' : '📡'}</div>
+          <div style="color:#555;">${isConnectedPanel
+            ? 'No connected devices.'
+            : 'No devices found on the network.'}</div>
+          <div style="margin-top:4px;font-size:11px;color:#bbb;">
+            Auto-scanning every ${SCAN_INTERVAL_SEC}s…
+          </div>
+        </div>`;
+      return;
+    }
+
+    list.innerHTML = '';
+    devices.forEach(dev => {
+      const isSaved   = savedDeviceIPs.includes(dev.ip);
+      const isConn    = connectedDeviceIPs.includes(dev.ip);
+      const label     = dev.device_id ? `${dev.device_id} (${dev.ip})` : dev.ip;
+      const name      = dev.name || 'Unknown Device';
+      const timeSince = getTimeSince(dev.last_seen);
+
+      const dupID   = dev.device_id && countOcc(discoveredDevices, d => d.device_id === dev.device_id) > 1;
+      const dupName = dev.name      && countOcc(discoveredDevices, d => d.name === dev.name) > 1;
+
+      let detailHtml = `${esc(name)} • Last seen ${timeSince}`;
+      if (dupID || dupName) {
+        const t = (dupID && dupName) ? 'ID & Name' : dupID ? 'Device ID' : 'Name';
+        detailHtml += ` <span style="color:#b02a37;font-weight:700;">⚠️ Duplicate ${t}!</span>`;
+      }
+
+      // Both Connect AND Disconnect buttons are present
+      // These are the ONLY things allowed to change connectedDeviceIPs
+      const actionBtn = isConn
+        ? `<span class="badge badge-connected">Connected</span>
+           <button class="btn-sm btn-sm-disconnect"
+             onclick="disconnectDevice('${esc(dev.ip)}')">Disconnect</button>`
+        : `<button class="btn-sm btn-sm-connect"
+             onclick="connectDevice('${esc(dev.ip)}')">Connect</button>`;
+
+      const statusBadge = isSaved
+        ? '<span class="badge badge-saved">In Network</span>'
+        : '<span class="badge badge-online">Online</span>';
+
+      const dupBadge = (dupID || dupName)
+        ? '<span class="badge badge-duplicate">Duplicate!</span>' : '';
+
+      const item = document.createElement('div');
+      item.className = 'device-item';
+      item.innerHTML = `
+        <input type="checkbox" class="dev-checkbox" data-ip="${esc(dev.ip)}" ${isSaved ? 'checked' : ''}>
+        <div class="dev-info">
+          <div class="dev-ip">${esc(label)}</div>
+          <div class="dev-details">${detailHtml}</div>
+        </div>
+        <div class="dev-actions">
+          ${actionBtn}
+          ${statusBadge}
+          ${dupBadge}
+        </div>`;
+      list.appendChild(item);
+    });
+  }
+
+  // ============================================================
+  //  FOOTER COUNTS + SELECT-ALL SYNC
+  // ============================================================
+  function updateFooterCounts() {
+    syncPanel('connectedDeviceList', 'selectAllConnected', 'connSelCount');
+    syncPanel('availableDeviceList', 'selectAllAvailable', 'availSelCount');
+  }
+
+  function syncPanel(listId, checkboxId, countId) {
+    const all = document.querySelectorAll(`#${listId} .dev-checkbox`);
+    const sel = document.querySelectorAll(`#${listId} .dev-checkbox:checked`);
+    const cb  = document.getElementById(checkboxId);
+    const ct  = document.getElementById(countId);
+    if (cb && all.length > 0) {
+      cb.indeterminate = sel.length > 0 && sel.length < all.length;
+      cb.checked       = sel.length === all.length;
+    }
+    if (ct) ct.textContent = sel.length > 0 ? `${sel.length} of ${all.length} selected` : '';
+  }
+
+  function resetSelectAll(id) {
+    const cb = document.getElementById(id);
+    if (cb) { cb.checked = false; cb.indeterminate = false; }
+  }
+
+  // ============================================================
+  //  SELECT ALL LISTENERS
+  // ============================================================
+  document.getElementById('selectAllConnected').addEventListener('change', function () {
+    document.querySelectorAll('#connectedDeviceList .dev-checkbox')
+      .forEach(cb => cb.checked = this.checked);
+    updateFooterCounts();
+  });
+
+  document.getElementById('selectAllAvailable').addEventListener('change', function () {
+    document.querySelectorAll('#availableDeviceList .dev-checkbox')
+      .forEach(cb => cb.checked = this.checked);
+    updateFooterCounts();
+  });
+
+  document.addEventListener('change', e => {
+    if (e.target?.classList?.contains('dev-checkbox')) updateFooterCounts();
+  });
+
+  // ============================================================
+  //  CONNECT — updates connectedDeviceIPs locally, scan never overrides
+  // ============================================================
+  async function connectDevice(ip) {
+    try {
+      const d = await fetch('/api/connect_device', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip })
+      }).then(r => r.json());
+
+      if (d && d.success) {
+        // Add to local list — do NOT re-fetch from server
+        if (!connectedDeviceIPs.includes(ip)) connectedDeviceIPs.push(ip);
+        showAlert(`Connected to ${ip}`, 'success');
+        renderBothPanels();
+      } else {
+        showAlert('Connection failed: ' + (d.error || 'Unknown error'), 'error');
+      }
+    } catch (err) {
+      showAlert('Connection failed: ' + err.message, 'error');
+    }
+  }
+
+  // ============================================================
+  //  DISCONNECT — removes from connectedDeviceIPs locally, scan never overrides
+  // ============================================================
+  async function disconnectDevice(ip) {
+    try {
+      const d = await fetch('/api/disconnect_device', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ip })
+      }).then(r => r.json());
+
+      if (d && d.success) {
+        // Remove from local list — do NOT re-fetch from server
+        // This is what keeps the device disconnected across scan cycles
+        connectedDeviceIPs = connectedDeviceIPs.filter(x => x !== ip);
+        showAlert(`Disconnected from ${ip}`, 'success');
+        renderBothPanels();
+      } else {
+        showAlert('Disconnect failed: ' + (d.error || 'Unknown error'), 'error');
+      }
+    } catch (err) {
+      showAlert('Disconnect failed: ' + err.message, 'error');
+    }
+  }
+
+  // ============================================================
+  //  UTILITIES
+  // ============================================================
+  function getTimeSince(ts) {
+    const s = Math.floor(Date.now() / 1000 - (ts || Math.floor(Date.now() / 1000)));
+    if (s < 60)    return 'just now';
+    if (s < 3600)  return Math.floor(s / 60) + ' min ago';
+    if (s < 86400) return Math.floor(s / 3600) + ' hr ago';
+    return Math.floor(s / 86400) + ' days ago';
+  }
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c =>
+      ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
+  function countOcc(arr, pred) { return arr.filter(pred).length; }
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+
+</body>
+</html>

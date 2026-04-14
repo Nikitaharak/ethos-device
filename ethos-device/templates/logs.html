@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Logs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+  <link rel="stylesheet" href="/static/css/osk.css">
+  <style>
+    :root{
+      --sb-inset-right: 36px; --sb-width: 22px; --sb-radius: 12px;
+      --sb-track: rgba(0,0,0,0.06); --sb-thumb: #bfbfbf; --sb-min-thumb: 48px;
+      --hdrH: 72px; --header-max: 800px;
+    }
+    html, body{ height:100%; margin:0; background:#f9f6ef; -webkit-user-select:none; user-select:none; overflow:hidden; }
+    .page-shell{ height:100vh; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+    .page-shell::-webkit-scrollbar{ width:0; height:0; }
+    .page-shell{ scrollbar-width:none; -ms-overflow-style:none; }
+    .sb-track{ display:none !important; }
+    .header{ display:flex; align-items:center; justify-content:space-between; padding:18px 38px 0; min-height:var(--hdrH); width:100%; max-width:var(--header-max); margin:0 auto; box-sizing:border-box; }
+    .logo-main{ height:48px; display:block; } .logo-right{ height:48px; display:block; }
+    .menu-back-btn{ background:#eee; color:#205081; padding:9px 18px; font-size:1rem; border:none; border-radius:8px; font-weight:600; cursor:pointer; transition:background .16s; min-width:92px; margin-right:12px; }
+    .menu-back-btn:hover{ background:#ffa500; color:#fff; }
+    .btn{ border:none; border-radius:8px; padding:10px 16px; font-weight:600; cursor:pointer; }
+    .btn-gray{ background:#eee; color:#205081; }
+    .btn-main{ background:#ffa500; color:#ffffff; } .btn-main:hover{ background:#ff8c00; }
+    .frame{ position:relative; width:100%; max-width:760px; margin:16px auto 24px; padding-left:14px; padding-right:35px; box-sizing:border-box; }
+    .toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:#fff; border-radius:16px; box-shadow:0 4px 18px rgba(32,80,129,.10); padding:16px; margin-bottom:10px; }
+    .toolbar .group{ display:flex; align-items:center; gap:8px; }
+    .input{ padding:10px 12px; font-size:1rem; border-radius:8px; border:1.5px solid #eee; background:#fff; color:#333; width:240px; }
+    .select{ padding:10px 12px; font-size:1rem; border-radius:8px; border:1.5px solid #eee; background:#fff; color:#333; }
+    .panel{ background:#fff; border-radius:16px; box-shadow:0 4px 18px rgba(32,80,129,.10); overflow:hidden; }
+    .table-wrap{ overflow:auto; max-height:calc(100vh - 220px); }
+    table{ width:100%; border-collapse:collapse; min-width:920px; }
+    th, td{ padding:12px 12px; text-align:left; border-bottom:1px solid #f0f0f0; font-size:0.98rem; }
+    th{ position:sticky; top:0; background:#f7f9fc; color:#205081; z-index:1; font-weight:700; }
+    tr:nth-child(even) td{ background:#fafbfe; }
+    .footer{ display:flex; align-items:center; justify-content:space-between; padding:10px 14px; gap:10px; background:#fff; border-top:1px solid #f0f0f0; }
+    .pager{ display:flex; align-items:center; gap:8px; }
+    .muted{ color:#666; font-size:0.95rem; }
+    .float-scroll{ position:fixed; right:28px; bottom:18px; }
+    .float-scroll .btn{ width:44px; height:44px; padding:0; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 14px rgba(0,0,0,0.15); }
+    body.osk-open{ padding-bottom:0 !important; }
+    body.osk-open .page-shell{ padding-bottom:38vh; box-sizing:border-box; }
+    @media (max-height:700px){ body.osk-open .page-shell{ padding-bottom:34vh; } }
+  </style>
+</head>
+<body>
+  <div class="page-shell" id="pageShell">
+    <div class="header" id="pageHeader">
+      <div class="left"><button class="menu-back-btn" onclick="window.location.href='/user_data'">← back</button></div>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;"><img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo"></div>
+      <div class="right"><img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage"></div>
+    </div>
+    <div class="frame">
+      <div class="toolbar">
+        <form class="group" id="searchForm" autocomplete="off">
+          <input id="q" class="input" type="search" placeholder="Search emp_id or name…" autocomplete="off" autocapitalize="off" spellcheck="false"/>
+          <button class="btn btn-main" id="searchBtn" type="submit"><i class="fa fa-search"></i> Search</button>
+          <button class="btn btn-gray" id="kbdBtn" type="button" title="Show Keyboard"><i class="fa fa-keyboard"></i></button>
+        </form>
+        <div class="group">
+          <label class="muted">Rows:</label>
+          <select id="limit" class="select">
+            <option value="50">50</option><option value="100" selected>100</option><option value="200">200</option><option value="500">500</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ===== Item Count by Shift Summary ===== -->
+      <div id="summaryPanel" style="background:#fff;border-radius:16px;box-shadow:0 4px 18px rgba(32,80,129,.10);padding:16px 18px;margin-bottom:10px;">
+        <div style="font-weight:700;color:#205081;font-size:1.05rem;margin-bottom:10px;"><i class="fa fa-chart-bar" style="margin-right:6px;"></i>Item Count by Shift</div>
+        <div id="summaryBody" style="color:#666;font-size:0.95rem;">Loading summary…</div>
+      </div>
+
+      <div class="panel">
+        <div class="table-wrap" id="tableWrap">
+          <table id="logsTable">
+            <thead><tr>
+              <th style="width:90px;">Index</th><th style="width:140px;">emp_id</th><th>Name</th>
+              <th style="width:160px;">Order&nbsp;Item</th><th style="width:140px;">Order&nbsp;ID</th>
+              <th style="width:160px;">Device&nbsp;ID</th><th style="width:190px;">Timestamp</th>
+              <th style="width:130px;">Mode</th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div class="footer">
+          <div class="muted" id="statusText">—</div>
+          <div class="pager">
+            <button class="btn btn-gray" id="prevBtn"><i class="fa fa-chevron-left"></i></button>
+            <span class="muted" id="pageText">Page 1</span>
+            <button class="btn btn-gray" id="nextBtn"><i class="fa fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="sb-track" id="sbTrack"><div class="sb-thumb" id="sbThumb"></div></div>
+  <div class="float-scroll" aria-hidden="true">
+    <button class="btn btn-main" id="scrollTopBtn" title="Scroll to top"><i class="fa fa-arrow-up"></i></button>
+    <button class="btn btn-gray" id="scrollDownBtn" title="Scroll down a page"><i class="fa fa-arrow-down"></i></button>
+  </div>
+  <div id="osk" class="simple-keyboard" aria-hidden="true"></div>
+  <script defer src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+  <script defer src="/static/js/osk.js"></script>
+  <script>
+  let state = { q:"", limit:100, offset:0, page:1, lastCount:0 };
+  const pageShell=document.getElementById('pageShell'), qEl=document.getElementById('q'),
+        limitEl=document.getElementById('limit'), kbdBtn=document.getElementById('kbdBtn'),
+        tbody=document.getElementById('tbody'), pageText=document.getElementById('pageText'),
+        statusText=document.getElementById('statusText'), prevBtn=document.getElementById('prevBtn'),
+        nextBtn=document.getElementById('nextBtn');
+  kbdBtn.addEventListener('click',()=>{ qEl.focus(); });
+
+  async function loadLogs(){
+    const params=new URLSearchParams();
+    if(state.q) params.set('q',state.q);
+    params.set('limit',String(state.limit)); params.set('offset',String(state.offset));
+    statusText.textContent='Loading…';
+    try{
+      const r=await fetch('/api/logs?'+params.toString());
+      const j=await r.json();
+      if(!j||!j.success) throw new Error('Failed');
+      renderRows(j.rows||[]); state.lastCount=(j.rows||[]).length; updateFooter();
+    }catch(err){
+      tbody.innerHTML=`<tr><td colspan="8" style="color:#b00020">Failed to load logs</td></tr>`;
+      statusText.textContent='Error';
+    }
+  }
+
+  function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+  // FIX: Use r.log_id from backend for a stable permanent index.
+  // Falls back to offset+idx+1 if backend hasn't exposed log_id yet (temporary compatibility).
+  function renderRows(rows){
+    if(!rows.length){ tbody.innerHTML=`<tr><td colspan="8" class="muted">No entries</td></tr>`; return; }
+    tbody.innerHTML=rows.map((r, idx)=>{
+      const rowNum = r.log_id != null ? esc(r.log_id) : (state.offset + idx + 1);
+      const itemText=r.item_name ? esc(r.item_name) : `<span style="color:#ccc;">—</span>`;
+      const orderIdText=r.order_id ? esc(r.order_id) : `<span style="color:#ccc;">—</span>`;
+      return `<tr>
+        <td>${rowNum}</td><td>${esc(r.emp_id)}</td><td>${esc(r.name)}</td>
+        <td>${itemText}</td><td>${orderIdText}</td>
+        <td>${esc(r.device_id)}</td><td>${esc(r.ts)}</td><td>${esc(r.mode)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function updateFooter(){
+    pageText.textContent=`Page ${Math.max(1,state.page)}`;
+    statusText.textContent=`Showing ${state.lastCount} row(s) — limit ${state.limit}, offset ${state.offset}`;
+    prevBtn.disabled=(state.offset<=0); nextBtn.disabled=(state.lastCount<state.limit);
+  }
+
+  /* ===== Item Count by Shift ===== */
+  async function loadSummary(){
+    try{
+      const r=await fetch('/api/logs/item_summary');
+      const j=await r.json();
+      if(!j||!j.success) throw new Error('Failed');
+      renderSummary(j.shifts||{});
+    }catch(err){
+      document.getElementById('summaryBody').innerHTML='<span style="color:#b00020;">Failed to load summary</span>';
+    }
+  }
+
+  function renderSummary(shifts){
+    const box=document.getElementById('summaryBody');
+    const shiftNames=Object.keys(shifts);
+    if(!shiftNames.length){ box.textContent='No data'; return; }
+    box.innerHTML=shiftNames.map(shift=>{
+      const items=shifts[shift];
+      const itemRows=Object.keys(items).map(item=>
+        `<span style="display:inline-block;background:#f0f4fa;border-radius:6px;padding:4px 10px;margin:3px 4px;font-size:0.93rem;">
+          <b>${esc(item)}</b>: ${items[item]}
+        </span>`
+      ).join('');
+      return `<div style="margin-bottom:8px;">
+        <span style="font-weight:600;color:#205081;font-size:0.97rem;"><i class="fa fa-clock" style="margin-right:4px;"></i>${esc(shift)}</span>
+        <div style="margin-top:4px;">${itemRows}</div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('searchForm').addEventListener('submit',(e)=>{ e.preventDefault(); state.q=(qEl.value||"").trim(); state.offset=0; state.page=1; loadLogs(); });
+  limitEl.addEventListener('change',()=>{ state.limit=parseInt(limitEl.value,10)||100; state.offset=0; state.page=1; loadLogs(); });
+  prevBtn.addEventListener('click',()=>{ if(state.offset<=0)return; state.offset=Math.max(0,state.offset-state.limit); state.page=Math.max(1,state.page-1); loadLogs(); });
+  nextBtn.addEventListener('click',()=>{ if(state.lastCount<state.limit)return; state.offset+=state.limit; state.page+=1; loadLogs(); });
+  document.getElementById('scrollTopBtn').addEventListener('click',()=>{ pageShell.scrollTo({top:0,behavior:'smooth'}); });
+  document.getElementById('scrollDownBtn').addEventListener('click',()=>{ pageShell.scrollBy({top:Math.max(200,pageShell.clientHeight*0.8),behavior:'smooth'}); });
+  window.addEventListener('DOMContentLoaded',()=>{ loadLogs(); loadSummary(); });
+  </script>
+</body>
+</html>

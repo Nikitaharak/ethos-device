@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Order · Select Items (Quick)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body{ background:#f9f6ef; margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+
+    .header{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 32px 0 32px; min-height:60px; box-sizing:border-box;
+    }
+    .logo-main{ height:44px; display:block; }
+    .logo-right{ height:34px; display:block; }
+
+    .menu-back-btn{
+      background:#eee; color:#205081; padding:9px 18px; font-size:1rem;
+      border:none; border-radius:8px; font-weight:700; cursor:pointer;
+      transition:background .16s; min-width:92px;
+    }
+    .menu-back-btn:hover{ background:#ffa500; color:#fff; }
+
+    .page{ padding: 18px 22px 100px; max-width:1100px; margin:0 auto; }
+
+    /* ── Combined info card ── */
+    .info-card{
+      display:none;
+      background:#fff; border-radius:16px; box-shadow:0 4px 18px rgba(32,80,129,.10);
+      padding:18px 20px; margin-top:16px;
+    }
+    .info-card-inner{
+      display:flex; align-items:center; gap:18px;
+    }
+    .user-photo{
+      width:110px; height:110px; border-radius:14px; border:3px solid #eef2f7;
+      background:#e5e5e5; overflow:hidden; flex:0 0 110px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .user-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .user-photo.fallback{ color:#9aa4b2; }
+    .user-photo.fallback i{ font-size:44px; }
+
+    .info-right{ flex:1; min-width:0; }
+    .info-name{ font-weight:800; color:#205081; font-size:1.2rem; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .info-emp{ color:#64748b; font-size:.95rem; margin-top:3px; font-weight:600; }
+    .info-divider{ width:100%; height:1px; background:#eef2f7; margin:10px 0; }
+    .info-slot{
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .info-slot .pill{
+      background:#e9eef7; color:#205081; font-weight:800; padding:5px 10px;
+      border-radius:999px; font-size:.88rem; white-space:nowrap;
+    }
+    .info-slot .slot-time{ color:#6b7280; font-weight:600; font-size:.9rem; }
+
+    /* ── Auto-order status ── */
+    .auto-order-banner{
+      display:none; margin-top:14px; padding:16px 18px;
+      background:#E8F5E9; border:2px solid #43A047; border-radius:14px;
+      text-align:center;
+    }
+    .auto-order-banner .aob-icon{
+      font-size:2.2rem; color:#2E7D32; margin-bottom:8px;
+    }
+    .auto-order-banner .aob-title{
+      font-weight:800; color:#1B5E20; font-size:1.1rem; margin-bottom:4px;
+    }
+    .auto-order-banner .aob-items{
+      color:#2E7D32; font-weight:600; font-size:.92rem; line-height:1.5;
+    }
+    .auto-order-banner .aob-sub{
+      color:#4CAF50; font-size:.82rem; margin-top:8px; font-weight:600;
+    }
+    .auto-order-banner.processing .aob-icon{ animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .auto-order-banner.error{ background:#FFEBEE; border-color:#D32F2F; }
+    .auto-order-banner.error .aob-icon{ color:#D32F2F; }
+    .auto-order-banner.error .aob-title{ color:#B71C1C; }
+    .auto-order-banner.error .aob-items{ color:#D32F2F; }
+
+    /* ── Closed state inside the same card ── */
+    .closed-section{
+      display:none; text-align:center; padding:14px 0 0;
+    }
+    .closed-section h3{ color:#b00020; margin:0 0 6px; font-size:1.15rem; }
+    .closed-section .next{ color:#205081; font-weight:700; }
+    .closed-section .hint{ color:#64748b; margin-top:4px; font-size:.9rem; font-weight:600; }
+
+    /* ── Standalone closed box (no user yet) ── */
+    .closed-wrap{
+      display:none; text-align:center; margin:44px auto 0; max-width:480px;
+      background:#fff; border-radius:16px; box-shadow:0 4px 18px rgba(32,80,129,.10); padding:28px 26px;
+    }
+    .closed-wrap h3{ color:#b00020; margin:0 0 10px 0; font-size:1.3rem; }
+    .closed-wrap .next{ color:#205081; font-weight:700; }
+
+    .menu-sections{ margin-top:14px; }
+    .menu-sections:empty{ display:none; }
+    .section{ display:none; padding:10px 0; border-top:1px solid #eef2f7; }
+    .section:first-child{ border-top:none; }
+    .section h4{ margin:0 0 10px 0; color:#205081; font-size:1.05rem; letter-spacing:.3px; position:relative; padding-left:22px; }
+    .section h4:before{ content:"\f2e7"; font-family:"Font Awesome 6 Free"; font-weight:900; position:absolute; left:0; top:-1px; color:#205081; }
+    .item{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      background:#f8fafc; border:1px solid #eef2f7; border-radius:12px; padding:12px 14px; margin:10px 0;
+    }
+    .item .left{ display:flex; align-items:center; gap:10px; }
+    .item .icon{
+      width:44px; height:44px; border-radius:12px; border:3px solid #eaeaea; display:flex; align-items:center; justify-content:center; background:#fff; color:#205081; font-size:1.3rem;
+    }
+    .nm{ font-weight:800; color:#205081; }
+    .qty-wrap{ display:flex; align-items:center; gap:0; flex-shrink:0; }
+    .qty-btn{
+      width:34px; height:34px; border:2px solid #dde3eb; background:#fff;
+      color:#205081; font-size:1.1rem; font-weight:800; border-radius:8px;
+      cursor:pointer; display:flex; align-items:center; justify-content:center;
+      transition:background .12s;
+    }
+    .qty-btn:active{ background:#e9eef7; transform:scale(.93); }
+    .qty-val{
+      min-width:32px; text-align:center; font-weight:800; font-size:1rem; color:#205081;
+    }
+    .order-btn{
+      background:#ffa500; color:#fff; border:none; border-radius:8px;
+      padding:7px 14px; font-weight:700; font-size:.85rem; cursor:pointer;
+      margin-left:8px; transition:background .12s, transform .08s; white-space:nowrap;
+    }
+    .order-btn:hover{ background:#ff8c00; }
+    .order-btn:active{ transform:scale(.94); }
+    .order-btn:disabled{ opacity:.4; cursor:not-allowed; }
+
+    /* ── Cart section ── */
+    .cart-section{
+      border-top:2px solid #205081; margin-top:14px; padding-top:12px;
+    }
+    .cart-header{
+      display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;
+    }
+    .cart-header h4{
+      margin:0; color:#205081; font-size:1rem; display:flex; align-items:center; gap:8px;
+    }
+    .cart-clear-btn{
+      background:none; border:1.5px solid #dde3eb; border-radius:8px; padding:5px 12px;
+      color:#b00020; font-size:.82rem; font-weight:700; cursor:pointer;
+    }
+    .cart-clear-btn:active{ background:#fde8e8; }
+    .cart-items{ display:flex; flex-direction:column; gap:6px; }
+    .cart-row{
+      display:flex; align-items:center; justify-content:space-between;
+      background:#eef6ff; border-radius:10px; padding:8px 12px;
+    }
+    .cart-row .cart-name{ font-weight:700; color:#205081; font-size:.95rem; }
+    .cart-row .cart-qty{
+      background:#205081; color:#fff; border-radius:8px; padding:2px 10px;
+      font-weight:700; font-size:.85rem; min-width:28px; text-align:center;
+    }
+    .cart-row .cart-remove{
+      background:none; border:none; color:#b00020; font-size:1.1rem; cursor:pointer; padding:2px 6px;
+    }
+    .place-order-btn{
+      width:100%; margin-top:10px; padding:13px 0; border:none; border-radius:12px;
+      background:#ffa500; color:#fff; font-size:1.05rem; font-weight:800;
+      cursor:pointer; transition:background .12s, transform .08s;
+      display:flex; align-items:center; justify-content:center; gap:8px;
+    }
+    .place-order-btn:hover{ background:#ff8c00; }
+    .place-order-btn:active{ transform:scale(.97); }
+    .place-order-btn:disabled{ opacity:.5; cursor:not-allowed; }
+
+    #face-cam{ position:absolute; left:-9999px; top:-9999px; width:270px; height:200px; opacity:0; }
+
+    .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:18px; z-index:9999; background:#205081; color:#fff; padding:10px 14px; border-radius:10px; font-weight:700; display:none; box-shadow:0 6px 24px #20508133; }
+    .toast.err{ background:#b00020; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button class="menu-back-btn" onclick="goBack()"><i class="fa-solid fa-arrow-left"></i> Back</button>
+    <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+      <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo">
+    </div>
+    <div class="right">
+      <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+    </div>
+  </div>
+
+  <div class="page">
+
+    <!-- Single combined card: user + slot + closed + auto-order banner -->
+    <div id="infoCard" class="info-card">
+      <div class="info-card-inner">
+        <div id="userPhoto" class="user-photo fallback">
+          <i class="fa-solid fa-user"></i>
+        </div>
+        <div class="info-right">
+          <div id="userName" class="info-name">—</div>
+          <div id="userMeta" class="info-emp">Emp ID: —</div>
+          <div class="info-divider"></div>
+          <div id="slotRow" class="info-slot" style="display:none;">
+            <span class="pill" id="slotName">Slot</span>
+            <span class="slot-time" id="slotTime">--:-- → --:--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-order status banner -->
+      <div id="autoOrderBanner" class="auto-order-banner">
+        <div class="aob-icon"><i class="fa-solid fa-bolt"></i></div>
+        <div class="aob-title" id="aobTitle">Auto-ordering default items…</div>
+        <div class="aob-items" id="aobItems"></div>
+        <div class="aob-sub" id="aobSub">Please wait…</div>
+      </div>
+
+      <div id="closedSection" class="closed-section">
+        <h3>Canteen is closed now</h3>
+        <div>Next opening at <span id="nextOpenInline" class="next">—</span></div>
+        <div class="hint">Taking you to home…</div>
+      </div>
+      <div id="sections" class="menu-sections"></div>
+      <!-- Cart summary + Place Order -->
+      <div id="cartSection" class="cart-section" style="display:none;">
+        <div class="cart-header">
+          <h4><i class="fa-solid fa-cart-shopping"></i> Your Order</h4>
+          <button class="cart-clear-btn" onclick="clearCart()">Clear</button>
+        </div>
+        <div id="cartItems" class="cart-items"></div>
+        <button id="placeOrderBtn" class="place-order-btn" onclick="submitCart()">
+          <i class="fa-solid fa-check"></i> Place Order
+        </button>
+      </div>
+    </div>
+
+    <!-- Standalone closed box (shown before auth) -->
+    <div id="closedBox" class="closed-wrap">
+      <h3>Canteen is closed now</h3>
+      <div>Next opening at <span id="nextOpen" class="next">—</span></div>
+      <div style="color:#64748b; margin-top:6px; font-weight:600;">Taking you to home…</div>
+    </div>
+
+    <div id="tapHint" class="tap-hint" style="display:none; margin-top:8px;">Tap an item to place order (single quantity)</div>
+  </div>
+
+  <img id="face-cam" src="/video_feed" alt="camera">
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    /* ======================== STATE ======================== */
+    let MODES = { auth_face: true, auth_finger: true, auth_rfid: true };
+    let CURRENT_USER = null;
+    let LOGIN_SLOT = null;
+    let ALLOWED_SLOT = null;
+    let AUTO_ORDER_DONE = false;
+
+    /* ======================= HELPERS ======================= */
+    function goBack(){ if(history.length>1) history.back(); else window.location.href='/'; }
+    async function loadModes(){ try{ const r=await fetch('/api/modes_get'); const m=await r.json(); MODES=Object.assign(MODES,m||{});}catch(_){} }
+    function toast(text, isErr=false){
+      const t=document.getElementById('toast'); t.textContent=text; t.classList.toggle('err',!!isErr);
+      t.style.display='block'; setTimeout(()=> t.style.display='none', 1600);
+    }
+    const sleep = ms => new Promise(s=>setTimeout(s,ms));
+    function timeStrToMin(t){ const [h,m]=(t||'0:0').split(':').map(x=>parseInt(x,10)||0); return h*60+m; }
+    function nowMinutes(){ const d=new Date(); return d.getHours()*60+d.getMinutes(); }
+    function withinSlot(now, fromM, toM){ return (fromM<=toM)? (now>=fromM && now<=toM) : (now>=fromM || now<=toM); }
+    function isIdle(data){
+      if(!data || typeof data!=='object') return true;
+      const msg=(data.message||data.reason||data.code||'').toString().toLowerCase();
+      const hints=['no finger','no_finger','no card','no_card','no tag','no_tag','timeout','time out','idle','waiting','place your finger','scan rfid','no_face'];
+      return hints.some(h=> msg.includes(h));
+    }
+
+    /* ================= USER CARD ================= */
+    async function populateUserCard(emp_id, fallbackName){
+      let img=null, name=fallbackName||'';
+      try{
+        const r=await fetch('/api/get_user_image',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ emp_id:String(emp_id) })});
+        const j=await r.json();
+        if(j && j.image) img=j.image;
+        if(j && j.name) name=j.name;
+      }catch(_){}
+      CURRENT_USER={emp_id:String(emp_id), name:name||'', image:img||''};
+
+      document.getElementById('userName').textContent = CURRENT_USER.name || '(No name)';
+      document.getElementById('userMeta').textContent = 'Emp ID: ' + CURRENT_USER.emp_id;
+
+      const photoEl = document.getElementById('userPhoto');
+      if(CURRENT_USER.image){
+        photoEl.className = 'user-photo';
+        photoEl.innerHTML = '<img src="'+CURRENT_USER.image+'" alt="photo">';
+      } else {
+        photoEl.className = 'user-photo fallback';
+        photoEl.innerHTML = '<i class="fa-solid fa-user"></i>';
+      }
+      document.getElementById('infoCard').style.display='block';
+    }
+
+    /* ============== SLOT RESOLUTION ================= */
+    async function resolveLoginSlotVisual(){
+      const r = await fetch('/api/time_slot_master/list');
+      const data = await r.json();
+      const slots = data.slots || [];
+      const shiftsBy = {}; (data.shifts||[]).forEach(s=> shiftsBy[s.shift_code]=s.shift_name);
+
+      const nowM = nowMinutes();
+      let chosen = null;
+      for(const s of slots){
+        const f=timeStrToMin(s.from_time), t=timeStrToMin(s.to_time);
+        if(withinSlot(nowM,f,t)){
+          chosen = { slot_code:s.slot_code, slot_name:s.slot_name, from_time:s.from_time, to_time:s.to_time, shift_name:(shiftsBy[s.shift_code]||''), shift_code:s.shift_code };
+          break;
+        }
+      }
+      if(!chosen){
+        let nextTime = '-';
+        try{
+          const x = await fetch('/api/is_canteen_open'); const j = await x.json();
+          nextTime = j.next_time || '-';
+        }catch(_){}
+
+        if(CURRENT_USER){
+          document.getElementById('nextOpenInline').textContent = nextTime;
+          document.getElementById('closedSection').style.display = 'block';
+          document.getElementById('slotRow').style.display = 'none';
+        } else {
+          document.getElementById('nextOpen').textContent = nextTime;
+          document.getElementById('closedBox').style.display='block';
+        }
+        setTimeout(()=> { window.location.href='/'; }, 4000);
+        return null;
+      }
+      LOGIN_SLOT = chosen;
+      document.getElementById('slotRow').style.display='flex';
+      document.getElementById('slotName').textContent = chosen.shift_name ? `${chosen.shift_name} · ${chosen.slot_name}` : chosen.slot_name;
+      document.getElementById('slotTime').textContent = `${chosen.from_time} → ${chosen.to_time}`;
+      return chosen;
+    }
+
+    /* ======= BUSINESS RULE: allowed slot ======= */
+    async function resolveAllowedSlot(){
+      if(!CURRENT_USER) return null;
+      try{
+        const r=await fetch('/api/allowed_slot_for_user', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ emp_id: CURRENT_USER.emp_id })
+        });
+        if(r.ok){
+          const j=await r.json();
+          if(j && j.allowed && j.slot_code){
+            ALLOWED_SLOT = {
+              slot_code:j.slot_code, slot_name:j.slot_name, from_time:j.from_time, to_time:j.to_time,
+              shift_name:j.shift_name||'', overtime_granted: !!j.overtime_granted
+            };
+            return ALLOWED_SLOT;
+          }else{
+            toast(j && j.reason ? j.reason : 'Not allowed in this shift', true);
+            document.getElementById('nextOpenInline').textContent = j && j.next_time ? j.next_time : '-';
+            document.getElementById('closedSection').style.display = 'block';
+            return null;
+          }
+        }
+      }catch(_){}
+      ALLOWED_SLOT = LOGIN_SLOT;
+      return ALLOWED_SLOT;
+    }
+
+    /* ══════════════════════════════════════════════════════════
+       DEFAULT MENU — Auto-order check & execution
+       ══════════════════════════════════════════════════════════ */
+    async function checkAndAutoOrder(){
+      if(!CURRENT_USER || !CURRENT_USER.emp_id) return false;
+      AUTO_ORDER_DONE = false;
+
+      try{
+        const r = await fetch('/api/default_menu/check_for_slot',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ emp_id: CURRENT_USER.emp_id })
+        });
+        const data = await r.json();
+
+        if(!data.success || !data.has_default){
+          // No default menu → fall through to manual selection
+          return false;
+        }
+
+        const items = data.items || [];
+        if(!items.length) return false;
+
+        // ── Show auto-order banner ──
+        const banner = document.getElementById('autoOrderBanner');
+        const title = document.getElementById('aobTitle');
+        const itemsEl = document.getElementById('aobItems');
+        const sub = document.getElementById('aobSub');
+
+        banner.className = 'auto-order-banner processing';
+        banner.style.display = 'block';
+        title.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Auto-ordering default items…';
+        itemsEl.innerHTML = items.map(i =>
+          (i.qty > 1 ? `${i.item_name} ×${i.qty}` : i.item_name)
+        ).join(' · ');
+        sub.textContent = `Shift: ${data.shift_name || ''}`;
+
+        // ── Submit the order ──
+        const orderBody = {
+          emp_id: CURRENT_USER.emp_id,
+          items: items.map(i => ({ item_code: i.item_code, qty: i.qty })),
+          print_coupon: true,
+          user_name: CURRENT_USER.name || ''
+        };
+
+        const orderRes = await fetch('/api/order_submit',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(orderBody)
+        });
+        const orderData = await orderRes.json();
+
+        if(orderRes.ok && orderData && orderData.success){
+          // ── SUCCESS ──
+          banner.className = 'auto-order-banner';
+          title.innerHTML = '<i class="fa-solid fa-circle-check" style="color:#2E7D32;"></i> Order placed & printing';
+          sub.textContent = 'Returning to home…';
+          AUTO_ORDER_DONE = true;
+
+          // Redirect to home after a short delay
+          setTimeout(()=> { window.location.href = '/'; }, 3500);
+          return true;
+
+        } else {
+          // ── FAILED — show error, fall through to manual ──
+          const errMsg = (orderData && orderData.message) ||
+                         (orderData && orderData.rejected && orderData.rejected[0] && orderData.rejected[0].message) ||
+                         'Auto-order failed';
+
+          banner.className = 'auto-order-banner error';
+          title.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Auto-order failed';
+          itemsEl.textContent = errMsg;
+          sub.textContent = 'Select items manually below';
+
+          // Hide banner after a few seconds and show manual menu
+          setTimeout(()=> { banner.style.display = 'none'; }, 4000);
+          return false;
+        }
+
+      } catch(e){
+        console.error('[DEFAULT_MENU] auto-order error:', e);
+        return false;
+      }
+    }
+
+
+    /* ===================== MENU ==================== */
+    async function loadMenuForAllowedSlot(){
+      const host=document.getElementById('sections'); host.innerHTML='';
+      document.getElementById('tapHint').style.display='none';
+
+      if(!ALLOWED_SLOT){ return; }
+
+      let rows=[];
+      try{
+        const r = await fetch('/api/items_for_current_slot');
+        const j = await r.json();
+        rows = j.items || [];
+      }catch(_){ rows=[]; }
+
+      const byCat = {};
+      rows.forEach(row=>{
+        const cat = row.category;
+        if(!byCat[cat]) byCat[cat] = [];
+        byCat[cat].push({ item_code: row.item_code, item_name: row.item_name });
+      });
+
+      const cats = Object.keys(byCat).sort();
+      cats.forEach(cat=>{
+        const wrap=document.createElement('div'); wrap.className='section'; wrap.style.display='block';
+        const h4=document.createElement('h4'); h4.textContent=cat; wrap.appendChild(h4);
+
+        byCat[cat].forEach(it=>{
+          const id = 'qty_' + it.item_code.replace(/[^a-zA-Z0-9]/g,'_');
+          const row=document.createElement('div'); row.className='item';
+          row.innerHTML = `
+            <div class="left">
+              <div class="icon"><i class="fa-solid fa-mug-hot"></i></div>
+              <div class="nm">${it.item_name}</div>
+            </div>
+            <div style="display:flex;align-items:center;">
+              <div class="qty-wrap">
+                <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
+                <span class="qty-val" id="${id}">1</span>
+                <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+              </div>
+              <button class="order-btn" onclick="addToCart('${it.item_code}','${it.item_name.replace(/'/g,"\\'")}','${id}')"><i class="fa-solid fa-plus" style="margin-right:4px;"></i>Add</button>
+            </div>
+          `;
+          wrap.appendChild(row);
+        });
+
+        host.appendChild(wrap);
+      });
+
+      if(cats.length>0) document.getElementById('tapHint').style.display='block';
+    }
+
+    /* ====================== QTY CONTROL ====================== */
+    function changeQty(id, delta){
+      const el = document.getElementById(id);
+      let v = parseInt(el.textContent) || 1;
+      v = Math.max(1, v + delta);
+      el.textContent = v;
+    }
+
+    /* ====================== CART SYSTEM ====================== */
+    const CART = {};
+
+    function addToCart(item_code, item_name, qtyId){
+      if(!CURRENT_USER || !CURRENT_USER.emp_id){ toast('Please authenticate first', true); return; }
+      if(!ALLOWED_SLOT){ toast('Not allowed in this shift', true); return; }
+      const qty = parseInt(document.getElementById(qtyId).textContent) || 1;
+      if(CART[item_code]){
+        CART[item_code].qty += qty;
+      } else {
+        CART[item_code] = { name: item_name, qty };
+      }
+      document.getElementById(qtyId).textContent = '1';
+      renderCart();
+      toast(`Added ${item_name} x${qty}`);
+    }
+
+    function removeFromCart(item_code){
+      delete CART[item_code];
+      renderCart();
+    }
+
+    function clearCart(){
+      Object.keys(CART).forEach(k => delete CART[k]);
+      renderCart();
+    }
+
+    function renderCart(){
+      const section = document.getElementById('cartSection');
+      const container = document.getElementById('cartItems');
+      const keys = Object.keys(CART);
+      if(!keys.length){
+        section.style.display = 'none';
+        return;
+      }
+      section.style.display = 'block';
+      container.innerHTML = keys.map(code => {
+        const c = CART[code];
+        const label = c.qty > 1 ? `${c.name} x${c.qty}` : c.name;
+        return `<div class="cart-row">
+          <span class="cart-name">${label}</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="cart-qty">${c.qty}</span>
+            <button class="cart-remove" onclick="removeFromCart('${code}')"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    async function submitCart(){
+      if(!CURRENT_USER || !CURRENT_USER.emp_id){ toast('Please authenticate first', true); return; }
+      const keys = Object.keys(CART);
+      if(!keys.length){ toast('Cart is empty', true); return; }
+
+      const items = keys.map(code => ({ item_code: code, qty: CART[code].qty }));
+      const body = {
+        emp_id: CURRENT_USER.emp_id,
+        items,
+        print_coupon: true,
+        user_name: CURRENT_USER.name || ''
+      };
+
+      const btn = document.getElementById('placeOrderBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Placing…';
+
+      try{
+        const res = await fetch('/api/order_submit',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify(body)
+        });
+        const out = await res.json();
+        if(res.ok && out && out.success){
+          toast('Order placed & printing…');
+          clearCart();
+        } else {
+          const msg = (out && out.message) || (out && out.rejected && out.rejected[0] && out.rejected[0].message) || 'Order failed';
+          toast(msg, true);
+        }
+      }catch(e){
+        toast('Network error', true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> Place Order';
+      }
+    }
+
+    /* ============= AUTH LOOPS ============= */
+    let faceLoopActive=false, fingerLoopActive=false, rfidLoopActive=false;
+    function stopAllLoops(){ faceLoopActive=false; fingerLoopActive=false; rfidLoopActive=false; }
+
+    async function afterLogin(userId, userName){
+      stopAllLoops();
+      await populateUserCard(userId, userName||'');
+
+      const openSlot = await resolveLoginSlotVisual();
+      if(!openSlot) return;
+
+      const policySlot = await resolveAllowedSlot();
+      if(!policySlot) return;
+
+      // ══════ DEFAULT MENU CHECK ══════
+      // Try auto-order first. If default menu is enabled and succeeds,
+      // we skip manual item selection entirely.
+      const autoOrdered = await checkAndAutoOrder();
+      if(autoOrdered){
+        // Auto-order succeeded — user will be redirected to home.
+        // Don't load the manual menu.
+        return;
+      }
+
+      // ══════ MANUAL SELECTION (default menu not enabled or failed) ══════
+      await loadMenuForAllowedSlot();
+    }
+
+    async function faceLoop(){
+      if(faceLoopActive) return; faceLoopActive=true;
+      const img=document.getElementById('face-cam');
+      while(faceLoopActive){
+        if(!MODES.auth_face){ await sleep(300); continue; }
+        if(!img.complete || img.naturalWidth===0){ await sleep(140); continue; }
+        const canvas=document.createElement('canvas'); canvas.width=270; canvas.height=200;
+        canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+        const b64=canvas.toDataURL('image/jpeg');
+        try{
+          const res=await fetch('/api/face_login',{method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({image:b64})});
+          const data=await res.json();
+          if(data && data.success && data.user_id){ await afterLogin(data.user_id, data.name||''); return; }
+          await sleep(220);
+        }catch(_){ await sleep(560); }
+      }
+    }
+    async function fingerLoop(){
+      if(fingerLoopActive) return; fingerLoopActive=true;
+      while(fingerLoopActive){
+        if(!MODES.auth_finger){ await sleep(300); continue; }
+        try{
+          const r=await fetch('/api/finger_identify',{method:'POST'}); const data=await r.json();
+          if(isIdle(data)){ await sleep(220); continue; }
+          if(data && data.success && data.user_id!==undefined && data.user_id!==null && data.user_id!==''){
+            await afterLogin(data.user_id, data.name||''); return;
+          }else{
+            await sleep(300);
+          }
+        }catch(_){ await sleep(560); }
+      }
+    }
+    async function rfidLoop(){
+      if(rfidLoopActive) return; rfidLoopActive=true;
+      while(rfidLoopActive){
+        if(!MODES.auth_rfid){ await sleep(300); continue; }
+        try{
+          const r=await fetch('/api/rfid_login',{method:'POST'}); const data=await r.json();
+          if(isIdle(data)){ await sleep(220); continue; }
+          if(data && data.success && data.user_id){
+            await afterLogin(data.user_id, data.name||''); return;
+          }else{
+            await sleep(300);
+          }
+        }catch(_){ await sleep(560); }
+      }
+    }
+
+    /* ========================= INIT ========================= */
+    (async function init(){
+      await loadModes();
+
+      const params = new URLSearchParams(window.location.search);
+      const urlEmpId = (params.get('emp_id') || '').trim();
+      const urlName  = (params.get('name') || '').trim();
+
+      if(urlEmpId){
+        await afterLogin(urlEmpId, urlName);
+        return;
+      }
+
+      faceLoop(); fingerLoop(); rfidLoop();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Data (Scan QR)</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+      body {
+        background: #f9f6ef; margin: 0; min-height: 100vh;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+      .header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 18px 38px 0; min-height: 70px;
+        box-sizing: border-box; margin-bottom: 20px; width: 100%;
+      }
+      .header .left  { display: flex; align-items: center; }
+      .header .center { flex: 1; display: flex; justify-content: center; align-items: center; }
+      .header .right { display: flex; align-items: center; }
+      .logo-main  { height: 48px; display: block; }
+      .logo-right { height: 48px; display: block; }
+      .menu-back-btn {
+        background: #eee; color: #205081; padding: 9px 18px; font-size: 1rem;
+        border: none; border-radius: 8px; font-weight: 600;
+        cursor: pointer; transition: all .15s ease; min-width: 92px;
+      }
+      .menu-back-btn:hover { background: #ffa500; color: #fff; }
+
+      .app-container {
+        width: 100%; max-width: 440px; height: 95vh; max-height: 750px;
+        background: #fff; border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        display: flex; flex-direction: column; overflow: hidden;
+      }
+      .app-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+
+      .form-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+      .form-row { display: flex; align-items: center; gap: 8px; }
+      .input-row { display: flex; align-items: center; flex: 1; min-width: 0; gap: 4px; }
+      .input-row label {
+        font-size: 13px; font-weight: 600; color: #444;
+        white-space: nowrap; margin-bottom: 0; min-width: 34px;
+      }
+      .custom-input-group {
+        display: flex; align-items: center; border: 1.5px solid #aaa; border-radius: 8px;
+        height: 36px; background: #fff; flex: 1; min-width: 0; overflow: hidden;
+        transition: all 0.2s ease;
+      }
+      .custom-input-group:hover,
+      .custom-input-group:focus-within {
+        border-color: #f3aa51; box-shadow: 0 0 0 3px rgba(243,170,81,0.18);
+      }
+      .custom-input-group input,
+      .custom-input-group select {
+        border: none; outline: none; flex: 1; min-width: 0;
+        padding: 0 8px; font-family: inherit; font-size: 13px;
+        background: transparent; height: 100%;
+      }
+      .custom-input-group .icon-btn {
+        color: #555; padding: 0 7px; border-left: 1px solid #ccc;
+        display: flex; align-items: center; justify-content: center;
+        height: 100%; background: transparent; cursor: pointer; flex-shrink: 0;
+      }
+
+      .select-all-btn {
+        background: #ffa500; color: #fff; border: none; border-radius: 8px;
+        padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+        font-family: inherit; display: flex; align-items: center; gap: 5px;
+        transition: all 0.2s ease; white-space: nowrap; margin-top: 4px;
+      }
+      .select-all-btn:hover { transform: translateY(-1px); }
+      .select-all-btn.active { background: #28a745; }
+
+      .big-action-btn {
+        width: 120px; height: 120px; background: #ffa500; border-radius: 14px; border: none;
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        cursor: pointer; color: #fff; transition: all 0.2s ease;
+      }
+      .action-grid { display: flex; justify-content: center; align-items: center; gap: 30px; margin-top: 20px; }
+      .big-action-btn:hover { background: #f08c00; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(243,170,81,0.45); }
+      .big-action-btn .btn-text { font-size: 16px; line-height: 1.1; text-align: center; margin-top: 5px; }
+      .composite-icon { position: relative; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+
+      .bottom-actions { display: flex; justify-content: center; gap: 15px; margin-top: auto; padding-bottom: 20px; }
+      .btn-bottom {
+        background: #ffa500; border: none; padding: 6px 25px; font-size: 16px;
+        display: flex; align-items: center; gap: 8px;
+        cursor: pointer; border-radius: 8px; font-family: inherit; color: #fff; font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .btn-bottom:hover { background: #e69500; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(255,165,0,0.4); }
+
+      .hidden-date { position: absolute; opacity: 0; pointer-events: none; }
+      input[type="text"]::-webkit-calendar-picker-indicator { display: none; }
+      input[type="date"] { color: #333; cursor: pointer; }
+      input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; padding: 0 2px; }
+
+      .app-footer {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 12px 15px; font-size: 14px; font-weight: 600; color: #b7b7b7;
+        border-top: 1px solid #f0e8d8;
+      }
+
+      /* ── SYNC RESULT MODAL ── */
+      .modal-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.55); display: none; align-items: center; justify-content: center; }
+      .modal-overlay.active { display: flex; }
+      .modal-box { background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 24px 28px; width: min(380px, 92vw); max-height: 85vh; display: flex; flex-direction: column; }
+      .modal-box h3 { color: #205081; margin: 0 0 10px; font-size: 1.1rem; text-align: center; }
+      .modal-status { color: #444; font-size: 0.9rem; text-align: center; margin: 0 0 10px; white-space: pre-line; line-height: 1.6; }
+      .modal-hint   { color: #888; font-size: 0.8rem; text-align: center; margin: 0 0 12px; }
+      .sync-summary { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 8px 0 14px; }
+      .sync-badge { display: flex; flex-direction: column; align-items: center; background: #f5f5f5; border-radius: 10px; padding: 8px 14px; min-width: 72px; font-size: 12px; font-weight: 600; color: #555; border: 1.5px solid #e0e0e0; }
+      .sync-badge .badge-count { font-size: 22px; font-weight: 700; line-height: 1.2; }
+      .sync-badge.created { border-color: #28a745; color: #28a745; background: #f0fff4; }
+      .sync-badge.updated { border-color: #ffa500; color: #b87000; background: #fffbf0; }
+      .sync-badge.skipped { border-color: #aaa; color: #666; background: #f9f9f9; }
+      .sync-badge.errors  { border-color: #dc3545; color: #dc3545; background: #fff5f5; }
+      .sync-log { flex: 1; overflow-y: auto; border: 1px solid #eee; border-radius: 8px; margin-bottom: 14px; font-size: 12px; }
+      .sync-log table { width: 100%; border-collapse: collapse; }
+      .sync-log th { background: #205081; color: #fff; padding: 6px 8px; text-align: left; position: sticky; top: 0; font-size: 11px; }
+      .sync-log td { padding: 5px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+      .log-created { color: #28a745; font-weight: 700; }
+      .log-updated { color: #e07800; font-weight: 700; }
+      .log-skipped { color: #888; }
+      .log-error   { color: #dc3545; font-weight: 700; }
+      .modal-close-btn { background: #ffa500; color: #fff; border: none; border-radius: 8px; padding: 9px 28px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s; align-self: center; }
+      .modal-close-btn:hover { background: #e69500; }
+      .spinner { display: inline-block; width: 28px; height: 28px; border: 3px solid #e0e0e0; border-top-color: #205081; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 6px auto 10px; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .progress-wrap { width: 100%; background: #eee; border-radius: 20px; height: 8px; margin: 0 0 12px; overflow: hidden; display: none; }
+      .progress-bar  { height: 100%; background: linear-gradient(90deg, #205081, #ffa500); border-radius: 20px; width: 0%; transition: width 0.4s ease; }
+
+      /* ── QR MODAL ── */
+      .qr-modal-overlay { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; }
+      .qr-modal-overlay.active { display: flex; }
+      .qr-modal-box { background: #fff; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); padding: 28px 28px 22px; width: min(340px, 92vw); display: flex; flex-direction: column; align-items: center; text-align: center; }
+      .qr-modal-box h3 { color: #205081; margin: 0 0 6px; font-size: 1.1rem; }
+      .qr-modal-box p  { color: #556; font-size: 0.88rem; margin: 0 0 14px; }
+      #qrModalImg { width: 220px; height: 220px; display: block; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin: 0 auto 6px; }
+      #qrModalCanvas { width: 220px; height: 220px; margin: 0 auto 6px; display: none; }
+      .qr-modal-status { font-size: 0.85rem; color: #444; margin: 8px 0 4px; min-height: 20px; }
+      .qr-modal-hint   { font-size: 0.78rem; color: #999; margin: 0 0 14px; }
+      .qr-modal-cancel-btn { background: #eee; color: #205081; border: none; border-radius: 8px; padding: 8px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.18s; }
+      .qr-modal-cancel-btn:hover { background: #ffa500; color: #fff; }
+    </style>
+  </head>
+  <body>
+
+    <div class="header">
+      <div class="left"><button class="menu-back-btn" onclick="window.location.href='/import'">← Back</button></div>
+      <div class="center"><img src="/static/img/logo_company.png" class="logo-main" alt="Company Logo"></div>
+      <div class="right"><img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage"></div>
+    </div>
+
+    <div class="app-container">
+      <div class="app-content">
+
+        <!-- Form Fields -->
+        <div class="form-grid">
+
+          <!-- Row 1: Fr ID + To ID -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="frId">Fr ID</label>
+              <div class="custom-input-group">
+                <input type="text" id="frId" placeholder="From ID" />
+                <div class="icon-btn"><i class="bi bi-search"></i></div>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="toId">To ID</label>
+              <div class="custom-input-group">
+                <input type="text" id="toId" placeholder="To ID" />
+                <div class="icon-btn"><i class="bi bi-search"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Fr Dt + To Dt -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="frRegDt">Fr Dt</label>
+              <div class="custom-input-group">
+                <input type="date" id="frRegDt" style="padding:0 8px; width:100%;" />
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="toRegDt">To Dt</label>
+              <div class="custom-input-group">
+                <input type="date" id="toRegDt" style="padding:0 8px; width:100%;" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Shift + Menu Type -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="selShift">Shift</label>
+              <div class="custom-input-group">
+                <select id="selShift"><option value="">All Shifts</option></select>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="selMenu">Menu</label>
+              <div class="custom-input-group">
+                <select id="selMenu"><option value="">All Menus</option></select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Time Slot + Order Item -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="selSlot">Slot</label>
+              <div class="custom-input-group">
+                <select id="selSlot"><option value="">All Slots</option></select>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="selItem">Item</label>
+              <div class="custom-input-group">
+                <select id="selItem"><option value="">All Items</option></select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Shared datalist for employee IDs -->
+        <datalist id="empIdList"></datalist>
+
+        <!-- Select All row -->
+        <div style="display:flex; align-items:center; gap:10px; margin:4px 0 18px 0;">
+          <button type="button" id="btnSelectAll" class="select-all-btn">
+            <i class="bi bi-check2-all"></i> Select All IDs
+          </button>
+          <span id="selAllHint" style="font-size:13px; color:#888;"></span>
+        </div>
+
+        <!-- Big Action Buttons -->
+        <div class="action-grid">
+          <button type="button" class="big-action-btn" id="btnImportUsers">
+            <div class="composite-icon">
+              <i class="bi bi-usb-drive" style="font-size:24px;position:absolute;top:-5px;left:0;"></i>
+              <i class="bi bi-arrow-down" style="font-size:16px;position:absolute;top:5px;left:24px;"></i>
+              <i class="bi bi-person"    style="font-size:32px;position:absolute;bottom:-5px;"></i>
+            </div>
+            <div class="btn-text">Import<br/>Logs</div>
+          </button>
+          <button type="button" class="big-action-btn" id="btnDeleteUsers">
+            <div class="composite-icon">
+              <i class="bi bi-trash"  style="font-size:22px;position:absolute;top:-5px;"></i>
+              <i class="bi bi-person" style="font-size:32px;position:absolute;bottom:-5px;"></i>
+            </div>
+            <div class="btn-text">Delete<br/>Logs</div>
+          </button>
+        </div>
+
+        <!-- Bottom Cancel / Ok -->
+        <div class="bottom-actions">
+          <button type="button" class="btn-bottom" id="btnCancel"><i class="bi bi-x-circle"></i> Cancel</button>
+          <button type="button" class="btn-bottom" id="btnOk"><i class="bi bi-check-circle"></i> Ok</button>
+        </div>
+
+      </div>
+
+      <div class="app-footer">
+        <span>Epitage Consulting Services, Pune - 411 038</span>
+        <span>+91 9850301345</span>
+      </div>
+    </div>
+
+
+    <!-- SYNC RESULT MODAL -->
+    <div class="modal-overlay" id="appModal">
+      <div class="modal-box">
+        <h3 id="modalTitle">Import Logs</h3>
+        <div class="spinner" id="modalSpinner"></div>
+        <div class="progress-wrap" id="progressWrap"><div class="progress-bar" id="progressBar"></div></div>
+        <p class="modal-status" id="modalStatus">Preparing…</p>
+        <div class="sync-summary" id="syncSummary" style="display:none;">
+          <div class="sync-badge created"><span class="badge-count" id="cntCreated">0</span><span>Created</span></div>
+          <div class="sync-badge updated"><span class="badge-count" id="cntUpdated">0</span><span>Updated</span></div>
+          <div class="sync-badge skipped"><span class="badge-count" id="cntSkipped">0</span><span>Skipped</span></div>
+          <div class="sync-badge errors"> <span class="badge-count" id="cntErrors">0</span> <span>Errors</span></div>
+        </div>
+        <div class="sync-log" id="syncLog" style="display:none;">
+          <table><thead><tr><th>User ID</th><th>Name</th><th>Result</th><th>Reason</th></tr></thead>
+          <tbody id="syncLogBody"></tbody></table>
+        </div>
+        <p class="modal-hint" id="modalHint"></p>
+        <button class="modal-close-btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+
+    <!-- QR MODAL -->
+    <div class="qr-modal-overlay" id="qrModal">
+      <div class="qr-modal-box">
+        <h3>Scan QR to Upload File</h3>
+        <p>Scan this code with your phone, then upload the ZIP file from the phone page.</p>
+        <img id="qrModalImg" alt="QR code" />
+        <div id="qrModalCanvas"></div>
+        <div class="qr-modal-status" id="qrModalStatus">Preparing token…</div>
+        <div class="qr-modal-hint"   id="qrModalHint"></div>
+        <button class="qr-modal-cancel-btn" id="qrModalCancelBtn">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Inline QR Generator -->
+    <script>!function(o){function t(o){this.mode=4,this.data=o}function e(o,t){this.typeNumber=o,this.errorCorrectLevel=t,this.modules=null,this.moduleCount=0,this.dataList=[]}function l(o,t){this.totalCount=o,this.dataCount=t}function c(o,t){this.buffer=[],this.length=0,null!=o&&this.put(o,t)}t.prototype={getLength:function(){return this.data.length},write:function(o){for(var t=0;t<this.data.length;t++)o.put(this.data.charCodeAt(t),8)}};var d=[[],[new l(19,7),new l(16,10),new l(13,13),new l(9,17)],[new l(34,10),new l(28,16),new l(22,22),new l(16,28)],[new l(55,15),new l(44,26),new l(34,18),new l(26,22)],[new l(80,20),new l(64,18),new l(48,26),new l(36,16)],[new l(108,26),new l(86,24),new l(62,18),new l(46,22)],[new l(136,18),new l(108,16),new l(76,24),new l(60,28)],[new l(156,20),new l(124,18),new l(88,18),new l(66,26)],[new l(194,24),new l(154,22),new l(110,22),new l(86,26)]];c.prototype={getBuffer:function(){return this.buffer},getLengthInBits:function(){return 8*this.length},put:function(o,t){for(var e=0;e<t;e++)this.putBit(1==((o>>(t-e-1))&1))},putBit:function(o){var t=this.length>>3;this.buffer.length<=t&&this.buffer.push(0),o&&(this.buffer[t]|=128>>>(this.length%8)),this.length++}};function g(o){for(var t=new c,e=0;e<o.dataList.length;e++){var s=o.dataList[e];t.put(s.mode,4),t.put(s.getLength(),8),s.write(t)}for(var n=0,r=o.getRSBlocks?o.getRSBlocks():[],i=0;i<r.length;i++)n+=r[i].dataCount;for(;t.getLengthInBits()>8*n;)o.typeNumber++;for(;t.getLengthInBits()+4<=8*n&&t.put(0,1),t.getLengthInBits()%8!=0;)t.putBit(!1);for(var a=[],u=0;u<n;u++)a[u]=255&t.getBuffer()[u];return a}e.prototype={addData:function(o){this.dataList.push(new t(o))},getLengthInBits:function(){return 8*this.dataList[0].getLength()},make:function(){this.typeNumber=1;for(var o=!1;!o;){this.makeImpl(!1,0);if(this.typeNumber>=8||this.dataList[0].getLength()>70){this.typeNumber++;if(this.typeNumber>=9)break}else o=!0}},makeImpl:function(o,t){this.moduleCount=21+4*(this.typeNumber-1),this.modules=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[e]=new Array(this.moduleCount);this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.mapData(g(this),t)},mapData:function(o,t){for(var e=0,s=this.moduleCount-1,n=-1,r=this.moduleCount-1;r>0;r-=2){6==r&&r--;for(;;){for(var i=0;i<2;i++)this.modules[s][r-i]=o.length>0&&255&o.shift();if((s+=n)<0||this.moduleCount<=s){s-=n,n=-n;break}}}},setupPositionProbePattern:function(o,t){for(var e=-1;e<=7;e++)if(!(o+e<=-1||this.moduleCount<=o+e))for(var s=-1;s<=7;s++)t+s<=-1||this.moduleCount<=t+s||(this.modules[o+e][t+s]=(e>=0&&e<=6&&(0==s||6==s))||(s>=0&&s<=6&&(0==e||6==e))||(e>=2&&e<=4&&s>=2&&s<=4))},getBestMaskPattern:function(){return 0}};function y(o,t){var e=document.createElement("canvas");e.width=t,e.height=t;for(var s=e.getContext("2d"),n=t/o.moduleCount,r=0;r<o.moduleCount;r++)for(var i=0;i<o.moduleCount;i++)o.modules[r][i]&&s.fillRect(i*n,r*n,n,n);return e}function v(o){this._el=o}v.prototype.makeCode=function(o){var t=new e(0,1);t.addData(o),t.make(),this._el.innerHTML="",this._el.appendChild(y(t,220))};window.QRCode=v}();</script>
+
+    <script>
+      /* ══════════════════════════════════
+         CANTEEN FILTER DATA
+      ══════════════════════════════════ */
+      let ALL_SHIFTS = [], ALL_SLOTS = [], ALL_MENUS = [], ALL_ITEMS = [];
+
+      async function loadCanteenMasters() {
+        try {
+          const sr = await fetch('/api/shift_master/list');
+          ALL_SHIFTS = (await sr.json()).shifts || [];
+          const slr = await fetch('/api/time_slot_master/list');
+          ALL_SLOTS = (await slr.json()).slots || [];
+          const mr = await fetch('/api/menu_master/list');
+          ALL_MENUS = (await mr.json()).menus || [];
+          const ir = await fetch('/api/item_master/list');
+          ALL_ITEMS = (await ir.json()).items || [];
+        } catch(e) { console.warn('Failed to load canteen masters:', e); }
+        populateShiftDropdown();
+        populateSlotDropdown();
+        populateMenuDropdown();
+        populateItemDropdown();
+      }
+
+      function populateShiftDropdown() {
+        const sel = document.getElementById('selShift');
+        sel.innerHTML = '<option value="">All Shifts</option>';
+        ALL_SHIFTS.forEach(s => {
+          sel.innerHTML += `<option value="${s.shift_code}">${s.shift_name} (${s.from_time}–${s.to_time})</option>`;
+        });
+      }
+      function populateSlotDropdown() {
+        const sel = document.getElementById('selSlot');
+        const f = document.getElementById('selShift').value;
+        sel.innerHTML = '<option value="">All Slots</option>';
+        (f ? ALL_SLOTS.filter(s => s.shift_code === f) : ALL_SLOTS).forEach(s => {
+          sel.innerHTML += `<option value="${s.slot_code}">${s.slot_name} (${s.from_time}–${s.to_time})</option>`;
+        });
+      }
+      function populateMenuDropdown() {
+        const sel = document.getElementById('selMenu');
+        const f = document.getElementById('selSlot').value;
+        sel.innerHTML = '<option value="">All Menus</option>';
+        (f ? ALL_MENUS.filter(m => m.slot_code === f) : ALL_MENUS).forEach(m => {
+          sel.innerHTML += `<option value="${m.menu_code}">${m.menu_name}</option>`;
+        });
+      }
+      function populateItemDropdown() {
+        const sel = document.getElementById('selItem');
+        const f = document.getElementById('selMenu').value;
+        sel.innerHTML = '<option value="">All Items</option>';
+        (f ? ALL_ITEMS.filter(i => i.menu_code === f) : ALL_ITEMS).forEach(i => {
+          sel.innerHTML += `<option value="${i.item_code}">${i.item_name}</option>`;
+        });
+      }
+
+      /* ── QR Handoff ── */
+      let _qrToken=null,_qrPoll=null,_qrResolve=null,_qrReject=null;
+
+      function showQrAndWait(){
+        return new Promise(async(resolve,reject)=>{
+          _qrResolve=resolve; _qrReject=reject;
+          const imgEl=document.getElementById('qrModalImg');
+          const canvasWrap=document.getElementById('qrModalCanvas');
+          const statusEl=document.getElementById('qrModalStatus');
+          const hintEl=document.getElementById('qrModalHint');
+          imgEl.src=''; imgEl.style.display='block';
+          canvasWrap.style.display='none'; canvasWrap.innerHTML='';
+          statusEl.textContent='Preparing token…'; hintEl.textContent='';
+          document.getElementById('qrModal').classList.add('active');
+          try{
+            const r=await fetch('/api/handoff_begin?mode=import');
+            if(!r.ok){_qrReject(new Error('Error starting handoff'));closeQrModal();return;}
+            const j=await r.json();
+            if(!j.success){_qrReject(new Error(j.message||'Failed'));closeQrModal();return;}
+            _qrToken=j.token;
+            const phoneUrl=j.url||j.phone_url||j.link||(location.origin+'/handoff/import/'+_qrToken);
+            imgEl.onload=()=>{statusEl.textContent='Scan the code with your phone';};
+            imgEl.onerror=()=>{
+              imgEl.style.display='none'; canvasWrap.style.display='block';
+              try{new QRCode(canvasWrap).makeCode(phoneUrl);}catch(_){}
+              statusEl.textContent='Scan the code with your phone';
+            };
+            imgEl.src='/api/qr_for_handoff/'+_qrToken+'.png';
+            if(j.expires_at) hintEl.textContent='This code expires soon.';
+            clearInterval(_qrPoll);
+            _qrPoll=setInterval(async()=>{
+              try{
+                const pr=await fetch('/api/handoff_status/'+encodeURIComponent(_qrToken));
+                if(!pr.ok)return;
+                const pj=await pr.json();
+                if(pj.exists&&pj.mode==='import'&&pj.have_file){
+                  clearInterval(_qrPoll);
+                  statusEl.textContent='✅ File received! Processing…';
+                  setTimeout(()=>{closeQrModal();if(_qrResolve)_qrResolve(_qrToken);},700);
+                }
+              }catch(_){}
+            },1500);
+          }catch(e){_qrReject(e);closeQrModal();}
+        });
+      }
+      function closeQrModal(){clearInterval(_qrPoll);document.getElementById('qrModal').classList.remove('active');}
+      document.getElementById('qrModalCancelBtn').addEventListener('click',()=>{
+        clearInterval(_qrPoll);closeQrModal();
+        if(_qrReject)_qrReject(new Error('cancelled'));
+        _qrResolve=_qrReject=null;
+      });
+
+      /* ── Modal Helpers ── */
+      function openModal(title){
+        document.getElementById("modalTitle").textContent=title;
+        document.getElementById("modalStatus").textContent="";
+        document.getElementById("modalHint").textContent="";
+        document.getElementById("progressBar").style.width="0%";
+        document.getElementById("progressWrap").style.display="none";
+        hideSyncResults();
+        document.getElementById("appModal").classList.add("active");
+      }
+      function closeModal(){document.getElementById("appModal").classList.remove("active");}
+      function setModalStatus(msg){document.getElementById("modalStatus").textContent=msg;}
+      function setModalHint(msg){document.getElementById("modalHint").textContent=msg||"";}
+      function showSpinner(v){document.getElementById("modalSpinner").style.display=v?"inline-block":"none";}
+      function setProgress(pct){
+        document.getElementById("progressWrap").style.display="block";
+        document.getElementById("progressBar").style.width=pct+"%";
+      }
+      function hideSyncResults(){
+        document.getElementById("syncSummary").style.display="none";
+        document.getElementById("syncLog").style.display="none";
+        document.getElementById("syncLogBody").innerHTML="";
+      }
+
+      /* ── Collect form values ── */
+      function getFormData() {
+        function fmtDate(val) {
+          if (!val) return "";
+          const parts = val.split("-");
+          if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+          return val;
+        }
+        const shiftCode = document.getElementById("selShift").value;
+        const shiftObj  = ALL_SHIFTS.find(s => s.shift_code === shiftCode);
+        const slotCode  = document.getElementById("selSlot").value;
+        const slotObj   = ALL_SLOTS.find(s => s.slot_code === slotCode);
+        const menuCode  = document.getElementById("selMenu").value;
+        const menuObj   = ALL_MENUS.find(m => m.menu_code === menuCode);
+        const itemCode  = document.getElementById("selItem").value;
+        const itemObj   = ALL_ITEMS.find(i => i.item_code === itemCode);
+
+        return {
+          from_id:    document.getElementById("frId").value.trim(),
+          to_id:      document.getElementById("toId").value.trim(),
+          from_dt:    fmtDate(document.getElementById("frRegDt").value),
+          to_dt:      fmtDate(document.getElementById("toRegDt").value),
+          shift_code: shiftCode,
+          shift_name: shiftObj ? shiftObj.shift_name : '',
+          slot_code:  slotCode,
+          slot_name:  slotObj ? slotObj.slot_name : '',
+          time_slot:  slotObj ? `${slotObj.from_time} - ${slotObj.to_time}` : '',
+          menu_code:  menuCode,
+          menu_type:  menuObj ? menuObj.menu_name : '',
+          item_code:  itemCode,
+          order_item: itemObj ? itemObj.item_name : '',
+        };
+      }
+
+      function showAlert(msg,type='error'){
+        document.querySelectorAll('.inline-alert').forEach(el=>el.remove());
+        const div=document.createElement('div');
+        div.className='inline-alert';
+        div.style.cssText=`margin:12px auto 0;max-width:380px;padding:10px 16px;border-radius:10px;font-size:14px;font-weight:600;text-align:center;background:${type==='error'?'#ffeaea':'#e6f9ee'};color:${type==='error'?'#b02a37':'#1a7a3c'};border:1px solid ${type==='error'?'#f5c2c7':'#a3d9b1'};`;
+        div.textContent=msg;
+        document.querySelector('.form-grid').insertAdjacentElement('afterend',div);
+        setTimeout(()=>div.remove(),4000);
+      }
+
+      /* ── DOM Ready ── */
+      document.addEventListener("DOMContentLoaded",()=>{
+
+        // Load canteen masters
+        loadCanteenMasters();
+
+        // Cascade dropdowns
+        document.getElementById('selShift').addEventListener('change', () => {
+          populateSlotDropdown(); populateMenuDropdown(); populateItemDropdown();
+        });
+        document.getElementById('selSlot').addEventListener('change', () => {
+          populateMenuDropdown(); populateItemDropdown();
+        });
+        document.getElementById('selMenu').addEventListener('change', () => {
+          populateItemDropdown();
+        });
+
+        // Load employee IDs
+        (async()=>{
+          try{
+            const res=await fetch("/api/get_all_employee_ids");
+            const j=await res.json();
+            if(j.success&&Array.isArray(j.ids)&&j.ids.length>0){
+              document.getElementById("frId").value=j.ids[0];
+              document.getElementById("toId").value=j.ids[j.ids.length-1];
+            }
+          }catch(e){console.warn("Could not load employee IDs",e);}
+        })();
+
+        // Select All
+        document.getElementById("btnSelectAll").addEventListener("click",()=>{
+          const btn=document.getElementById("btnSelectAll");
+          const hint=document.getElementById("selAllHint");
+          if(btn.classList.contains("active")){
+            document.getElementById("frId").value="";
+            document.getElementById("toId").value="";
+            btn.innerHTML='<i class="bi bi-check2-all"></i> Select All IDs';
+            btn.classList.remove("active"); hint.textContent="";
+          }else{
+            document.getElementById("frId").value="";
+            document.getElementById("toId").value="";
+            btn.innerHTML='<i class="bi bi-x-circle"></i> Clear Selection';
+            btn.classList.add("active"); hint.textContent="✔ All employees selected";
+          }
+        });
+        ["frId","toId"].forEach(id=>{
+          document.getElementById(id).addEventListener("input",()=>{
+            const btn=document.getElementById("btnSelectAll");
+            if(btn.classList.contains("active")){
+              btn.innerHTML='<i class="bi bi-check2-all"></i> Select All IDs';
+              btn.classList.remove("active");
+              document.getElementById("selAllHint").textContent="";
+            }
+          });
+        });
+
+        // Cancel
+        document.getElementById('btnCancel').addEventListener('click',()=>{
+          ['frId','toId'].forEach(id=>document.getElementById(id).value='');
+          document.getElementById('frRegDt').value='';
+          document.getElementById('toRegDt').value='';
+          ['selShift','selSlot','selMenu','selItem'].forEach(id=>document.getElementById(id).selectedIndex=0);
+          const btn=document.getElementById("btnSelectAll");
+          btn.innerHTML='<i class="bi bi-check2-all"></i> Select All IDs';
+          btn.classList.remove("active");
+          document.getElementById("selAllHint").textContent="";
+        });
+
+        // Ok = Import
+        document.getElementById('btnOk').addEventListener('click',()=>{
+          document.getElementById('btnImportUsers').click();
+        });
+
+        /* ── IMPORT LOGS ── */
+        document.getElementById('btnImportUsers').addEventListener('click',async()=>{
+          let handoffToken;
+          try{handoffToken=await showQrAndWait();}
+          catch(e){
+            if(e.message!=='cancelled'){openModal("Import Logs");showSpinner(false);setModalStatus("❌ QR handoff failed: "+e.message);}
+            return;
+          }
+
+          const fd=getFormData();
+          openModal("Import Logs");
+          setModalStatus("Reading log data from Device A…");
+          showSpinner(true);
+          hideSyncResults();
+
+          try{
+            setProgress(10);
+            const fetchRes=await fetch("/api/get_users_from_device_a",{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({
+                from_id:'', to_id:'',
+                from_dt:'', to_dt:'',
+                handoff_token:handoffToken,
+                include_card:true, include_thumb:true,
+                include_face:true, include_photo:true,
+              })
+            });
+            if(!fetchRes.ok){showSpinner(false);setModalStatus("❌ Failed to read ZIP\n"+fetchRes.statusText);return;}
+            const fetchJson=await fetchRes.json();
+            if(!fetchJson.success){showSpinner(false);setModalStatus("❌ "+(fetchJson.message||"Could not read ZIP"));return;}
+
+            const logsFromA = fetchJson.logs || [];
+            if(logsFromA.length===0){
+              showSpinner(false);
+              setModalStatus("⚠ No logs found in the uploaded file matching the selected filters.");
+              return;
+            }
+
+            setModalStatus(`Found ${logsFromA.length} log record(s).\nSyncing to this device…`);
+            setProgress(40);
+
+            const syncRes=await fetch("/api/import_sync_logs",{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({ handoff_token:handoffToken, logs:logsFromA })
+            });
+            setProgress(85);
+            if(!syncRes.ok){showSpinner(false);setModalStatus("❌ Sync failed\n"+syncRes.statusText);return;}
+
+            const syncJson=await syncRes.json();
+            setProgress(100); showSpinner(false);
+            if(!syncJson.success){setModalStatus("❌ "+(syncJson.message||"Sync failed"));return;}
+
+            const summary     = syncJson.summary     || {};
+            const results     = syncJson.results     || [];
+            const logsCreated = syncJson.logs_created || 0;
+            const logsSkipped = syncJson.logs_skipped || 0;
+
+            document.getElementById("cntCreated").textContent = logsCreated;
+            document.getElementById("cntUpdated").textContent = summary.updated ?? 0;
+            document.getElementById("cntSkipped").textContent = (summary.skipped ?? 0) + logsSkipped;
+            document.getElementById("cntErrors").textContent  = summary.errors  ?? 0;
+
+            const tbody=document.getElementById("syncLogBody");
+            tbody.innerHTML="";
+            results.forEach(r=>{
+              const tr=document.createElement("tr");
+              const cls={created:"log-created",updated:"log-updated",skipped:"log-skipped",error:"log-error"}[r.action]||"";
+              const lbl={created:"✅ Created",updated:"🔄 Updated",skipped:"⏭ Skipped",error:"❌ Error"}[r.action]||r.action;
+              tr.innerHTML=`<td>${r.user_id||"—"}</td><td>${r.name||"—"}</td><td class="${cls}">${lbl}</td><td style="color:#666;">${r.reason||""}</td>`;
+              tbody.appendChild(tr);
+            });
+
+            setModalStatus("✅ Import complete!");
+            setModalHint(`Logs: ${logsCreated} imported, ${logsSkipped} skipped`);
+            document.getElementById("syncSummary").style.display="flex";
+            if(results.length>0) document.getElementById("syncLog").style.display="block";
+
+          }catch(e){showSpinner(false);setModalStatus("❌ Network error: "+e.message);}
+        });
+
+        /* ── DELETE LOGS ── */
+        document.getElementById('btnDeleteUsers').addEventListener('click',async()=>{
+          const fd=getFormData();
+          const pw = prompt("Enter admin password to delete logs:");
+          if (pw === null) return;
+
+          openModal("Delete Canteen Logs");
+          setModalStatus("Deleting logs…");
+          showSpinner(true); hideSyncResults();
+          try{
+            const res=await fetch("/api/delete_filtered_logs",{
+              method:"POST",
+              headers:{"Content-Type":"application/json"},
+              body:JSON.stringify({ ...fd, admin_password: pw })
+            });
+            const j=await res.json(); showSpinner(false);
+            if(!j.success){setModalStatus("❌ Failed: "+(j.message||"Server error"));return;}
+            setModalStatus("✅ "+(j.message||`Deleted ${j.deleted} log record(s).`));
+          }catch(e){showSpinner(false);setModalStatus("❌ Network error: "+e.message);}
+        });
+
+      }); // end DOMContentLoaded
+    </script>
+
+    <div id="osk" class="simple-keyboard"></div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+    <link rel="stylesheet" href="/static/css/osk.css">
+    <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+    <script src="/static/js/osk.js" defer></script>
+  </body>
+</html>

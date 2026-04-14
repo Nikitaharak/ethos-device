@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=480, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Item Limit Master — Ethos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root {
+    --bg-base: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-input: #F7F8FA;
+    --bg-btn-warm: #F0F1F4;
+    --bg-table-head: #205081;
+    --text-primary: #205081;
+    --text-dark: #1A1A1A;
+    --text-secondary: #6B7D93;
+    --text-muted: #A0ADB8;
+    --text-on-dark: #FFFFFF;
+    --accent: #F5A623;
+    --accent-deep: #E8940A;
+    --accent-glow: rgba(245,166,35,0.12);
+    --blue: #205081;
+    --blue-glow: rgba(32,80,129,0.10);
+    --border: #E4E7EC;
+    --border-input: #D8DCE3;
+    --danger: #D94040;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+html, body {
+    width: 480px; height: 800px; overflow: hidden;
+    font-family: var(--font-body); background: var(--bg-base);
+    color: var(--text-dark); -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none;
+}
+
+.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; background: var(--bg-base);
+    height: 56px; flex-shrink: 0;
+}
+.btn-back {
+    height: 38px; border-radius: 8px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 0 16px 0 12px;
+    background: var(--bg-btn-warm); border: 1px solid var(--border);
+    color: var(--text-primary); font-size: 0.82rem; font-weight: 600;
+    font-family: var(--font-body); cursor: pointer; text-decoration: none;
+}
+.btn-back i { font-size: 0.78rem; }
+.btn-back:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.logo-main { height: 38px; object-fit: contain; }
+.logo-right { height: 30px; object-fit: contain; }
+
+.page-wrap {
+    height: calc(800px - 56px); overflow-y: auto;
+    -webkit-overflow-scrolling: touch; padding: 10px 16px 20px;
+}
+
+.main-card {
+    background: var(--bg-card); border-radius: 22px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.08);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+.card-form-section { padding: 24px 22px 0; }
+.card-title {
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--text-primary); text-align: center; margin-bottom: 20px;
+}
+
+.form-group { margin-bottom: 14px; }
+.form-group label {
+    display: block; font-size: 0.72rem; font-weight: 700;
+    color: var(--text-primary); text-transform: uppercase;
+    letter-spacing: 0.05em; margin-bottom: 5px;
+}
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; margin-bottom: 14px; }
+.form-group input, .form-group select {
+    width: 100%; height: 42px; padding: 0 14px;
+    font-family: var(--font-body); font-size: 0.88rem;
+    background: var(--bg-input); border: 1.5px solid var(--border-input);
+    border-radius: 10px; color: var(--text-dark);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    user-select: auto; -webkit-user-select: auto;
+    pointer-events: auto; touch-action: manipulation;
+}
+.form-group select { -webkit-appearance: menulist; appearance: menulist; }
+.form-group input[type="number"] {
+    font-family: var(--font-mono); font-size: 0.9rem; text-align: center;
+}
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); background: #FFF9F0;
+}
+
+.action-row {
+    display: flex; gap: 12px; justify-content: center;
+    margin-top: 16px; padding-top: 14px; padding-bottom: 20px;
+    border-top: 1px solid #F0ECE5;
+}
+.action-col { text-align: center; }
+.action-btn {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: grid; place-items: center; border: none; cursor: pointer;
+    font-size: 1.25rem; color: #fff;
+    transition: transform 0.12s; box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+.action-btn:active { transform: scale(0.93); }
+.action-btn.save { background: linear-gradient(135deg, var(--accent), var(--accent-deep)); box-shadow: 0 3px 12px rgba(245,166,35,0.3); }
+.action-label { font-size: 0.6rem; font-weight: 600; color: var(--text-secondary); margin-top: 4px; }
+
+.card-divider { height: 1px; background: var(--border); margin: 0; }
+
+.table-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 22px 12px;
+}
+.table-section-header h2 { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+.table-empty {
+    padding: 30px 16px; text-align: center;
+    color: var(--text-muted); font-size: 0.88rem;
+}
+.table-empty i { display: block; font-size: 2rem; margin-bottom: 10px; color: var(--accent); opacity: 0.35; }
+
+.table-scroll { max-height: 320px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+    background: var(--bg-table-head); color: var(--text-on-dark);
+    font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.07em; padding: 11px 10px; text-align: left;
+    white-space: nowrap; position: sticky; top: 0; z-index: 2;
+}
+thead th:first-child { padding-left: 20px; }
+thead th:last-child { text-align: center; padding-right: 20px; }
+tbody tr { border-bottom: 1px solid #F0ECE5; transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:nth-child(even) { background: #F9FAFB; }
+tbody tr:active { background: #FFF3E8; }
+tbody td { padding: 10px 10px; font-size: 0.82rem; color: var(--text-dark); vertical-align: middle; }
+tbody td:first-child { padding-left: 20px; }
+tbody td:last-child { text-align: center; padding-right: 20px; }
+
+.cell-name { font-weight: 600; }
+
+/* ── Stepper: [ − ][ 88 ][ + ] ── */
+.limit-stepper {
+    display: inline-flex; align-items: center;
+    border: 1.5px solid var(--border-input); border-radius: 10px;
+    overflow: hidden; background: var(--bg-input);
+    height: 36px;
+}
+.limit-stepper .step-btn {
+    width: 34px; height: 100%; border: none; background: transparent;
+    color: var(--text-primary); font-size: 1.1rem; font-weight: 700;
+    cursor: pointer; display: grid; place-items: center;
+    font-family: var(--font-body);
+    transition: background 0.12s, color 0.12s;
+    -webkit-tap-highlight-color: transparent;
+}
+.limit-stepper .step-btn:active {
+    background: var(--accent); color: #fff;
+}
+.limit-stepper .step-btn.minus { border-right: 1px solid var(--border-input); }
+.limit-stepper .step-btn.plus  { border-left: 1px solid var(--border-input); }
+.limit-stepper .limit-input {
+    width: 46px; height: 100%; text-align: center;
+    font-family: var(--font-mono); font-size: 0.88rem; font-weight: 600;
+    background: transparent; border: none; border-radius: 0;
+    color: var(--text-dark); outline: none;
+    user-select: auto; -webkit-user-select: auto;
+    pointer-events: auto; touch-action: manipulation;
+    -moz-appearance: textfield;
+}
+.limit-stepper .limit-input::-webkit-inner-spin-button,
+.limit-stepper .limit-input::-webkit-outer-spin-button {
+    -webkit-appearance: none; margin: 0;
+}
+.limit-stepper:focus-within {
+    border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+/* ── Toast ── */
+.toast-wrap { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; }
+.toast {
+    background: var(--accent-deep); color: #fff; padding: 10px 22px; border-radius: 12px;
+    font-size: 0.82rem; font-weight: 600; box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+    opacity: 0; transform: translateY(10px); transition: opacity 0.2s, transform 0.2s;
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success i { color: #4CAF50; }
+.toast.error i { color: #FF5252; }
+
+.table-scroll::-webkit-scrollbar, .page-wrap::-webkit-scrollbar { width: 3px; }
+.table-scroll::-webkit-scrollbar-thumb, .page-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="/shift_config" class="btn-back"><i class="fa fa-arrow-left"></i> back</a>
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Logo">
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+</div>
+
+<div class="page-wrap">
+    <div class="main-card">
+        <div class="card-form-section">
+            <div class="card-title">Item Limit Master</div>
+            <form onsubmit="return false;">
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label for="category">Category</label>
+                        <select id="category"></select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="cat-limit">Category Limit</label>
+                        <input type="number" id="cat-limit" min="1" value="1">
+                    </div>
+                </div>
+                <div class="action-row">
+                    <div class="action-col">
+                        <button class="action-btn save" onclick="saveAll()" type="button"><i class="fa fa-check"></i></button>
+                        <div class="action-label">Save All</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="card-divider"></div>
+
+        <div class="table-section-header">
+            <h2><i class="fa fa-sliders" style="margin-right:6px;opacity:0.5;"></i>Item Limits</h2>
+        </div>
+        <div class="table-empty" id="table-empty">
+            <i class="fa fa-sliders"></i>
+            Select a category to configure limits
+        </div>
+        <div class="table-scroll">
+            <table id="items-table" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Limit</th>
+                    </tr>
+                </thead>
+                <tbody id="items-body"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+<script>
+"use strict";
+var limits = {}, items = [], currCategory = "";
+
+function toast(m, t) {
+    var e = document.getElementById('toast');
+    e.className = 'toast ' + (t || 'success');
+    e.innerHTML = '<i class="fa fa-' + (t === 'error' ? 'circle-xmark' : 'circle-check') + '"></i> ' + m;
+    e.classList.add('show');
+    clearTimeout(e._t);
+    e._t = setTimeout(function() { e.classList.remove('show'); }, 2200);
+}
+
+function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+}
+
+function stepLimit(itemKey, delta) {
+    var current = limits[itemKey] || 1;
+    var next = Math.max(1, current + delta);
+    limits[itemKey] = next;
+    var inp = document.getElementById('lim-' + itemKey);
+    if (inp) inp.value = next;
+}
+
+function onLimitInput(itemKey, el) {
+    var v = parseInt(el.value) || 1;
+    if (v < 1) v = 1;
+    limits[itemKey] = v;
+    el.value = v;
+}
+
+function loadCategories() {
+    fetch('/api/categories')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var sel = document.getElementById('category');
+            sel.innerHTML = '';
+            var cats = data.categories || [];
+            if (cats.length === 0) {
+                sel.innerHTML = '<option value="">— No categories —</option>';
+                return;
+            }
+            sel.innerHTML = cats.map(function(cat) {
+                return '<option value="' + esc(cat) + '">' + esc(cat) + '</option>';
+            }).join('');
+            sel.onchange = function() { loadCategoryLimits(sel.value); };
+            sel.value = cats[0];
+            loadCategoryLimits(cats[0]);
+        })
+        .catch(function() { toast('Failed to load categories', 'error'); });
+}
+
+function loadCategoryLimits(cat) {
+    currCategory = cat;
+    fetch('/api/items_for_category?category=' + encodeURIComponent(cat))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            items = data.items || [];
+            fetch('/api/item_limit_master/list')
+                .then(function(r) { return r.json(); })
+                .then(function(data2) {
+                    var allLimits = data2.limits || [];
+                    var catLim = allLimits.find(function(x) { return x.category === cat && x.item_name === '*'; });
+                    document.getElementById('cat-limit').value = catLim ? catLim.item_limit : 1;
+                    limits = {};
+                    items.forEach(function(item) {
+                        var limRow = allLimits.find(function(x) { return x.category === cat && x.item_name === item; });
+                        limits[item] = limRow ? limRow.item_limit : 1;
+                    });
+                    renderTable();
+                });
+        })
+        .catch(function() { toast('Failed to load items', 'error'); });
+}
+
+function renderTable() {
+    var tbl = document.getElementById('items-table');
+    var empty = document.getElementById('table-empty');
+    if (items.length === 0) {
+        tbl.style.display = 'none';
+        empty.style.display = '';
+        return;
+    }
+    tbl.style.display = '';
+    empty.style.display = 'none';
+    document.getElementById('items-body').innerHTML = items.map(function(item) {
+        var safeKey = esc(item).replace(/'/g, "\\'");
+        var val = limits[item] || 1;
+        return '<tr>'
+            + '<td class="cell-name">' + esc(item) + '</td>'
+            + '<td>'
+            +   '<div class="limit-stepper">'
+            +     '<button type="button" class="step-btn minus" onclick="stepLimit(\'' + safeKey + '\', -1)">\u2212</button>'
+            +     '<input type="number" min="1" class="limit-input" id="lim-' + esc(item) + '" value="' + val + '"'
+            +       ' onchange="onLimitInput(\'' + safeKey + '\', this)"'
+            +       ' onblur="onLimitInput(\'' + safeKey + '\', this)">'
+            +     '<button type="button" class="step-btn plus" onclick="stepLimit(\'' + safeKey + '\', 1)">+</button>'
+            +   '</div>'
+            + '</td>'
+            + '</tr>';
+    }).join('');
+}
+
+function saveAll() {
+    var cat = currCategory;
+    if (!cat) { toast('Select a category first', 'error'); return; }
+    var rows = [
+        { category: cat, item_name: '*', item_limit: parseInt(document.getElementById('cat-limit').value || 1) }
+    ];
+    items.forEach(function(item) {
+        rows.push({ category: cat, item_name: item, item_limit: limits[item] || 1 });
+    });
+    fetch('/api/item_limit_master/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(rows)
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            toast('Limits saved', 'success');
+            loadCategoryLimits(cat);
+        } else {
+            toast(data.message || 'Save failed', 'error');
+        }
+    })
+    .catch(function() { toast('Network error', 'error'); });
+}
+
+window.onload = loadCategories;
+</script>
+<div id="osk" class="simple-keyboard"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+<link rel="stylesheet" href="/static/css/osk.css">
+<script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+<script src="/static/js/osk.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,622 @@
+2026-03-15 20:35:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 20:40:38 [INFO] get_template: OK slot=5 size=498
+2026-03-15 20:40:38 [INFO] [ENROLL] get_template OK: slot=5 size=498 bytes
+2026-03-15 20:40:38 [INFO] [ENROLL] Saved fingerprint_encodings/220503.dat (498 bytes, slot=5)
+2026-03-15 20:40:38 [INFO] [ENROLL] Saved fingerprint_bins/220503.bin (498 bytes)
+2026-03-15 20:40:38 [INFO] [ENROLL] === SUCCESS emp_id=220503 slot=5 update=False template_size=498 ===
+2026-03-15 20:40:38 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=220503 ===
+2026-03-15 20:40:38 [INFO] [BROADCAST] Read /home/admin/ethos-device/ethos-device/fingerprint_bins/220503.bin (498 bytes)
+2026-03-15 20:40:38 [INFO] [BROADCAST] Broadcast finger_edit emp_id=220503 slot=5 broadcast_ok=True
+2026-03-15 20:54:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 20:59:04 [INFO] get_template: OK slot=6 size=498
+2026-03-15 20:59:04 [INFO] [ENROLL] get_template OK: slot=6 size=498 bytes
+2026-03-15 20:59:04 [INFO] [ENROLL] Saved fingerprint_encodings/220503.dat (498 bytes, slot=6)
+2026-03-15 20:59:04 [INFO] [ENROLL] Saved fingerprint_bins/220503.bin (498 bytes)
+2026-03-15 20:59:04 [INFO] [ENROLL] === SUCCESS emp_id=220503 slot=6 update=False template_size=498 ===
+2026-03-15 20:59:04 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=220503 ===
+2026-03-15 20:59:04 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/220503.bin (498 bytes)
+2026-03-15 20:59:04 [INFO] [BROADCAST] Broadcast finger_edit emp_id=220503 slot=6 broadcast_ok=True
+2026-03-15 21:20:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 21:33:33 [INFO] get_template: OK slot=1 size=498
+2026-03-15 21:33:33 [INFO] [ENROLL] get_template OK: slot=1 size=498 bytes
+2026-03-15 21:33:33 [INFO] [ENROLL] Saved fingerprint_encodings/220503.dat (498 bytes, slot=1)
+2026-03-15 21:33:33 [INFO] [ENROLL] Saved fingerprint_bins/220503.bin (498 bytes)
+2026-03-15 21:33:33 [INFO] [ENROLL] === SUCCESS emp_id=220503 slot=1 update=False template_size=498 ===
+2026-03-15 21:33:33 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=220503 ===
+2026-03-15 21:33:33 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/220503.bin (498 bytes)
+2026-03-15 21:33:33 [INFO] [BROADCAST] Broadcast finger_edit emp_id=220503 slot=1 broadcast_ok=True
+2026-03-15 22:48:36 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 22:50:14 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 23:02:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 23:22:24 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 23:27:10 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-15 23:39:42 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 00:04:39 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 00:08:50 [INFO] get_template: OK slot=1 size=498
+2026-03-16 00:08:50 [INFO] [ENROLL] get_template OK: slot=1 size=498 bytes
+2026-03-16 00:08:50 [INFO] [ENROLL] Saved fingerprint_encodings/220503.dat (498 bytes, slot=1)
+2026-03-16 00:08:50 [INFO] [ENROLL] Saved fingerprint_bins/220503.bin (498 bytes)
+2026-03-16 00:08:50 [INFO] [ENROLL] === SUCCESS emp_id=220503 slot=1 update=False template_size=498 ===
+2026-03-16 00:08:50 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=220503 ===
+2026-03-16 00:08:50 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/220503.bin (498 bytes)
+2026-03-16 00:08:50 [INFO] [BROADCAST] Broadcast finger_edit emp_id=220503 slot=1 broadcast_ok=True
+2026-03-16 00:14:05 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 00:18:12 [INFO] get_template: OK slot=1 size=498
+2026-03-16 00:18:12 [INFO] [ENROLL] get_template OK: slot=1 size=498 bytes
+2026-03-16 00:18:12 [INFO] [ENROLL] Saved fingerprint_encodings/220503.dat (498 bytes, slot=1)
+2026-03-16 00:18:12 [INFO] [ENROLL] Saved fingerprint_bins/220503.bin (498 bytes)
+2026-03-16 00:18:12 [INFO] [ENROLL] === SUCCESS emp_id=220503 slot=1 update=False template_size=498 ===
+2026-03-16 00:18:12 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=220503 ===
+2026-03-16 00:18:12 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/220503.bin (498 bytes)
+2026-03-16 00:18:12 [INFO] [BROADCAST] Broadcast finger_edit emp_id=220503 slot=1 broadcast_ok=True
+2026-03-16 00:27:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 10:15:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 10:23:23 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 10:34:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 10:44:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 10:46:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 10:50:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 10:59:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 11:12:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 11:12:43 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 11:22:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 11:27:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 12:09:18 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 12:11:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 12:26:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 12:54:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 13:08:08 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 13:12:54 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 13:17:22 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 13:19:52 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 13:24:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 13:26:24 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 13:52:36 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:19:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:21:29 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:24:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:28:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:29:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:34:21 [INFO] get_template: OK slot=3 size=498
+2026-03-16 14:34:21 [INFO] [ENROLL] get_template OK: slot=3 size=498 bytes
+2026-03-16 14:34:21 [INFO] [ENROLL] Saved fingerprint_encodings/22035.dat (498 bytes, slot=3)
+2026-03-16 14:34:21 [INFO] [ENROLL] Saved fingerprint_bins/22035.bin (498 bytes)
+2026-03-16 14:34:21 [INFO] [ENROLL] === SUCCESS emp_id=22035 slot=3 update=False template_size=498 ===
+2026-03-16 14:34:21 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=22035 ===
+2026-03-16 14:34:21 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/22035.bin (498 bytes)
+2026-03-16 14:34:21 [INFO] [BROADCAST] Broadcast finger_edit emp_id=22035 slot=3 broadcast_ok=True
+2026-03-16 14:44:12 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:47:28 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:52:43 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 14:59:39 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 15:05:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 15:06:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 15:09:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 15:09:40 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 15:14:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 16:50:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 17:02:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-16 17:33:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 09:56:28 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:27:15 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:29:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:34:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:36:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:36:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:47:27 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-03-22 10:50:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:50:47 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 10:56:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 11:00:14 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 11:04:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 11:12:29 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 11:32:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 11:37:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 11:38:01 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-03-22 11:46:51 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 11:52:23 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 12:12:34 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 12:14:53 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-03-22 12:19:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 15:30:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 15:45:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 15:48:34 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-22 15:49:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 12:39:37 [INFO] get_template: OK slot=1 size=498
+2026-03-23 12:39:37 [INFO] [ENROLL] get_template OK: slot=1 size=498 bytes
+2026-03-23 12:39:37 [INFO] [ENROLL] Saved fingerprint_encodings/220503.dat (498 bytes, slot=1)
+2026-03-23 12:39:37 [INFO] [ENROLL] Saved fingerprint_bins/220503.bin (498 bytes)
+2026-03-23 12:39:37 [INFO] [ENROLL] === SUCCESS emp_id=220503 slot=1 update=True template_size=498 ===
+2026-03-23 12:39:37 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=220503 ===
+2026-03-23 12:39:37 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/220503.bin (498 bytes)
+2026-03-23 12:39:37 [INFO] [BROADCAST] Broadcast finger_edit emp_id=220503 slot=1 broadcast_ok=True
+2026-03-23 13:09:57 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 13:47:47 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 14:11:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 14:28:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 14:32:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 14:35:35 [INFO] get_template: OK slot=7 size=498
+2026-03-23 14:35:35 [INFO] [ENROLL] get_template OK: slot=7 size=498 bytes
+2026-03-23 14:35:35 [INFO] [ENROLL] Saved fingerprint_encodings/909.dat (498 bytes, slot=7)
+2026-03-23 14:35:35 [INFO] [ENROLL] Saved fingerprint_bins/909.bin (498 bytes)
+2026-03-23 14:35:35 [INFO] [ENROLL] === SUCCESS emp_id=909 slot=7 update=False template_size=498 ===
+2026-03-23 14:35:35 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=909 ===
+2026-03-23 14:35:35 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/909.bin (498 bytes)
+2026-03-23 14:35:35 [INFO] [BROADCAST] Broadcast finger_edit emp_id=909 slot=7 broadcast_ok=True
+2026-03-23 14:43:11 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 14:46:28 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 14:49:18 [INFO] get_template: OK slot=3 size=498
+2026-03-23 14:49:18 [INFO] [ENROLL] get_template OK: slot=3 size=498 bytes
+2026-03-23 14:49:18 [INFO] [ENROLL] Saved fingerprint_encodings/22035.dat (498 bytes, slot=3)
+2026-03-23 14:49:18 [INFO] [ENROLL] Saved fingerprint_bins/22035.bin (498 bytes)
+2026-03-23 14:49:18 [INFO] [ENROLL] === SUCCESS emp_id=22035 slot=3 update=False template_size=498 ===
+2026-03-23 14:49:18 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=22035 ===
+2026-03-23 14:49:18 [INFO] [BROADCAST] Read /home/admin/ethos-device-2/fingerprint_bins/22035.bin (498 bytes)
+2026-03-23 14:49:18 [INFO] [BROADCAST] Broadcast finger_edit emp_id=22035 slot=3 broadcast_ok=True
+2026-03-23 14:52:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:27:21 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-03-23 15:29:40 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:32:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:48:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:50:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:50:44 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:51:05 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:51:26 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:51:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:52:09 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:52:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:52:52 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:53:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:53:15 [INFO] get_template: OK slot=3 size=498
+2026-03-23 15:53:15 [INFO] [ENROLL] get_template OK: slot=3 size=498 bytes
+2026-03-23 15:53:15 [INFO] [ENROLL] Saved fingerprint_encodings/22035.dat (498 bytes, slot=3)
+2026-03-23 15:53:15 [INFO] [ENROLL] Saved fingerprint_bins/22035.bin (498 bytes)
+2026-03-23 15:53:15 [INFO] [ENROLL] === SUCCESS emp_id=22035 slot=3 update=True template_size=498 ===
+2026-03-23 15:53:15 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=22035 ===
+2026-03-23 15:53:15 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/22035.bin (498 bytes)
+2026-03-23 15:53:15 [INFO] [BROADCAST] Broadcast finger_edit emp_id=22035 slot=3 broadcast_ok=True
+2026-03-23 15:53:34 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:53:56 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-03-23 15:52:22 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:57:55 [INFO] [MESH] finger_edit received: emp_id=220503 size=498 from=192.168.1.2
+2026-03-23 15:57:55 [INFO] [RECEIVE] === receive_fingerprint_template START emp_id=220503 fp_bytes_len=498 ===
+2026-03-23 15:57:55 [INFO] [RECEIVE] Employee 220503 already has fingerprint at slot 1 — SKIPPED
+2026-03-23 16:01:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-03-23 15:59:56 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-03-23 16:25:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 19:57:39 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 19:57:49 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 19:58:37 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 20:01:29 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 20:03:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 20:06:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 22:20:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-01 22:26:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 00:05:03 [INFO] [RECEIVE] === receive_fingerprint_template START emp_id=999 fp_bytes_len=498 ===
+2026-04-02 00:05:03 [INFO] [RECEIVE] Assigned slot 1 for 999
+2026-04-02 00:05:03 [INFO] [RECEIVE] Saved fingerprint_encodings/999.dat
+2026-04-02 00:05:03 [INFO] [RECEIVE] Saved fingerprint_bins/999.bin
+2026-04-02 00:05:03 [INFO] [RECEIVE] DB: fingerprint_map OK emp_id=999 slot=1
+2026-04-02 00:05:03 [INFO] [RECEIVE] DB: fingerprints OK slot=1
+2026-04-02 00:05:03 [INFO] [RECEIVE] DB: user_finger_map OK
+2026-04-02 00:05:03 [INFO] [RECEIVE] Injecting into sensor slot 1 for 999...
+2026-04-02 00:05:04 [INFO] set_template: OK slot=1 size=498
+2026-04-02 00:05:04 [INFO] [RECEIVE] SENSOR INJECT OK: emp_id=999 slot=1
+2026-04-02 00:05:04 [INFO] [RECEIVE] === SUCCESS Fingerprint received and injected: emp_id=999 slot=1 ===
+2026-04-02 01:14:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 14:20:55 [INFO] get_template: OK slot=23 size=498
+2026-04-02 14:20:55 [INFO] [ENROLL] get_template OK: slot=23 size=498 bytes
+2026-04-02 14:20:55 [INFO] [ENROLL] Saved fingerprint_encodings/3123.dat (498 bytes, slot=23)
+2026-04-02 14:20:55 [INFO] [ENROLL] Saved fingerprint_bins/3123.bin (498 bytes)
+2026-04-02 14:20:55 [INFO] [ENROLL] === SUCCESS emp_id=3123 slot=23 update=False template_size=498 ===
+2026-04-02 14:20:55 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=3123 ===
+2026-04-02 14:20:55 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/3123.bin (498 bytes)
+2026-04-02 14:20:55 [INFO] [BROADCAST] Broadcast finger_edit emp_id=3123 slot=23 broadcast_ok=True
+2026-04-02 14:58:49 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 16:36:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 20:03:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 20:17:26 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 20:56:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 21:19:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 21:27:05 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-02 21:46:55 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-03 13:52:14 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-04-03 15:05:23 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-03 15:27:05 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-03 17:19:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-05 15:22:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-05 15:27:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 12:45:37 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 12:55:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 13:01:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 13:21:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 13:56:23 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 14:02:24 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 14:40:57 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 14:42:35 [INFO] get_template: OK slot=2 size=498
+2026-04-07 14:42:35 [INFO] [ENROLL] get_template OK: slot=2 size=498 bytes
+2026-04-07 14:42:35 [INFO] [ENROLL] Saved fingerprint_encodings/3123.dat (498 bytes, slot=2)
+2026-04-07 14:42:35 [INFO] [ENROLL] Saved fingerprint_bins/3123.bin (498 bytes)
+2026-04-07 14:42:35 [INFO] [ENROLL] === SUCCESS emp_id=3123 slot=2 update=False template_size=498 ===
+2026-04-07 14:42:35 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=3123 ===
+2026-04-07 14:42:35 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/3123.bin (498 bytes)
+2026-04-07 14:42:35 [INFO] [BROADCAST] Broadcast finger_edit emp_id=3123 slot=2 broadcast_ok=True
+2026-04-07 14:51:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 14:52:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 14:55:39 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 15:00:35 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 15:05:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:01:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:03:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:06:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:12:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:14:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:18:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:27:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:29:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:41:28 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:44:57 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:57:09 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:57:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 17:59:51 [INFO] get_template: OK slot=4 size=498
+2026-04-07 17:59:51 [INFO] [ENROLL] get_template OK: slot=4 size=498 bytes
+2026-04-07 17:59:51 [INFO] [ENROLL] Saved fingerprint_encodings/008.dat (498 bytes, slot=4)
+2026-04-07 17:59:51 [INFO] [ENROLL] Saved fingerprint_bins/008.bin (498 bytes)
+2026-04-07 17:59:51 [INFO] [ENROLL] === SUCCESS emp_id=008 slot=4 update=False template_size=498 ===
+2026-04-07 17:59:51 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=008 ===
+2026-04-07 17:59:51 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/008.bin (498 bytes)
+2026-04-07 17:59:51 [INFO] [BROADCAST] Broadcast finger_edit emp_id=008 slot=4 broadcast_ok=True
+2026-04-07 18:25:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 18:33:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 18:35:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-07 18:36:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 13:24:12 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 13:48:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 13:54:47 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:05:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:09:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:10:07 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:16:09 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:24:11 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:32:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:39:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 14:43:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 15:24:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 15:25:29 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 15:43:37 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 15:51:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 16:05:36 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 16:11:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 16:12:22 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 16:20:37 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 16:26:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 17:12:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 17:16:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 17:21:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 17:32:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 17:59:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:06:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:07:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:09:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:12:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:15:44 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:18:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:20:51 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:23:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:25:43 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-08 18:40:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 10:27:54 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 10:39:07 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 10:41:03 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 10:44:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 10:46:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 10:47:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 10:49:11 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 11:14:57 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 11:20:03 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 11:32:51 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 11:44:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 11:47:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 14:03:37 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 14:18:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 14:24:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 14:44:51 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 14:48:04 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 14:49:04 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 14:59:34 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 15:26:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 15:33:05 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 16:38:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 17:35:36 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 17:41:08 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 17:58:26 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 17:59:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:01:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:03:49 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:05:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:14:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:16:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:33:14 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:34:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-09 18:36:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 10:02:57 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 10:16:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 10:46:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 10:50:57 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 10:53:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 10:56:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 11:06:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 11:48:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 12:47:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 12:56:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 12:58:08 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:20:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:37:23 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:43:08 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:46:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:51:41 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:52:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:53:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:54:15 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 13:58:23 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 14:09:24 [INFO] get_template: OK slot=4 size=498
+2026-04-10 14:09:24 [INFO] [ENROLL] get_template OK: slot=4 size=498 bytes
+2026-04-10 14:09:24 [INFO] [ENROLL] Saved fingerprint_encodings/008.dat (498 bytes, slot=4)
+2026-04-10 14:09:24 [INFO] [ENROLL] Saved fingerprint_bins/008.bin (498 bytes)
+2026-04-10 14:09:24 [INFO] [ENROLL] === SUCCESS emp_id=008 slot=4 update=False template_size=498 ===
+2026-04-10 14:09:24 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=008 ===
+2026-04-10 14:09:24 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/008.bin (498 bytes)
+2026-04-10 14:09:24 [INFO] [BROADCAST] Broadcast finger_edit emp_id=008 slot=4 broadcast_ok=True
+2026-04-10 14:10:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 14:14:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 14:17:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 14:39:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 14:43:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:10:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:16:35 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:22:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:26:15 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:27:10 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:32:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:34:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:38:07 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:38:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:41:14 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:51:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 15:56:52 [INFO] get_template: OK slot=2 size=498
+2026-04-10 15:56:52 [INFO] [ENROLL] get_template OK: slot=2 size=498 bytes
+2026-04-10 15:56:52 [INFO] [ENROLL] Saved fingerprint_encodings/2003.dat (498 bytes, slot=2)
+2026-04-10 15:56:52 [INFO] [ENROLL] Saved fingerprint_bins/2003.bin (498 bytes)
+2026-04-10 15:56:52 [INFO] [ENROLL] === SUCCESS emp_id=2003 slot=2 update=False template_size=498 ===
+2026-04-10 15:56:52 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=2003 ===
+2026-04-10 15:56:52 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/2003.bin (498 bytes)
+2026-04-10 15:56:52 [INFO] [BROADCAST] Broadcast finger_edit emp_id=2003 slot=2 broadcast_ok=True
+2026-04-10 16:03:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:05:37 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:06:42 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:10:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:12:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:15:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:23:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:35:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 16:46:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 17:30:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 17:32:40 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 17:50:43 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 17:52:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 17:58:07 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 18:04:44 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 18:06:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 18:22:18 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 18:25:43 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 18:29:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-10 19:02:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 01:10:17 [INFO] get_template: OK slot=5 size=498
+2026-04-11 01:10:17 [INFO] [ENROLL] get_template OK: slot=5 size=498 bytes
+2026-04-11 01:10:18 [INFO] [ENROLL] Saved fingerprint_encodings/99.dat (498 bytes, slot=5)
+2026-04-11 01:10:18 [INFO] [ENROLL] Saved fingerprint_bins/99.bin (498 bytes)
+2026-04-11 01:10:18 [INFO] [ENROLL] === SUCCESS emp_id=99 slot=5 update=False template_size=498 ===
+2026-04-11 01:10:18 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=99 ===
+2026-04-11 01:10:18 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/99.bin (498 bytes)
+2026-04-11 01:10:18 [INFO] [BROADCAST] Broadcast finger_edit emp_id=99 slot=5 broadcast_ok=True
+2026-04-11 01:15:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 11:12:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 11:19:42 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 11:30:10 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 11:46:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 11:48:28 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 13:16:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 13:27:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 13:28:49 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 13:29:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 13:30:29 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 13:44:35 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 13:56:49 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:13:36 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:20 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:26 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:39 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:52 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:14:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:05 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:12 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:18 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:41 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:44 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:47 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:15:54 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:16:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:16:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:16:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:17:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:18:52 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:19:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:19:28 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 14:23:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 15:03:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 15:15:51 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 15:29:10 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 15:33:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 15:35:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 15:54:15 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 15:58:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 16:02:10 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 16:36:47 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 17:24:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 17:30:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 17:36:26 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 17:38:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 17:51:39 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 18:00:43 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 18:24:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 18:24:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 18:31:41 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 18:52:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 18:52:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 18:58:09 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:03:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:11:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:14:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:19:22 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:28:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:43:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:47:55 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:55:13 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:55:44 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 19:58:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 20:13:30 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 20:15:28 [INFO] get_template: OK slot=6 size=498
+2026-04-11 20:15:28 [INFO] [ENROLL] get_template OK: slot=6 size=498 bytes
+2026-04-11 20:15:28 [INFO] [ENROLL] Saved fingerprint_encodings/2.dat (498 bytes, slot=6)
+2026-04-11 20:15:28 [INFO] [ENROLL] Saved fingerprint_bins/2.bin (498 bytes)
+2026-04-11 20:15:28 [INFO] [ENROLL] === SUCCESS emp_id=2 slot=6 update=False template_size=498 ===
+2026-04-11 20:15:28 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=2 ===
+2026-04-11 20:15:28 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/2.bin (498 bytes)
+2026-04-11 20:15:28 [INFO] [BROADCAST] Broadcast finger_edit emp_id=2 slot=6 broadcast_ok=True
+2026-04-11 21:02:07 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 21:03:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-11 21:02:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 01:15:29 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 19:47:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 19:47:54 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 19:48:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 19:50:45 [INFO] get_template: OK slot=1 size=498
+2026-04-12 19:50:45 [INFO] [ENROLL] get_template OK: slot=1 size=498 bytes
+2026-04-12 19:50:45 [INFO] [ENROLL] Saved fingerprint_encodings/220503.dat (498 bytes, slot=1)
+2026-04-12 19:50:45 [INFO] [ENROLL] Saved fingerprint_bins/220503.bin (498 bytes)
+2026-04-12 19:50:45 [INFO] [ENROLL] === SUCCESS emp_id=220503 slot=1 update=False template_size=498 ===
+2026-04-12 19:50:45 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=220503 ===
+2026-04-12 19:50:45 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/220503.bin (498 bytes)
+2026-04-12 19:50:45 [INFO] [BROADCAST] Broadcast finger_edit emp_id=220503 slot=1 broadcast_ok=True
+2026-04-12 19:58:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:03:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:03:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:13:12 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:13:55 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:16:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:20:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:24:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 20:26:41 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-12 23:51:47 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:04:12 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:04:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:05:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:06:23 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:06:55 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:21:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:23:32 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:40:40 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:41:08 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:41:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:42:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:42:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:42:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:43:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:43:08 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:43:15 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:43:21 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:43:28 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:43:34 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:43:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:44:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 10:52:02 [INFO] get_template: OK slot=2 size=498
+2026-04-13 10:52:02 [INFO] [ENROLL] get_template OK: slot=2 size=498 bytes
+2026-04-13 10:52:02 [INFO] [ENROLL] Saved fingerprint_encodings/2003.dat (498 bytes, slot=2)
+2026-04-13 10:52:02 [INFO] [ENROLL] Saved fingerprint_bins/2003.bin (498 bytes)
+2026-04-13 10:52:02 [INFO] [ENROLL] === SUCCESS emp_id=2003 slot=2 update=False template_size=498 ===
+2026-04-13 10:52:02 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=2003 ===
+2026-04-13 10:52:02 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/2003.bin (498 bytes)
+2026-04-13 10:52:02 [INFO] [BROADCAST] Broadcast finger_edit emp_id=2003 slot=2 broadcast_ok=True
+2026-04-13 11:02:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:09:39 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:25:12 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:34:25 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:36:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:36:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:38:10 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:43:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 11:47:48 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 12:00:56 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 12:18:44 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 12:22:52 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 12:40:52 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 12:47:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 12:57:12 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 13:11:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 13:32:58 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 13:34:01 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 13:34:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 16:03:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 17:35:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 17:36:18 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:12:00 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:19:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:20:59 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:22:11 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:23:53 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:26:50 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:28:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:30:03 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:30:19 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:34:42 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:35:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:42:05 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:42:27 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:43:02 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:43:18 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:46:42 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:48:06 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:50:31 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 18:53:34 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 19:04:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 19:01:34 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 19:09:24 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-13 19:14:17 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:12:33 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:14:21 [INFO] get_template: OK slot=2 size=498
+2026-04-14 10:14:21 [INFO] [ENROLL] get_template OK: slot=2 size=498 bytes
+2026-04-14 10:14:21 [INFO] [ENROLL] Saved fingerprint_encodings/2003.dat (498 bytes, slot=2)
+2026-04-14 10:14:21 [INFO] [ENROLL] Saved fingerprint_bins/2003.bin (498 bytes)
+2026-04-14 10:14:21 [INFO] [ENROLL] === SUCCESS emp_id=2003 slot=2 update=False template_size=498 ===
+2026-04-14 10:14:21 [INFO] [BROADCAST] === broadcast_finger_edit START emp_id=2003 ===
+2026-04-14 10:14:21 [INFO] [BROADCAST] Read /home/admin/ethos-device/fingerprint_bins/2003.bin (498 bytes)
+2026-04-14 10:14:21 [INFO] [BROADCAST] Broadcast finger_edit emp_id=2003 slot=2 broadcast_ok=True
+2026-04-14 10:10:45 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:16:35 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:15:55 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:16:16 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:34:03 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:41:43 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:43:46 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:47:55 [INFO] === Fingerprint transfer logger initialized ===
+                                                                           2026-04-14 10:47:04 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 10:57:38 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 11:03:42 [INFO] === Fingerprint transfer logger initialized ===
+2026-04-14 11:07:31 [INFO] === Fingerprint transfer logger initialized ===

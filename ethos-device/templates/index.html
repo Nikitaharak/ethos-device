@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ethos Device</title>
+    <link rel="stylesheet" href="/static/css/master.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+/* ── Base ── */
+html, body { height:100%; margin:0; padding:0; background:linear-gradient(130deg,#fff 0%,#f9f6f4 60%,#f3efec 100%); background-attachment:fixed; }
+body { min-height:100vh; display:flex; flex-direction:column; overflow-x:hidden; overflow-y:auto; }
+.container-home { flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; transform:translateY(40px); }
+.logo-wrap { width:320px; height:320px; margin-bottom:45px; display:flex; align-items:center; justify-content:center; }
+.logo-anim { width:320px; height:320px; object-fit:contain; display:block; mix-blend-mode:multiply; }
+.brand-title { font-family:'Segoe UI',Arial,sans-serif; font-size:2.3rem; font-weight:700; color:#205081; text-align:center; margin-bottom:10px; }
+.subtitle { font-size:1.02rem; color:#949aa4; font-weight:500; margin-bottom:34px; text-align:center; }
+.footer { text-align:center; margin:32px 0 8px; color:#b7b7b7; }
+
+/* ── Clock ── */
+.live-clock { font-size:2.5rem; color:#205081; text-align:center; margin-bottom:6px; line-height:1.2; font-weight:700; text-transform:uppercase; }
+.live-date  { font-size:1.5rem; font-weight:700; color:#205081; margin-bottom:6px; text-transform:uppercase; }
+
+/* ── Hidden video for background user-face detection ── */
+#hidden-video { position:absolute; left:-9999px; width:1px; height:1px; opacity:0; pointer-events:none; }
+
+/* ── Admin Login Button ── */
+.admin-login-btn {
+    position:fixed; top:20px; right:30px;
+    padding:12px 24px; background:#2f5c8f; color:#fff;
+    border:none; border-radius:8px; font-size:0.95rem; font-weight:600;
+    cursor:pointer; z-index:1000;
+    transition:transform .12s, box-shadow .12s;
+}
+.admin-login-btn:hover { transform:translateY(-2px); box-shadow:0 6px 16px rgba(47,92,143,.4); }
+.admin-login-btn:active { transform:translateY(0); }
+
+/* ── Admin Stage (overlay) ── */
+.admin-stage { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.46); z-index:9998; padding:20px; }
+.admin-stage.show { display:flex; }
+
+.admin-card {
+    position:relative; width:min(420px,90vw); aspect-ratio:3/4;
+    border-radius:16px; overflow:hidden; background:#000;
+    box-shadow:0 12px 36px rgba(0,0,0,.4);
+    border:3px solid rgba(255,255,255,.9);
+    transition:border-color .15s;
+}
+.admin-card.ring-ok   { border-color:#22c55e; }
+.admin-card.ring-fail { border-color:#ef4444; }
+
+#admin-video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+
+/* scanning pulse on the card border */
+.admin-card.scanning { animation:pulse-border 1.4s ease-in-out infinite; }
+@keyframes pulse-border {
+    0%,100% { box-shadow:0 12px 36px rgba(0,0,0,.4), 0 0 0 0 rgba(58,142,255,.5); }
+    50%      { box-shadow:0 12px 36px rgba(0,0,0,.4), 0 0 0 8px rgba(58,142,255,0); }
+}
+
+.admin-actions { position:absolute; top:10px; right:10px; display:flex; gap:8px; z-index:10; }
+.admin-btn { background:rgba(255,255,255,.95); color:#205081; border:1px solid #cfd8e3; padding:8px 14px; border-radius:8px; font-weight:600; cursor:pointer; font-size:.88rem; }
+.admin-btn:hover { border-color:#205081; }
+
+/* Status bar inside camera card */
+.admin-status-bar {
+    position:absolute; bottom:0; left:0; right:0;
+    background:linear-gradient(to top, rgba(0,0,0,.7) 0%, transparent 100%);
+    padding:28px 14px 14px; z-index:6;
+    display:flex; align-items:center; gap:9px;
+}
+.status-dot { width:9px; height:9px; border-radius:50%; background:#3a8eff; flex-shrink:0; animation:blink 1s ease-in-out infinite; }
+.status-dot.ok   { background:#22c55e; animation:none; }
+.status-dot.fail { background:#ef4444; animation:none; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.25;} }
+.status-txt { color:rgba(255,255,255,.92); font-size:.88rem; font-weight:600; letter-spacing:.2px; }
+
+/* ── Unified Banner (matches user.html) ── */
+.banner {
+    position:fixed; left:0; right:0; bottom:0; height:auto;
+    background:transparent;
+    transform:translateY(100%);
+    transition:transform .18s ease-out;
+    z-index:9999; display:flex; align-items:flex-end; justify-content:center;
+    pointer-events:none; padding:0; will-change:transform;
+}
+.banner.show { transform:translateY(0); }
+.banner-card {
+    width:calc(100% - 32px); margin:0 16px;
+    background:rgba(255,255,255,0.98); border-radius:18px 18px 0 0;
+    box-shadow:0 -6px 28px rgba(0,0,0,0.18);
+    display:flex; align-items:center; gap:18px;
+    min-height:200px; padding:30px 28px;
+    pointer-events:auto; box-sizing:border-box;
+}
+.banner .avatar {
+    width:120px; height:160px; border-radius:10px; border:4px solid #eef2f7;
+    background:#f2f2f2; display:flex; align-items:center; justify-content:center;
+    flex:0 0 120px; overflow:hidden;
+}
+.banner .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+.banner .avatar.icon-avatar {
+    width:64px; height:64px; border-radius:50%; flex:0 0 64px;
+}
+.banner .avatar.fail {
+    background:#ffebee; border-color:#ffd6db; color:#b02a37; font-size:34px;
+}
+.banner .avatar.success-icon {
+    background:#e8f5e9; border-color:#c8e6c9; color:#2e7d32; font-size:28px;
+}
+.banner .ok { color:#157347; font-weight:900; margin-bottom:4px; font-size:1.2rem; }
+.banner .fail-text { color:#b02a37; font-weight:900; margin-bottom:4px; font-size:1.2rem; }
+.banner .sub { color:#205081; white-space:pre-line; font-size:1rem; }
+.banner .lines { flex:1; display:flex; flex-direction:column; gap:3px; }
+
+/* ── Password Modal ── */
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(20,40,70,.35); z-index:10000; align-items:flex-start; justify-content:center; padding-top:250px; }
+.modal-bg.show { display:flex; }
+.modal-box { background:#fff; border-radius:18px; box-shadow:0 10px 40px rgba(0,0,0,.18); padding:28px; width:min(380px,94vw); text-align:center; }
+.modal-title { font-size:1.1rem; font-weight:700; color:#205081; margin-bottom:18px; }
+.pw-wrap { position:relative; width:100%; max-width:270px; margin:0 auto 14px; }
+.pw-input { width:100%; height:46px; padding:0 44px 0 15px; font-size:1rem; border:2px solid #dde3eb; border-radius:10px; box-sizing:border-box; transition:border-color .15s; }
+.pw-input:focus { border-color:#205081; outline:none; }
+.pw-eye { position:absolute; right:13px; top:50%; transform:translateY(-50%); font-size:1.1rem; color:#205081;cursor:pointer; }
+.pw-btns { display:flex; gap:10px; justify-content:center; }
+.pw-btns button { padding:10px 24px; border:none; border-radius:9px; font-size:.95rem; font-weight:600; cursor:pointer; }
+.btn-ok  { background:#205081; color:#fff; }
+.btn-no  { background:#e8edf3; color:#444; }
+.pw-msg  { margin-top:10px; font-size:.87rem; min-height:17px; }
+
+/* ── OSK ── */
+#osk { position:fixed; left:0; right:0; bottom:0; z-index:99999; margin:0!important; padding:0!important; overflow:hidden!important; height:auto!important; max-height:none!important; }
+.simple-keyboard { margin:0!important; padding:4px 4px 0!important; border-radius:0!important; box-shadow:none!important; }
+.simple-keyboard .hg-rows { margin:0!important; padding:0!important; display:flex!important; flex-direction:column!important; gap:0!important; }
+.simple-keyboard .hg-row  { margin:0!important; margin-bottom:4px!important; padding:0!important; }
+.simple-keyboard .hg-row:last-child { margin-bottom:0!important; }
+.simple-keyboard .hg-button { margin-bottom:0!important; }
+    </style>
+</head>
+<body>
+
+<img id="hidden-video" src="/video_feed" alt="">
+
+<button class="admin-login-btn" onclick="openAdminPanel()">
+    <i class="fa fa-user-shield"></i> Admin Login
+</button>
+
+<div class="container-home">
+    <div class="live-clock">
+        <div id="live-date" class="live-date"></div>
+        <div id="live-time"></div>
+    </div>
+    <div class="brand-title">Ethos</div>
+    <div class="subtitle">Product by Epitage Consulting Services</div>
+    <div class="logo-wrap">
+        <img src="/static/img/logo_epitage.png" class="logo-anim" alt="Logo">
+    </div>
+</div>
+
+<div class="footer">
+    Epitage Consulting Services, Pune - 411038<br>
+    <span style="font-size:.97rem;">+91 7041512804</span>
+</div>
+
+<!-- Admin Stage -->
+<div class="admin-stage" id="admin-stage">
+    <div class="admin-card scanning" id="admin-card">
+        <div class="admin-actions">
+            <button class="admin-btn" onclick="openPasswordModal()"><i class="fa fa-key"></i> Password</button>
+            <button class="admin-btn" onclick="closeAdminPanel()"><i class="fa fa-times"></i> Close</button>
+        </div>
+        <img id="admin-video" src="/video_feed" alt="Camera">
+        <div class="admin-status-bar">
+            <div class="status-dot" id="sdot"></div>
+            <div class="status-txt" id="stxt">Show face &middot; scan finger &middot; tap card</div>
+        </div>
+    </div>
+</div>
+
+<!-- Unified Banner (matches user.html) -->
+<div class="banner" id="unified-banner" aria-live="polite" aria-atomic="true">
+    <div class="banner-card" id="unified-banner-card">
+        <div class="avatar" id="unified-banner-avatar"></div>
+        <div class="lines">
+            <div class="ok"        id="unified-banner-title-ok"   style="display:none;"></div>
+            <div class="fail-text" id="unified-banner-title-fail" style="display:none;"></div>
+            <div class="sub"       id="unified-banner-sub"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Password Modal -->
+<div class="modal-bg" id="pw-modal">
+    <div class="modal-box">
+        <div class="modal-title"><i class="fa fa-lock" style="opacity:.65;margin-right:7px;"></i>Admin Password</div>
+        <div class="pw-wrap">
+            <input type="password" id="pw-input" class="pw-input" placeholder="Enter password" autocomplete="off">
+            <i class="fa fa-eye pw-eye" id="pw-eye" onclick="toggleEye()"></i>
+        </div>
+        <div class="pw-btns">
+            <button class="btn-ok" onclick="submitPassword()">Verify</button>
+            <button class="btn-no" onclick="closePasswordModal()">Cancel</button>
+        </div>
+        <div class="pw-msg" id="pw-msg"></div>
+    </div>
+</div>
+
+<script>
+"use strict";
+
+/* ═══════════════════════════════════════════════════
+CLOCK
+═══════════════════════════════════════════════════ */
+(function(){
+    const de = document.getElementById('live-date');
+    const te = document.getElementById('live-time');
+    function tick(){
+        const n = new Date();
+        de.textContent = n.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+        te.textContent = n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+    }
+    tick(); setInterval(tick, 1000);
+})();
+
+/* ═══════════════════════════════════════════════════
+CONFIG  — tweak here only
+═══════════════════════════════════════════════════ */
+const C = {
+    /* capture size — smaller = faster encode+upload, still enough for face_recognition */
+    FACE_W: 120, FACE_H: 90, FACE_Q: 0.35,
+
+    /* polling — admin mode is aggressive; user background is relaxed */
+    ADMIN_FACE_MS:   0,    /* 0 = fire immediately after previous call returns */
+    ADMIN_FINGER_MS: 0,
+    ADMIN_RFID_MS:   100,
+    USER_FACE_MS:    400,
+    USER_FINGER_MS:  500,
+    USER_RFID_MS:    800,
+
+    /* after verify success: show banner then navigate */
+    REDIRECT_MS: 300,      /* was 900ms — user sees green flash then immediately goes to /menu */
+
+    FAIL_MAX:    2,
+
+    /* API timeouts */
+    T_FACE:   2000,
+    T_FINGER: 2500,
+    T_RFID:   2500,
+    T_PW:     3000,
+};
+
+/* ═══════════════════════════════════════════════════
+STATE
+═══════════════════════════════════════════════════ */
+let _alive     = true;   /* all loops stop when false */
+let _adminOpen = false;
+let _going     = false;  /* redirect guard — only one winner */
+let _failCount = 0;
+
+const hiddenVid = document.getElementById('hidden-video');
+const adminVid  = document.getElementById('admin-video');
+
+/* ═══════════════════════════════════════════════════
+HELPERS
+═══════════════════════════════════════════════════ */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function post(url, body, timeout){
+    const ac = new AbortController();
+    const tm = setTimeout(() => ac.abort(), timeout);
+    try {
+        const r = await fetch(url, {
+            method:'POST', signal:ac.signal, cache:'no-store',
+            headers:{'Content-Type':'application/json'},
+            body: body ? JSON.stringify(body) : undefined
+        });
+        return await r.json();
+    } catch { return null; }
+    finally { clearTimeout(tm); }
+}
+
+function stopAll(){ _alive = false; _adminOpen = false; }
+window.addEventListener('beforeunload', stopAll);
+window.addEventListener('pagehide',     stopAll);
+
+function isAdmin(role){
+    if(!role) return false;
+    const r = role.toLowerCase().replace(/[\s_]+/g,'');
+    return ['admin','superadmin','operator'].includes(r);
+}
+function label(role){
+    if(!role) return 'Admin';
+    const r = role.toLowerCase().replace(/[\s_]+/g,'');
+    if(r==='superadmin') return 'Super Admin';
+    if(r==='operator')   return 'Operator';
+    return 'Admin';
+}
+
+/* ═══════════════════════════════════════════════════
+UNIFIED BANNER (matches user.html)
+═══════════════════════════════════════════════════ */
+let _bTimer = null;
+function showUnifiedBanner(success, title, sub, photoUrl, durationMs){
+    const bannerEl = document.getElementById('unified-banner');
+    const card     = document.getElementById('unified-banner-card');
+    const avatar   = document.getElementById('unified-banner-avatar');
+    const okEl     = document.getElementById('unified-banner-title-ok');
+    const failEl   = document.getElementById('unified-banner-title-fail');
+    const subEl    = document.getElementById('unified-banner-sub');
+
+    if(_bTimer){ clearTimeout(_bTimer); _bTimer=null; }
+
+    /* ── Avatar ── */
+    if(photoUrl){
+        avatar.className = 'avatar';
+        avatar.style.width  = '120px';
+        avatar.style.height = '160px';
+        avatar.style.borderRadius = '10px';
+        avatar.innerHTML = `<img src="${photoUrl}" alt="User">`;
+    } else if(success){
+        avatar.className = 'avatar icon-avatar success-icon';
+        avatar.style.width = avatar.style.height = '';
+        avatar.style.borderRadius = '';
+        avatar.innerHTML = '<i class="fa fa-check" style="font-size:26px;"></i>';
+    } else {
+        avatar.className = 'avatar icon-avatar fail';
+        avatar.style.width = avatar.style.height = '';
+        avatar.style.borderRadius = '';
+        avatar.innerHTML = '<i class="fa fa-times" style="font-size:26px;"></i>';
+    }
+
+    /* ── Title ── */
+    if(success){
+        okEl.style.display   = 'block';
+        failEl.style.display = 'none';
+        okEl.textContent     = title || 'Verified';
+    } else {
+        okEl.style.display   = 'none';
+        failEl.style.display = 'block';
+        failEl.textContent   = title || 'Not Recognized';
+    }
+
+    subEl.textContent = sub || '';
+
+    /* ── Left-border accent ── */
+    card.style.borderLeft = success ? '6px solid #2e7d32' : '6px solid #b02a37';
+
+    bannerEl.classList.add('show');
+
+    const dur = durationMs || (success ? 1400 : 2000);
+    _bTimer = setTimeout(()=>{
+        bannerEl.classList.remove('show');
+    }, dur);
+}
+/* backward-compat wrapper */
+function banner(ok, title, sub, ms){ showUnifiedBanner(ok, title, sub, null, ms); }
+
+/* ═══════════════════════════════════════════════════
+CANVAS CAPTURE — reused objects, no allocations per frame
+═══════════════════════════════════════════════════ */
+const _adminCanvas = document.createElement('canvas');
+_adminCanvas.width = C.FACE_W; _adminCanvas.height = C.FACE_H;
+const _adminCtx = _adminCanvas.getContext('2d', {willReadFrequently:true});
+
+const _userCanvas = document.createElement('canvas');
+_userCanvas.width = 160; _userCanvas.height = 120;
+const _userCtx = _userCanvas.getContext('2d', {willReadFrequently:true});
+
+function captureAdmin(){
+    if(!adminVid.complete || adminVid.naturalWidth===0) return null;
+    _adminCtx.drawImage(adminVid, 0, 0, C.FACE_W, C.FACE_H);
+    return _adminCanvas.toDataURL('image/jpeg', C.FACE_Q);
+}
+function captureUser(){
+    if(!hiddenVid.complete || hiddenVid.naturalWidth===0) return null;
+    _userCtx.drawImage(hiddenVid, 0, 0, 160, 120);
+    return _userCanvas.toDataURL('image/jpeg', 0.4);
+}
+
+/* ═══════════════════════════════════════════════════
+SUCCESS HANDLER — called by whichever method wins
+═══════════════════════════════════════════════════ */
+function onSuccess(role, emp_id, name){
+    if(_going) return;       /* only the first call goes through */
+    _going = true;
+
+    const lbl = label(role);
+
+    /* trigger thank you sound + green LED */
+    fetch('/api/trigger_effects', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({type: 'success', emp_id: emp_id || ''})
+    }).catch(()=>{});
+
+    /* immediate visual feedback */
+    setDot('ok'); setTxt(`${lbl} verified — entering…`);
+    const card = document.getElementById('admin-card');
+    card.classList.remove('scanning'); card.classList.add('ring-ok');
+    showUnifiedBanner(true, 'Admin Verified',
+        [emp_id ? `Emp ID: ${emp_id}` : '', name||''].filter(Boolean).join('\n'),
+        null, C.REDIRECT_MS + 400);
+
+    /* close overlay */
+    document.getElementById('admin-stage').classList.remove('show');
+    _adminOpen = false;
+
+    /* navigate — short enough that the user sees the green banner flash */
+    setTimeout(()=>{ stopAll(); window.location.href='/menu'; }, C.REDIRECT_MS);
+}
+
+/* ═══════════════════════════════════════════════════
+ADMIN PANEL UI
+═══════════════════════════════════════════════════ */
+function setDot(state){ // 'scanning' | 'ok' | 'fail'
+    const d = document.getElementById('sdot');
+    d.className = 'status-dot' + (state==='ok'?' ok':state==='fail'?' fail':'');
+}
+function setTxt(t){ document.getElementById('stxt').textContent = t; }
+
+function openAdminPanel(){
+    if(_going) return;
+    _adminOpen = true; _failCount = 0;
+    const card = document.getElementById('admin-card');
+    card.classList.remove('ring-ok','ring-fail'); card.classList.add('scanning');
+    setDot('scanning'); setTxt('Show face \u00b7 scan finger \u00b7 tap card');
+    document.getElementById('admin-stage').classList.add('show');
+
+    /* launch only enabled auth loops — first success wins via onSuccess() guard */
+    if (_authModes.face)   adminFaceLoop();
+    if (_authModes.finger) adminFingerLoop();
+    if (_authModes.rfid)   adminRfidLoop();
+}
+
+function closeAdminPanel(){
+    _adminOpen = false;
+    document.getElementById('admin-stage').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════════
+ADMIN FACE LOOP
+═══════════════════════════════════════════════════ */
+async function adminFaceLoop(){
+    while(_adminOpen && _alive && !_going){
+        const img = captureAdmin();
+        if(!img){
+            await sleep(80);
+            continue;
+        }
+
+        const d = await post('/api/operator_face_verify',
+            {image: img}, C.T_FACE);
+
+        if(!_adminOpen || !_alive || _going) return;
+
+        /* ── SUCCESS — backend already validated admin role ── */
+        if(d && d.success === true){
+            onSuccess(d.role, d.emp_id, d.name);
+            return;
+        }
+
+        /* ── No face / bad frame / unknown face / errors — NOT a failure, keep polling ── */
+        if(!d || d.message !== 'not_admin'){
+            await sleep(C.ADMIN_FACE_MS || 50);
+            continue;
+        }
+
+        /* ── Face recognized but NOT an admin — this is an Access Denied ── */
+        _failCount++;
+        setDot('fail');
+        showUnifiedBanner(false,
+            `Access Denied (${_failCount}/${C.FAIL_MAX})`,
+            'Admin face not recognized.', null, 1800);
+
+        if(_failCount >= C.FAIL_MAX){
+            setTxt('Too many failures');
+            _adminOpen = false;
+            document.getElementById('admin-stage').classList.remove('show');
+            return;
+        }
+
+        setTxt(`Not an Admin — ${C.FAIL_MAX - _failCount} attempt(s) left`);
+        await sleep(800);
+        if(!_adminOpen || !_alive || _going) return;
+        setDot('scanning');
+        setTxt('Show face \u00b7 scan finger \u00b7 tap card');
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+ADMIN FINGER LOOP
+═══════════════════════════════════════════════════ */
+async function adminFingerLoop(){
+    while(_adminOpen && _alive && !_going){
+        const d = await post('/api/operator_finger_verify', null, C.T_FINGER);
+
+        if(!_adminOpen || !_alive || _going) return;
+
+        /* ── SUCCESS — backend already validated admin role ── */
+        if(d && d.success === true){
+            onSuccess(d.role, d.emp_id, d.name);
+            return;
+        }
+
+        /* Only 'not_admin' counts as Access Denied */
+        if(d && d.message === 'not_admin'){
+            _failCount++;
+            setDot('fail');
+            showUnifiedBanner(false,
+                `Access Denied (${_failCount}/${C.FAIL_MAX})`,
+                'Admin fingerprint not recognized.', null, 1800);
+
+            if(_failCount >= C.FAIL_MAX){
+                setTxt('Too many failures');
+                _adminOpen = false;
+                document.getElementById('admin-stage').classList.remove('show');
+                return;
+            }
+            setTxt(`Not an Admin — ${C.FAIL_MAX - _failCount} attempt(s) left`);
+            await sleep(800);
+            if(!_adminOpen || !_alive || _going) return;
+            setDot('scanning');
+            setTxt('Show face \u00b7 scan finger \u00b7 tap card');
+        }
+
+        /* 'No finger' / null → natural loop pacing from sensor RTT */
+        if(C.ADMIN_FINGER_MS > 0) await sleep(C.ADMIN_FINGER_MS);
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+ADMIN RFID LOOP
+═══════════════════════════════════════════════════ */
+async function adminRfidLoop(){
+    while(_adminOpen && _alive && !_going){
+        const d = await post('/api/operator_rfid_verify', null, C.T_RFID);
+
+        if(!_adminOpen || !_alive || _going) return;
+
+        /* ── SUCCESS — backend already validated admin role ── */
+        if(d && d.success === true){
+            onSuccess(d.role, d.emp_id, d.name);
+            return;
+        }
+
+        /* Only 'not_admin' counts as Access Denied */
+        if(d && d.message === 'not_admin'){
+            _failCount++;
+            setDot('fail');
+            showUnifiedBanner(false,
+                `Access Denied (${_failCount}/${C.FAIL_MAX})`,
+                'Card not registered as Admin.', null, 1800);
+
+            if(_failCount >= C.FAIL_MAX){
+                setTxt('Too many failures');
+                _adminOpen = false;
+                document.getElementById('admin-stage').classList.remove('show');
+                return;
+            }
+            setTxt(`Not an Admin — ${C.FAIL_MAX - _failCount} attempt(s) left`);
+            await sleep(800);
+            if(!_adminOpen || !_alive || _going) return;
+            setDot('scanning');
+            setTxt('Show face \u00b7 scan finger \u00b7 tap card');
+        }
+
+        await sleep(C.ADMIN_RFID_MS);
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+USER-MODE BACKGROUND LOOPS (admin panel closed)
+═══════════════════════════════════════════════════ */
+async function userFaceLoop(){
+    while(_alive){
+        if(_adminOpen || _going){ await sleep(300); continue; }
+        const img = captureUser();
+        if(img){
+            const d = await post('/api/detect_face_presence', {image:img}, 1500);
+            if(d && d.face_detected){ stopAll(); location.href='/user?mode=face'; return; }
+        }
+        await sleep(C.USER_FACE_MS);
+    }
+}
+
+async function userFingerLoop(){
+    while(_alive){
+        if(_adminOpen || _going){ await sleep(400); continue; }
+        const d = await post('/api/finger_identify', null, 2500);
+        if(d && (d.success || (d.reason && d.reason !== 'no_finger'))){
+            stopAll(); location.href='/user?mode=finger'; return;
+        }
+        await sleep(C.USER_FINGER_MS);
+    }
+}
+
+async function userRfidLoop(){
+    while(_alive){
+        if(_adminOpen || _going){ await sleep(400); continue; }
+        const d = await post('/api/rfid_login', null, 2500);
+        if(d && d.success === true){ stopAll(); location.href='/user?mode=rfid'; return; }
+        await sleep(C.USER_RFID_MS);
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+PASSWORD MODAL
+═══════════════════════════════════════════════════ */
+function openPasswordModal(){
+    document.getElementById('pw-modal').classList.add('show');
+    const inp = document.getElementById('pw-input');
+    inp.value = '';
+    document.getElementById('pw-msg').textContent = '';
+    setTimeout(()=>{ inp.focus(); fetch('/api/show_keyboard').catch(()=>{}); }, 80);
+}
+function closePasswordModal(){
+    document.getElementById('pw-modal').classList.remove('show');
+}
+
+async function submitPassword(){
+    const inp = document.getElementById('pw-input');
+    const msg = document.getElementById('pw-msg');
+    const pw  = inp.value.trim();
+    if(!pw){ msg.textContent='Enter a password'; msg.style.color='#dc2626'; return; }
+    msg.textContent='Verifying…'; msg.style.color='#667a94';
+
+    const d = await post('/api/operator_password_login', {password:pw}, C.T_PW);
+    if(!d){ msg.textContent='Network error'; msg.style.color='#dc2626'; return; }
+
+    if(d.success && isAdmin(d.role)){
+        msg.textContent = label(d.role)+' access granted!';
+        msg.style.color = '#15803d';
+        closePasswordModal();
+        onSuccess(d.role, d.emp_id, d.name);
+    } else if(d.success){
+        msg.textContent = 'Access denied: insufficient permissions';
+        msg.style.color = '#dc2626';
+        showUnifiedBanner(false,'Access Denied','Insufficient permissions.', null, 1800);
+        inp.value=''; inp.focus();
+    } else {
+        msg.textContent = d.message||'Invalid password';
+        msg.style.color = '#dc2626';
+        showUnifiedBanner(false,'Access Denied',d.message||'Invalid password.', null, 1800);
+        inp.value=''; inp.focus();
+    }
+}
+document.getElementById('pw-input').addEventListener('keypress', e=>{ if(e.key==='Enter') submitPassword(); });
+
+function toggleEye(){
+    const inp  = document.getElementById('pw-input');
+    const icon = document.getElementById('pw-eye');
+    if(inp.type==='password'){ inp.type='text'; icon.classList.replace('fa-eye','fa-eye-slash'); }
+    else { inp.type='password'; icon.classList.replace('fa-eye-slash','fa-eye'); }
+}
+
+/* ═══════════════════════════════════════════════════
+START — fetch auth modes then launch only enabled loops
+═══════════════════════════════════════════════════ */
+let _authModes = { face: true, finger: true, rfid: true };
+
+window.addEventListener('load', async ()=>{
+    /* Fetch which auth modes are enabled in settings */
+    try {
+        const r = await fetch('/api/modes_get');
+        const m = await r.json();
+        _authModes.face   = !!m.auth_face;
+        _authModes.finger = !!m.auth_finger;
+        _authModes.rfid   = !!m.auth_rfid;
+    } catch(e) {
+        console.warn('Failed to load auth modes, all enabled by default', e);
+    }
+
+    setTimeout(()=>{
+        if (_authModes.face)   userFaceLoop();
+        if (_authModes.finger) userFingerLoop();
+        if (_authModes.rfid)   userRfidLoop();
+    }, 500);
+});
+</script>
+
+<!-- On-Screen Keyboard -->
+<div id="osk" class="simple-keyboard"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+<link rel="stylesheet" href="/static/css/osk.css">
+<script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+<script src="/static/js/osk.js" defer></script>
+
+</body>
+</html>

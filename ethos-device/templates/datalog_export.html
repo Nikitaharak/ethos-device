@@ -1,0 +1,874 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Export Data Logs</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+
+    <style>
+      body {
+        background: #f9f6ef;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      }
+
+      /* ── HEADER ── */
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 38px 0;
+        min-height: 60px;
+        box-sizing: border-box;
+        width: 100%;
+      }
+      .logo-main  { height: 44px; display: block; }
+      .logo-right { height: 44px; display: block; }
+      .menu-back-btn {
+        background: #eee;
+        color: #205081;
+        padding: 9px 18px;
+        font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background .16s;
+        min-width: 92px;
+        margin-right: 12px;
+      }
+      .menu-back-btn:hover { background: #ffa500; color: #fff; }
+
+      /* ── APP CONTAINER ── */
+      .app-container {
+        width: 100%;
+        max-width: 440px;
+        height: 95vh;
+        max-height: 750px;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        margin-top: 16px;
+      }
+
+      /* ── MAIN CONTENT ── */
+      .app-content {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── FORM GRID ── */
+      .form-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .form-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .input-row {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        min-width: 0;
+        gap: 4px;
+      }
+      .input-row label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #444;
+        white-space: nowrap;
+        margin-bottom: 0;
+        min-width: 34px;
+      }
+      .custom-input-group {
+        display: flex;
+        align-items: center;
+        border: 1.5px solid #aaa;
+        border-radius: 8px;
+        height: 36px;
+        background: #fff;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        transition: all 0.2s ease;
+      }
+      .custom-input-group:hover,
+      .custom-input-group:focus-within {
+        border-color: #f3aa51;
+        box-shadow: 0 0 0 3px rgba(243,170,81,0.18);
+      }
+      .custom-input-group input,
+      .custom-input-group select {
+        border: none;
+        outline: none;
+        flex: 1;
+        min-width: 0;
+        padding: 0 8px;
+        font-family: inherit;
+        font-size: 13px;
+        background: transparent;
+        height: 100%;
+      }
+      .custom-input-group .icon-btn {
+        color: #555;
+        padding: 0 7px;
+        border-left: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: transparent;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      /* ── CHECKBOXES ── */
+      .checkbox-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin: 15px 0 25px 0;
+        padding-right: 5px;
+        gap: 6px;
+      }
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .checkbox-item input[type="checkbox"] {
+        width: 28px;
+        height: 28px;
+        border: 1px solid #777;
+        cursor: pointer;
+        accent-color: #f3aa51;
+      }
+
+      /* ── ACTION BUTTONS ── */
+      .action-grid {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-top: 20px;
+      }
+      .big-action-btn {
+        background: #ffa500;
+        border-radius: 12px;
+        border: none;
+        width: 110px;
+        height: 110px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: inherit;
+        color: #fff;
+        transition: all 0.2s ease;
+      }
+      .big-action-btn:hover {
+        background: #f3aa51;
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(243,170,81,0.45);
+      }
+      .big-action-btn .btn-text {
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: center;
+        margin-top: 8px;
+        color: #fff;
+      }
+      .composite-icon {
+        position: relative;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ── BOTTOM BUTTONS ── */
+      .bottom-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: auto;
+        padding-bottom: 20px;
+      }
+      .btn-bottom {
+        background: #ffa500;
+        border: none;
+        padding: 6px 25px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        border-radius: 8px;
+        font-family: inherit;
+        color: #fff;
+        font-weight: 600;
+        transition: all 0.2s ease;
+      }
+      .btn-bottom:hover {
+        background: #e69500;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 14px rgba(255,165,0,0.4);
+      }
+
+      /* ── FOOTER ── */
+      .app-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 15px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #b7b7b7;
+        border-top: 1px solid #f0e8d8;
+      }
+
+      input[type="text"]::-webkit-calendar-picker-indicator { display: none; }
+      input[list]::-webkit-calendar-picker-indicator { display: none !important; }
+      input[type="date"] { color: #333; cursor: pointer; }
+      input[type="date"]::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; padding: 0 2px; }
+      input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+      /* ── SELECT ALL BUTTON ── */
+      .select-all-btn {
+        background: #ffa500;
+        margin-top: 18px;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+      .select-all-btn:hover {
+        background: #ffa500;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(255,165,0,0.35);
+      }
+      .select-all-btn.active { background: #28a745; }
+
+      /* ── MODAL OVERLAY ── */
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0,0,0,0.55);
+        display: none;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay.active { display: flex; }
+      .modal-box {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        padding: 28px 32px;
+        text-align: center;
+        width: min(340px, 90vw);
+      }
+      .modal-box h3 { color: #205081; margin: 0 0 12px; font-size: 1.15rem; }
+      .modal-status { color: #444; font-size: 0.95rem; min-height: 20px; margin: 0 0 14px; }
+      .modal-hint   { color: #888; font-size: 0.82rem; min-height: 16px; margin: 0 0 18px; }
+      .modal-qr-img {
+        width: 220px; height: 220px; border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin: 0 auto 10px; display: none;
+      }
+      .modal-qr-canvas { width: 220px; height: 220px; margin: 0 auto 10px; display: none; }
+      .modal-close-btn {
+        background: #ffa500; color: #fff; border: none; border-radius: 8px;
+        padding: 9px 28px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
+      }
+      .modal-close-btn:hover { background: #e69500; }
+
+      .spinner {
+        display: inline-block; width: 28px; height: 28px;
+        border: 3px solid #e0e0e0; border-top-color: #205081;
+        border-radius: 50%; animation: spin 0.8s linear infinite;
+        margin: 8px auto 12px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- ── HEADER ── -->
+    <div class="header">
+      <div class="left">
+        <button class="menu-back-btn" onclick="window.location.href='/import'">
+          ← Back
+        </button>
+      </div>
+      <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+        <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo" />
+      </div>
+      <div class="right">
+        <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage" />
+      </div>
+    </div>
+
+    <!-- ── APP CARD ── -->
+    <div class="app-container">
+
+      <div class="app-content">
+
+        <!-- Form Fields -->
+        <div class="form-grid">
+
+          <!-- Row 1: Fr ID + To ID -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="frId">Fr ID</label>
+              <div class="custom-input-group">
+                <input type="text" id="frId" placeholder="From ID" />
+                <div class="icon-btn"><i class="bi bi-search"></i></div>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="toId">To ID</label>
+              <div class="custom-input-group">
+                <input type="text" id="toId" placeholder="To ID" />
+                <div class="icon-btn"><i class="bi bi-search"></i></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Fr Dt + To Dt -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="frRegDt">Fr Dt</label>
+              <div class="custom-input-group">
+                <input type="date" id="frRegDt" style="padding:0 8px; width:100%;" />
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="toRegDt">To Dt</label>
+              <div class="custom-input-group">
+                <input type="date" id="toRegDt" style="padding:0 8px; width:100%;" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 3: Shift + Menu Type -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="selShift">Shift</label>
+              <div class="custom-input-group">
+                <select id="selShift">
+                  <option value="">All Shifts</option>
+                </select>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="selMenu">Menu</label>
+              <div class="custom-input-group">
+                <select id="selMenu">
+                  <option value="">All Menus</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 4: Time Slot + Order Item -->
+          <div class="form-row">
+            <div class="input-row">
+              <label for="selSlot">Slot</label>
+              <div class="custom-input-group">
+                <select id="selSlot">
+                  <option value="">All Slots</option>
+                </select>
+              </div>
+            </div>
+            <div class="input-row">
+              <label for="selItem">Item</label>
+              <div class="custom-input-group">
+                <select id="selItem">
+                  <option value="">All Items</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Shared datalist for employee IDs -->
+        <datalist id="empIdList"></datalist>
+
+        <!-- Select All row -->
+        <div style="display:flex; align-items:center; gap:10px; margin:4px 0 18px 0;">
+          <button type="button" id="btnSelectAll" class="select-all-btn">
+            <i class="bi bi-check2-all"></i> Select All IDs
+          </button>
+          <span id="selAllHint" style="font-size:13px; color:#888;"></span>
+        </div>
+
+        <!-- Big Action Buttons -->
+        <div class="action-grid">
+
+          <!-- EXPORT LOGS -->
+          <button type="button" class="big-action-btn" id="btnExportLogs">
+            <div class="composite-icon">
+              <i class="bi bi-journal-text" style="font-size:28px; position:absolute; top:-4px;"></i>
+              <i class="bi bi-arrow-up"     style="font-size:16px; position:absolute; bottom:0; right:0;"></i>
+            </div>
+            <div class="btn-text">Export<br/>Logs</div>
+          </button>
+
+          <!-- DELETE LOGS -->
+          <button type="button" class="big-action-btn" id="btnDeleteLogs">
+            <div class="composite-icon">
+              <i class="bi bi-trash"         style="font-size:22px; position:absolute; top:-5px;"></i>
+              <i class="bi bi-journal-text"  style="font-size:28px; position:absolute; bottom:-5px;"></i>
+            </div>
+            <div class="btn-text">Delete<br/>Logs</div>
+          </button>
+
+        </div>
+
+        <!-- Bottom Cancel / Ok -->
+        <div class="bottom-actions">
+          <button type="button" class="btn-bottom" id="btnCancel">
+            <i class="bi bi-x-circle"></i> Cancel
+          </button>
+          <button type="button" class="btn-bottom" id="btnOk">
+            <i class="bi bi-check-circle"></i> Ok
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="app-footer">
+        <span>Epitage Consulting Services, Pune - 411 038</span>
+        <span>+91 9850301345</span>
+      </div>
+
+    </div><!-- end app-container -->
+
+
+    <!-- ══════════════════════════════════
+         MODAL
+    ══════════════════════════════════ -->
+    <div class="modal-overlay" id="appModal">
+      <div class="modal-box">
+        <h3 id="modalTitle">Export Logs</h3>
+        <div class="spinner" id="modalSpinner"></div>
+        <p class="modal-status" id="modalStatus">Preparing…</p>
+        <img  class="modal-qr-img"    id="modalQrImg"    src="" alt="QR Code" />
+        <div  class="modal-qr-canvas" id="modalQrCanvas"></div>
+        <p class="modal-hint" id="modalHint"></p>
+        <button class="modal-close-btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════
+         SCRIPTS
+    ══════════════════════════════════ -->
+    <script>
+
+      /* ══════════════════════════════════
+         CANTEEN FILTER DATA
+         Loaded from backend on page load
+      ══════════════════════════════════ */
+      let ALL_SHIFTS = [];   // [{shift_code, shift_name, from_time, to_time}]
+      let ALL_SLOTS  = [];   // [{slot_code, slot_name, shift_code, from_time, to_time}]
+      let ALL_MENUS  = [];   // [{menu_code, menu_name, slot_code}]
+      let ALL_ITEMS  = [];   // [{item_code, item_name, menu_code}]
+
+      async function loadCanteenMasters() {
+        try {
+          // Shifts
+          const sr = await fetch('/api/shift_master/list');
+          const sj = await sr.json();
+          ALL_SHIFTS = sj.shifts || [];
+
+          // Slots
+          const slr = await fetch('/api/time_slot_master/list');
+          const slj = await slr.json();
+          ALL_SLOTS = slj.slots || [];
+
+          // Menus
+          const mr = await fetch('/api/menu_master/list');
+          const mj = await mr.json();
+          ALL_MENUS = mj.menus || [];
+
+          // Items
+          const ir = await fetch('/api/item_master/list');
+          const ij = await ir.json();
+          ALL_ITEMS = ij.items || [];
+        } catch(e) {
+          console.warn('Failed to load canteen masters:', e);
+        }
+
+        // Populate dropdowns
+        populateShiftDropdown();
+        populateSlotDropdown();
+        populateMenuDropdown();
+        populateItemDropdown();
+      }
+
+      function populateShiftDropdown() {
+        const sel = document.getElementById('selShift');
+        sel.innerHTML = '<option value="">All Shifts</option>';
+        ALL_SHIFTS.forEach(s => {
+          sel.innerHTML += `<option value="${s.shift_code}">${s.shift_name} (${s.from_time}–${s.to_time})</option>`;
+        });
+      }
+
+      function populateSlotDropdown() {
+        const sel = document.getElementById('selSlot');
+        const shiftFilter = document.getElementById('selShift').value;
+        sel.innerHTML = '<option value="">All Slots</option>';
+        const filtered = shiftFilter ? ALL_SLOTS.filter(s => s.shift_code === shiftFilter) : ALL_SLOTS;
+        filtered.forEach(s => {
+          sel.innerHTML += `<option value="${s.slot_code}">${s.slot_name} (${s.from_time}–${s.to_time})</option>`;
+        });
+      }
+
+      function populateMenuDropdown() {
+        const sel = document.getElementById('selMenu');
+        const slotFilter = document.getElementById('selSlot').value;
+        sel.innerHTML = '<option value="">All Menus</option>';
+        const filtered = slotFilter ? ALL_MENUS.filter(m => m.slot_code === slotFilter) : ALL_MENUS;
+        filtered.forEach(m => {
+          sel.innerHTML += `<option value="${m.menu_code}">${m.menu_name}</option>`;
+        });
+      }
+
+      function populateItemDropdown() {
+        const sel = document.getElementById('selItem');
+        const menuFilter = document.getElementById('selMenu').value;
+        sel.innerHTML = '<option value="">All Items</option>';
+        const filtered = menuFilter ? ALL_ITEMS.filter(i => i.menu_code === menuFilter) : ALL_ITEMS;
+        filtered.forEach(i => {
+          sel.innerHTML += `<option value="${i.item_code}">${i.item_name}</option>`;
+        });
+      }
+
+
+      document.addEventListener("DOMContentLoaded", () => {
+
+        // Load canteen masters for dropdowns
+        loadCanteenMasters();
+
+        // Cascade: shift → slot → menu → item
+        document.getElementById('selShift').addEventListener('change', () => {
+          populateSlotDropdown();
+          populateMenuDropdown();
+          populateItemDropdown();
+        });
+        document.getElementById('selSlot').addEventListener('change', () => {
+          populateMenuDropdown();
+          populateItemDropdown();
+        });
+        document.getElementById('selMenu').addEventListener('change', () => {
+          populateItemDropdown();
+        });
+
+        // Load employee IDs for autocomplete
+        (async () => {
+          const frId = document.getElementById("frId");
+          const toId = document.getElementById("toId");
+          const list = document.getElementById("empIdList");
+          try {
+            const res = await fetch("/api/get_all_employee_ids");
+            const j   = await res.json();
+            if (j.success && Array.isArray(j.ids) && j.ids.length > 0) {
+              list.innerHTML = j.ids.map(id => `<option value="${id}">`).join("");
+              const first = j.ids[0];
+              const last  = j.ids[j.ids.length - 1];
+              frId.placeholder = `From (e.g. ${first})`;
+              toId.placeholder = `To (e.g. ${last})`;
+              frId.value = first;
+              toId.value = last;
+            }
+          } catch(e) {
+            frId.placeholder = "From ID";
+            toId.placeholder = "To ID";
+          }
+        })();
+
+        // Button wiring
+        document.getElementById("btnExportLogs").addEventListener("click", handleExportLogs);
+        document.getElementById("btnDeleteLogs").addEventListener("click", handleDeleteLogs);
+        document.getElementById("btnCancel").addEventListener("click", () => {
+          window.location.href = "/import";
+        });
+        document.getElementById("btnOk").addEventListener("click", handleExportLogs);
+
+        // Select All IDs toggle
+        document.getElementById("btnSelectAll").addEventListener("click", () => {
+          const btn  = document.getElementById("btnSelectAll");
+          const hint = document.getElementById("selAllHint");
+          const frId = document.getElementById("frId");
+          const toId = document.getElementById("toId");
+
+          if (btn.classList.contains("active")) {
+            frId.value = "";
+            toId.value = "";
+            frId.placeholder = "From ID";
+            toId.placeholder = "To ID";
+            btn.innerHTML = '<i class="bi bi-check2-all"></i> Select All IDs';
+            btn.classList.remove("active");
+            hint.textContent = "";
+          } else {
+            frId.value = "";
+            toId.value = "";
+            frId.placeholder = "ALL";
+            toId.placeholder = "ALL";
+            btn.innerHTML = '<i class="bi bi-x-circle"></i> Clear Selection';
+            btn.classList.add("active");
+            hint.textContent = "✔ All employees selected";
+          }
+        });
+
+        ["frId", "toId"].forEach(id => {
+          document.getElementById(id).addEventListener("input", () => {
+            const btn  = document.getElementById("btnSelectAll");
+            const hint = document.getElementById("selAllHint");
+            if (btn.classList.contains("active")) {
+              btn.innerHTML = '<i class="bi bi-check2-all"></i> Select All IDs';
+              btn.classList.remove("active");
+              hint.textContent = "";
+              document.getElementById("frId").placeholder = "From ID";
+              document.getElementById("toId").placeholder = "To ID";
+            }
+          });
+        });
+
+      });
+
+
+      /* ── Collect form values ── */
+      function getFormData() {
+        function fmtDate(val) {
+          if (!val) return "";
+          const parts = val.split("-");
+          if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+          return val;
+        }
+
+        // Resolve shift name from code
+        const shiftCode = document.getElementById("selShift").value;
+        const shiftObj  = ALL_SHIFTS.find(s => s.shift_code === shiftCode);
+
+        // Resolve slot name from code
+        const slotCode = document.getElementById("selSlot").value;
+        const slotObj  = ALL_SLOTS.find(s => s.slot_code === slotCode);
+
+        // Resolve menu name from code
+        const menuCode = document.getElementById("selMenu").value;
+        const menuObj  = ALL_MENUS.find(m => m.menu_code === menuCode);
+
+        // Resolve item name from code
+        const itemCode = document.getElementById("selItem").value;
+        const itemObj  = ALL_ITEMS.find(i => i.item_code === itemCode);
+
+        return {
+          from_id:      document.getElementById("frId").value.trim(),
+          to_id:        document.getElementById("toId").value.trim(),
+          from_dt:      fmtDate(document.getElementById("frRegDt").value),
+          to_dt:        fmtDate(document.getElementById("toRegDt").value),
+          shift_code:   shiftCode,
+          shift_name:   shiftObj ? shiftObj.shift_name : '',
+          slot_code:    slotCode,
+          slot_name:    slotObj ? slotObj.slot_name : '',
+          time_slot:    slotObj ? `${slotObj.from_time} - ${slotObj.to_time}` : '',
+          menu_code:    menuCode,
+          menu_type:    menuObj ? menuObj.menu_name : '',
+          item_code:    itemCode,
+          order_item:   itemObj ? itemObj.item_name : '',
+        };
+      }
+
+      /* ── Build filter summary for display ── */
+      function buildFilterSummary(fd) {
+        const parts = [];
+        if (fd.from_id || fd.to_id) parts.push(`IDs ${fd.from_id||'*'}–${fd.to_id||'*'}`);
+        else parts.push('All IDs');
+        if (fd.from_dt || fd.to_dt) parts.push(`${fd.from_dt||'*'}–${fd.to_dt||'*'}`);
+        else parts.push('All Dates');
+        if (fd.shift_name) parts.push(`Shift: ${fd.shift_name}`);
+        if (fd.slot_name) parts.push(`Slot: ${fd.slot_name}`);
+        if (fd.menu_type) parts.push(`Menu: ${fd.menu_type}`);
+        if (fd.order_item) parts.push(`Item: ${fd.order_item}`);
+        return parts.join(' | ');
+      }
+
+
+      /* ══════════════════════════════════
+         EXPORT LOGS
+      ══════════════════════════════════ */
+      async function handleExportLogs() {
+        const fd = getFormData();
+
+        openModal("Export Canteen Logs");
+        setModalStatus("Building log export package…");
+        showSpinner(true);
+        hideQR();
+
+        try {
+          const res = await fetch("/api/export_filtered_datalog_handoff", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(fd)
+          });
+
+          const j = await res.json();
+          showSpinner(false);
+
+          if (!j.success) {
+            setModalStatus("❌ Export failed: " + (j.message || "Unknown error"));
+            return;
+          }
+
+          setModalStatus(
+            `✅ ${j.log_count} log record(s) ready. Scan QR with your phone to download.`
+          );
+          setModalHint(`ZIP size: ${j.zip_size_kb} KB  •  ${buildFilterSummary(fd)}`);
+          showQR(j.qr_url, j.handoff_url);
+
+        } catch (e) {
+          showSpinner(false);
+          setModalStatus("❌ Network error: " + e.message);
+        }
+      }
+
+
+      /* ══════════════════════════════════
+         DELETE LOGS
+      ══════════════════════════════════ */
+      async function handleDeleteLogs() {
+        const pw = prompt("Enter admin password to delete logs:");
+        if (pw === null) return;
+
+        openModal("Delete Canteen Logs");
+        setModalStatus("Deleting logs…");
+        showSpinner(true);
+        hideQR();
+
+        try {
+          const payload = {
+            ...getFormData(),
+            admin_password: pw
+          };
+
+          const res = await fetch("/api/delete_filtered_logs", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const contentType = res.headers.get("content-type") || "";
+          if (!contentType.includes("application/json")) {
+            showSpinner(false);
+            setModalStatus("❌ Server error: endpoint not found (check app.py)");
+            return;
+          }
+
+          const j = await res.json();
+          showSpinner(false);
+
+          if (!j.success) {
+            setModalStatus("❌ Failed: " + (j.message || "Incorrect password or server error"));
+            return;
+          }
+
+          setModalStatus("✅ " + (j.message || `Deleted ${j.deleted} log record(s) successfully.`));
+          if (j.errors && j.errors.length > 0) {
+            setModalHint("Warnings: " + j.errors.slice(0, 3).join(", "));
+          }
+
+        } catch (e) {
+          showSpinner(false);
+          setModalStatus("❌ Network error: " + e.message);
+        }
+      }
+
+
+      /* ══════════════════════════════════
+         MODAL HELPERS
+      ══════════════════════════════════ */
+      function openModal(title) {
+        document.getElementById("modalTitle").textContent  = title;
+        document.getElementById("modalStatus").textContent = "";
+        document.getElementById("modalHint").textContent   = "";
+        document.getElementById("appModal").classList.add("active");
+      }
+      function closeModal() {
+        document.getElementById("appModal").classList.remove("active");
+      }
+      function setModalStatus(msg) {
+        document.getElementById("modalStatus").textContent = msg;
+      }
+      function setModalHint(msg) {
+        document.getElementById("modalHint").textContent = msg || "";
+      }
+      function showSpinner(visible) {
+        document.getElementById("modalSpinner").style.display = visible ? "inline-block" : "none";
+      }
+      function hideQR() {
+        const img = document.getElementById("modalQrImg");
+        const cvs = document.getElementById("modalQrCanvas");
+        img.style.display = "none";
+        img.src = "";
+        cvs.style.display = "none";
+        cvs.innerHTML = "";
+      }
+      function showQR(qrUrl, fallbackUrl) {
+        const img = document.getElementById("modalQrImg");
+        const cvs = document.getElementById("modalQrCanvas");
+        img.onload  = () => { img.style.display = "block"; };
+        img.onerror = () => {
+          img.style.display = "none";
+          if (fallbackUrl) {
+            cvs.style.display = "block";
+            try { new QRCode(cvs).makeCode(fallbackUrl); } catch(_) {}
+          }
+        };
+        img.src = qrUrl;
+      }
+
+    </script>
+
+    <!-- Inline QR fallback library -->
+    <script>!function(o){function t(o){this.mode=4,this.data=o}function e(o,t){this.typeNumber=o,this.errorCorrectLevel=t,this.modules=null,this.moduleCount=0,this.dataList=[]}function l(o,t){this.totalCount=o,this.dataCount=t}function c(o,t){this.buffer=[],this.length=0,null!=o&&this.put(o,t)}t.prototype={getLength:function(){return this.data.length},write:function(o){for(var t=0;t<this.data.length;t++)o.put(this.data.charCodeAt(t),8)}};var d=[[],[new l(19,7),new l(16,10),new l(13,13),new l(9,17)],[new l(34,10),new l(28,16),new l(22,22),new l(16,28)],[new l(55,15),new l(44,26),new l(34,18),new l(26,22)],[new l(80,20),new l(64,18),new l(48,26),new l(36,16)],[new l(108,26),new l(86,24),new l(62,18),new l(46,22)],[new l(136,18),new l(108,16),new l(76,24),new l(60,28)],[new l(156,20),new l(124,18),new l(88,18),new l(66,26)],[new l(194,24),new l(154,22),new l(110,22),new l(86,26)]];c.prototype={getBuffer:function(){return this.buffer},getLengthInBits:function(){return 8*this.length},put:function(o,t){for(var e=0;e<t;e++)this.putBit(1==((o>>(t-e-1))&1))},putBit:function(o){var t=this.length>>3;this.buffer.length<=t&&this.buffer.push(0),o&&(this.buffer[t]|=128>>>(this.length%8)),this.length++}};function g(o){for(var t=new c,e=0;e<o.dataList.length;e++){var s=o.dataList[e];t.put(s.mode,4),t.put(s.getLength(),8),s.write(t)}for(var n=0,r=o.getRSBlocks?o.getRSBlocks():[],i=0;i<r.length;i++)n+=r[i].dataCount;for(;t.getLengthInBits()>8*n;)o.typeNumber++;for(;t.getLengthInBits()+4<=8*n&&t.put(0,1),t.getLengthInBits()%8!=0;)t.putBit(!1);for(var a=[],u=0;u<n;u++)a[u]=255&t.getBuffer()[u];return a}e.prototype={addData:function(o){this.dataList.push(new t(o))},getLengthInBits:function(){return 8*this.dataList[0].getLength()},make:function(){this.typeNumber=1;for(var o=!1;!o;){this.makeImpl(!1,0);if(this.typeNumber>=8||this.dataList[0].getLength()>70){this.typeNumber++;if(this.typeNumber>=9)break}else o=!0}},makeImpl:function(o,t){this.moduleCount=21+4*(this.typeNumber-1),this.modules=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[e]=new Array(this.moduleCount);this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.mapData(g(this),t)},mapData:function(o,t){for(var e=0,s=this.moduleCount-1,n=-1,r=this.moduleCount-1;r>0;r-=2){6==r&&r--;for(;;){for(var i=0;i<2;i++)this.modules[s][r-i]=o.length>0&&255&o.shift();if((s+=n)<0||this.moduleCount<=s){s-=n,n=-n;break}}}},setupPositionProbePattern:function(o,t){for(var e=-1;e<=7;e++)if(!(o+e<=-1||this.moduleCount<=o+e))for(var s=-1;s<=7;s++)t+s<=-1||this.moduleCount<=t+s||(this.modules[o+e][t+s]=(e>=0&&e<=6&&(0==s||6==s))||(s>=0&&s<=6&&(0==e||6==e))||(e>=2&&e<=4&&s>=2&&s<=4))},getBestMaskPattern:function(){return 0}};function y(o,t){var e=document.createElement("canvas");e.width=t,e.height=t;for(var s=e.getContext("2d"),n=t/o.moduleCount,r=0;r<o.moduleCount;r++)for(var i=0;i<o.moduleCount;i++)o.modules[r][i]&&s.fillRect(i*n,r*n,n,n);return e}function v(o){this._el=o}v.prototype.makeCode=function(o){var t=new e(0,1);t.addData(o),t.make(),this._el.innerHTML="",this._el.appendChild(y(t,220))};window.QRCode=v}();</script>
+
+  </body>
+</html>

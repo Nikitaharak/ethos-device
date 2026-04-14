@@ -1,0 +1,1245 @@
+<!DOCTYPE html>  
+<html>
+<head>
+  <title>User Login</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+  <link rel="stylesheet" href="/static/css/osk.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+
+  <style>
+    /* Performance Optimizations for Raspberry Pi */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+
+    html {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    :root{ --hdrH:72px; }
+    body{
+      --sb-inset-right: 26px;
+      background:#f9f6ef;
+      margin:0;
+      padding:0;
+      font-family:sans-serif;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Header */
+    .header{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 38px 0 38px; min-height:var(--hdrH); box-sizing:border-box;
+    }
+    .logo-main{ height:70px; display:block; }
+    .menu-back-btn{
+      background:#eee; color:#205081; padding:9px 18px; font-size:1rem;
+      border:none; border-radius:8px; font-weight:600; cursor:pointer;
+      transition:background .16s; min-width:92px; margin-right:12px;
+    }
+    .menu-back-btn:hover{ background:#ffa500; color:#fff; }
+
+    .admin-login-btn{
+      background:#205081; color:#fff; padding:9px 18px; font-size:0.95rem;
+      border:none; border-radius:8px; font-weight:600; cursor:pointer;
+      transition:background .16s; min-width:120px;
+      margin-left:12px;
+      margin-top:10px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      white-space:nowrap;
+    }
+  .admin-login-btn:hover{
+  background:#205081;
+}
+
+    /* Mode Switcher */
+    .mode-switcher{
+      position:absolute;
+      top:120px;
+      left:50%;
+      transform:translateX(-50%);
+      display:flex;
+      gap:14px;
+      padding:12px 16px;
+      border-radius:16px;
+     
+      z-index:30;
+    }
+
+    .mode-btn{
+      padding:14px 26px;
+      border-radius:6px;
+      height:55px;
+      border:2px solid #2f5c8f;
+      background:#f3f3f3;
+      color:#2f5c8f;
+      font-weight:700;
+      font-size:16px;
+      cursor:pointer;
+      transition:0.25s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+    }
+    .mode-btn.active{
+      background:#2f5c8f;
+      color:white;
+      border:2px solid #2f5c8f;
+    }
+    .mode-btn:hover:not(.active){
+      background:#e0e6ef;
+    }
+
+    /* Admin login stage */
+    .admin-stage{
+      position:fixed; left:0; right:0; top:var(--hdrH); bottom:0;
+      display:none; align-items:center; justify-content:center;
+      box-sizing:border-box;
+      z-index:9998;
+      background:rgba(0,0,0,0.3);
+      padding:20px 38px 20px 20px;
+    }
+    .admin-stage.show{ display:flex; }
+    .admin-live-card{
+      position:relative;
+      width:min(520px, 96vw);
+      aspect-ratio:3/4;
+      border-radius:16px; overflow:hidden;
+      background:#000;
+      box-shadow:0 10px 28px rgba(32,80,129,.18);
+      border:4px solid #eef2f7;
+      display:flex; align-items:center; justify-content:center;
+    }
+    #admin-live-video{
+      position:absolute; inset:0;
+      width:100%; height:100%; object-fit:cover; display:block;
+      transform:scaleX(-1);
+    }
+    .top-actions{
+      position:absolute; right:10px; top:10px; display:flex; gap:8px; z-index:20;
+    }
+    .ghost{
+      background:rgba(255,255,255,0.9); color:#205081; border:1px solid #cfd8e3;
+      padding:6px 10px; border-radius:8px; cursor:pointer; font-weight:600;
+    }
+   .ghost:hover{
+  border:1px solid #205081;   /* blue border only */
+  background:#fff;            /* keep background white */
+  color:#205081;              /* keep text blue */
+}
+
+    /* Stage (centered frame) */
+    .stage{
+      position:fixed;
+      inset:var(--hdrH) 0 0 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 0 18px;
+      box-sizing:border-box;
+    }
+
+    /* Mode panels */
+    .panel{ display:none; width:100%; height:100%; }
+    .panel.show{ display:flex; align-items:center; justify-content:center; }
+
+    /* Shared frame */
+    .live-card {
+      position:relative;
+      aspect-ratio:3/4;
+      height:calc(100vh - var(--hdrH) - 100px);
+      margin-left:auto;
+      margin-right:auto;
+      border-radius:16px;
+      overflow:hidden;
+      background:#000;
+      box-shadow:0 10px 28px rgba(32,80,129,.18);
+      border:4px solid #eef2f7;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:min(1000px, calc(100vw - 32px));
+      margin-inline:auto;
+    }
+
+    /* Camera feed */
+    #live-video{
+      position:absolute; inset:0;
+      width:100%; height:100%; object-fit:cover; display:block;
+      transform:scaleX(-1);
+      will-change:transform;
+      backface-visibility:hidden;
+      -webkit-backface-visibility:hidden;
+      transform-style:preserve-3d;
+      -webkit-transform-style:preserve-3d;
+    }
+
+    /* Icon feed for Finger/RFID modes */
+    .icon-feed{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background:radial-gradient(ellipse at center, #1e2a3a 0%, #0b1119 100%);
+      color:#ffa500;
+    }
+    .icon-feed .icon-circle{
+      width:120px; height:120px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      background:#f4f7fb; border:6px solid #eee; box-shadow:0 8px 26px rgba(0,0,0,.25);
+      color:#ffa500; font-size:3rem;
+    }
+    .icon-feed .label{
+      position:absolute; bottom:12px; left:50%; transform:translateX(-50%);
+      color:#d6e1f2; font-weight:700; font-size:1rem; letter-spacing:.2px;
+      background:rgba(0,0,0,.25); padding:6px 10px; border-radius:10px;
+      backdrop-filter:blur(1px);
+    }
+
+    /* ===== UNIFIED BANNER ===== */
+    .banner {
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      height:auto;
+      background:transparent;
+      transform:translateY(100%);
+      transition:transform .18s ease-out;
+      z-index:9999;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      pointer-events:none;
+      padding:0;
+      will-change:transform;
+    }
+    .banner.show {
+      transform:translateY(0);
+    }
+
+   .banner-card {
+      width:calc(100% - 32px);
+      margin:0 16px;
+      background:rgba(255,255,255,0.98);
+      border-radius:18px 18px 0 0;
+      box-shadow:0 -6px 28px rgba(0,0,0,0.18);
+      display:flex;
+      align-items:center;
+      gap:18px;
+      min-height:200px;
+      padding:30px 28px;
+      pointer-events:auto;
+      box-sizing:border-box;
+    }
+
+    /* Avatar: rectangular for user photo, circular for admin/icon states */
+    .banner .avatar {
+      width:120px;
+      height:160px;
+      border-radius:10px;
+      border:4px solid #eef2f7;
+      background:#f2f2f2;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 120px;
+      overflow:hidden;
+    }
+    .banner .avatar img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .banner .avatar.icon-avatar {
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      flex:0 0 64px;
+    }
+    .banner .avatar.fail {
+      background:#ffebee;
+      border-color:#ffd6db;
+      color:#b02a37;
+      font-size:34px;
+    }
+    .banner .avatar.success-icon {
+      background:#e8f5e9;
+      border-color:#c8e6c9;
+      color:#2e7d32;
+      font-size:28px;
+    }
+
+    .banner .ok {
+      color:#157347;
+      font-weight:900;
+      margin-bottom:4px;
+      font-size:1.2rem;
+    }
+    .banner .fail-text {
+      color:#b02a37;
+      font-weight:900;
+      margin-bottom:4px;
+      font-size:1.2rem;
+    }
+    .banner .sub {
+      color:#205081;
+      white-space:pre-line;
+      font-size:1rem;
+    }
+    .banner .lines {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    /* Admin Password Modal */
+    .modal-bg {
+      display:none;
+      position:fixed;
+      top:0; left:0;
+      width:100vw; height:100vh;
+      background:rgba(0,0,0,0.4);
+      z-index:10000;
+      align-items:center;
+      justify-content:center;
+    }
+    body.osk-open .modal-bg {
+      padding-bottom:400px;
+    }
+
+    .modal-box {
+      background:#ffffff;
+      border-radius:20px;
+      padding:24px;
+      width:400px;
+      max-width:92vw;
+      text-align:center;
+      border:1px solid #E6EBF2;
+      max-height:65vh;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:thin;
+      scrollbar-color:#205081 #f0f0f0;
+    }
+    body.osk-open .modal-box {
+      transform:translateY(-120px);
+    }
+
+    .modal-box::-webkit-scrollbar { width:8px; }
+    .modal-box::-webkit-scrollbar-track { background:#f0f0f0; border-radius:10px; }
+    .modal-box::-webkit-scrollbar-thumb { background:#205081; border-radius:10px; }
+    .modal-box::-webkit-scrollbar-thumb:hover { background:#ffa500; }
+
+    body { scrollbar-width:thin; scrollbar-color:#205081 #f0f0f0; }
+    body::-webkit-scrollbar { width:10px; }
+    body::-webkit-scrollbar-track { background:#f9f6ef; }
+    body::-webkit-scrollbar-thumb { background:#205081; border-radius:10px; }
+    body::-webkit-scrollbar-thumb:hover { background:#ffa500; }
+
+    .modal-box h3 { margin-bottom:22px; font-size:22px; font-weight:700; color:#1c2d44; }
+
+    .pw-grid {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:18px;
+    }
+
+    .pw-wrap {
+      position:relative;
+      width:100%;
+      max-width:350px;
+      margin:0 auto;
+      display:flex;
+      justify-content:center;
+    }
+
+    .pw-input {
+      width:100%;
+      padding:15px 50px 15px 16px;
+      font-size:1.05rem;
+      border:1.5px solid #dbe3ee;
+      border-radius:14px;
+      transition:0.2s;
+      text-align:center;
+      box-sizing:border-box;
+    }
+    .pw-input::placeholder { text-align:center; color:#999; }
+    .pw-input:focus { border-color:#205081; outline:none; background:white; }
+
+    .pw-eye {
+      position:absolute;
+      right:15px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:18px;
+      background:none;
+      border:none;
+      color:#205081;
+      cursor:pointer;
+    }
+
+    .pw-actions {
+      display:flex;
+      justify-content:center;
+      gap:18px;
+      width:100%;
+    }
+    .pw-actions button {
+      min-width:120px;
+      padding:12px 26px;
+      border-radius:12px;
+      font-weight:600;
+      font-size:1rem;
+      cursor:pointer;
+      transition:0.2s;
+    }
+    #pw-submit { background:#205081; color:white; border:none; }
+    #pw-submit:hover { background:#183d63; }
+    .btn-secondary { background:#e6e6e6; color:#333; border:none; }
+    .btn-secondary:hover { background:#d2d2d2; }
+
+    .simple-keyboard,
+    .simple-keyboard .hg-rows,
+    .simple-keyboard .hg-row {
+      height:auto !important;
+      min-height:unset !important;
+      margin-bottom:0 !important;
+      padding-bottom:0 !important;
+    }
+
+    body.osk-open {
+      position:fixed;
+      bottom:0; left:0;
+      width:100%;
+      padding:0;
+    }
+    .simple-keyboard { padding-bottom:0 !important; margin-bottom:0 !important; }
+    .simple-keyboard .hg-rows { margin-bottom:0 !important; }
+    body.osk-open .modal-box { transition:0.3s ease; transform:translateY(-5px); }
+
+    /* 462px display fixes */
+    @media screen and (max-width: 462px){
+      :root { overflow-x:hidden; }
+      html, body { width:100%; max-width:100%; overflow-x:hidden !important; }
+      .stage { left:0; right:0; padding:0 !important; margin:0 auto; display:flex; justify-content:center; align-items:center; }
+      .live-card { width:calc(100% - 16px) !important; max-width:462px !important; margin-inline:auto !important; }
+      .full-width-fix, .stage, .banner, #osk { width:100% !important; max-width:100% !important; }
+      .mode-switcher { left:50%; transform:translateX(-50%); margin:0; }
+      .modal-bg { display:flex; align-items:center; justify-content:center; padding:0; }
+      .modal-box { width:90vw; max-width:420px; margin:0 auto; transform:none !important; }
+      body.osk-open .modal-bg { align-items:flex-start; }
+      body.osk-open .modal-box { margin-top:12vh; }
+      #osk { width:100vw; left:0; right:0; }
+    }
+
+  </style>
+
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="left" style="width:120px;"></div>
+    <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+      <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo">
+    </div>
+    <div class="right">
+      <button class="admin-login-btn" onclick="openAdminPasswordModal()">
+        <i class="fa fa-user-shield"></i> Admin Login
+      </button>
+    </div>
+  </div>
+
+  <!-- Mode Switcher -->
+  <div class="mode-switcher">
+    <button class="mode-btn active" data-mode="face" onclick="switchMode('face')">
+      <i class="fa fa-user"></i> Face
+    </button>
+    <button class="mode-btn" data-mode="finger" onclick="switchMode('finger')">
+      <i class="fa fa-fingerprint"></i> Finger
+    </button>
+    <button class="mode-btn" data-mode="rfid" onclick="switchMode('rfid')">
+      <i class="fa fa-id-card"></i> Card
+    </button>
+  </div>
+
+  <!-- Stage -->
+  <div class="stage">
+    <!-- FACE mode -->
+    <div class="panel show" id="panel-face">
+      <div class="live-card">
+        <img id="live-video" src="/video_feed" alt="Live camera">
+      </div>
+    </div>
+
+    <!-- FINGER mode -->
+    <div class="panel" id="panel-finger">
+      <div class="live-card">
+        <div class="icon-feed">
+          <div class="icon-circle"><i class="fa fa-fingerprint"></i></div>
+          <div class="label">Fingerprint Login</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RFID mode -->
+    <div class="panel" id="panel-rfid">
+      <div class="live-card">
+        <div class="icon-feed">
+          <div class="icon-circle"><i class="fa fa-id-card"></i></div>
+          <div class="label">RFID Login</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== UNIFIED BANNER ===== -->
+  <div class="banner" id="unified-banner" aria-live="polite" aria-atomic="true">
+    <div class="banner-card" id="unified-banner-card">
+      <div class="avatar" id="unified-banner-avatar"></div>
+      <div class="lines">
+        <div class="ok"        id="unified-banner-title-ok"   style="display:none;"></div>
+        <div class="fail-text" id="unified-banner-title-fail" style="display:none;"></div>
+        <div class="sub"       id="unified-banner-sub"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Login Stage -->
+  <div class="admin-stage" id="admin-stage">
+    <div class="admin-live-card">
+      <div class="top-actions">
+        <button class="ghost" id="adminPwBtn">Use Password</button>
+        <button class="ghost" id="adminCloseBtn">✕ Close</button>
+      </div>
+      <img id="admin-live-video" src="/video_feed" alt="Admin face login" crossorigin="anonymous">
+    </div>
+  </div>
+
+  <!-- Admin Password Modal -->
+  <div class="modal-bg" id="pw-modal" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+    <div class="modal-box">
+      <h3 id="pw-title" style="margin:0 0 8px;">Admin Password</h3>
+      <div class="pw-grid">
+        <div class="pw-wrap">
+          <input id="pw-input" type="password" class="pw-input" placeholder="Enter Admin Password" autocomplete="off">
+          <button class="pw-eye" id="pw-eye" aria-label="Show password"><i class="fa fa-eye"></i></button>
+        </div>
+        <div class="pw-actions">
+          <button id="pw-submit">Verify</button>
+          <button class="btn-secondary" id="pw-cancel">Cancel</button>
+        </div>
+      </div>
+      <div id="pw-msg" style="margin-top:8px; font-size:0.95rem; min-height:20px; text-align:center;"></div>
+    </div>
+  </div>
+
+<script>
+/* ===== Tunables ===== */
+const BANNER_DURATION_MS   = 750;
+const FACE_POLL_MS         = 150;
+const FINGER_POLL_MS       = 500;
+const RFID_POLL_MS         = 700;
+const RFID_DEBOUNCE_MS     = 2500;
+const CACHE_DURATION_MS    = 10000;
+const ACTIVITY_TIMEOUT_MS  = 60000;
+
+/* ===== Admin-specific tunables ===== */
+const ADMIN_FACE_SLEEP_MS      = 50;
+const ADMIN_FINGER_SLEEP_MS    = 300;
+const ADMIN_BOOT_DELAY_MS      = 100;
+const ADMIN_REDIRECT_DELAY_MS  = 500;
+const ADMIN_FACE_TIMEOUT_MS    = 1200;
+
+/* ===== Helpers ===== */
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+async function fastFetch(url, opts={}, timeoutMs=2000) {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort('timeout'), timeoutMs);
+  try {
+    const res = await fetch(url, { ...opts, signal:ctrl.signal, cache:'no-store' });
+    return await res.json();
+  } catch(e) {
+    console.error('[FastFetch Error]', url, e.message);
+    return null;
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+/* ===== Role Check Helper ===== */
+function isAdminRole(role) {
+  if (!role) return false;
+  const r = role.toLowerCase().trim();
+  return ['admin', 'super_admin', 'superadmin', 'operator', 'super admin'].includes(r);
+}
+
+/* ===== Mode Management ===== */
+let currentMode      = 'face';
+let faceLoopActive   = false;
+let fingerLoopActive = false;
+let rfidLoopActive   = false;
+let pageActive       = true;
+
+function stopAllLoops() {
+  faceLoopActive = fingerLoopActive = rfidLoopActive = pageActive = false;
+  if (typeof adminAuthActive       !== 'undefined') adminAuthActive       = false;
+  if (typeof adminFaceLoopActive   !== 'undefined') adminFaceLoopActive   = false;
+  if (typeof adminFingerPollActive !== 'undefined') adminFingerPollActive = false;
+}
+
+window.addEventListener('beforeunload', stopAllLoops);
+window.addEventListener('pagehide',     stopAllLoops);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') stopAllLoops();
+});
+
+function navigateTo(url) {
+  stopAllLoops();
+  setTimeout(() => { window.location.href = url; }, 50);
+}
+
+function switchMode(mode) {
+  if (currentMode === mode) return;
+  faceLoopActive = fingerLoopActive = rfidLoopActive = false;
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
+  document.getElementById(`panel-${mode}`).classList.add('show');
+  setTimeout(() => {
+    if      (mode === 'face')   startFaceLoop();
+    else if (mode === 'finger') startFingerLoop();
+    else if (mode === 'rfid')   startRfidLoop();
+  }, 100);
+}
+
+/* ===== SessionStorage Caching ===== */
+function getCachedUserData(empId) {
+  try {
+    const cached = sessionStorage.getItem(`user_${empId}`);
+    if (!cached) return null;
+    const data = JSON.parse(cached);
+    if (Date.now() - data.timestamp > CACHE_DURATION_MS) {
+      sessionStorage.removeItem(`user_${empId}`);
+      return null;
+    }
+    return data;
+  } catch(e) { return null; }
+}
+
+function cacheUserData(empId, userData) {
+  try {
+    sessionStorage.setItem(`user_${empId}`, JSON.stringify({ ...userData, timestamp:Date.now() }));
+  } catch(e) {
+    try {
+      Object.keys(sessionStorage).filter(k => k.startsWith('user_')).slice(0,10).forEach(k => sessionStorage.removeItem(k));
+      sessionStorage.setItem(`user_${empId}`, JSON.stringify({ ...userData, timestamp:Date.now() }));
+    } catch(e2) {}
+  }
+}
+
+/* ===== UNIFIED BANNER ===== */
+let _bannerTimer     = null;
+let _currentBannerId = null;
+
+function showUnifiedBanner(success, title, sub, photoUrl, durationMs) {
+  const banner  = document.getElementById('unified-banner');
+  const card    = document.getElementById('unified-banner-card');
+  const avatar  = document.getElementById('unified-banner-avatar');
+  const okEl    = document.getElementById('unified-banner-title-ok');
+  const failEl  = document.getElementById('unified-banner-title-fail');
+  const subEl   = document.getElementById('unified-banner-sub');
+
+  if (_bannerTimer) { clearTimeout(_bannerTimer); _bannerTimer = null; }
+
+  /* ── Avatar ── */
+  if (photoUrl) {
+    avatar.className = 'avatar';
+    avatar.style.width  = '120px';
+    avatar.style.height = '160px';
+    avatar.style.borderRadius = '10px';
+    avatar.innerHTML = `<img src="${photoUrl}" alt="User">`;
+  } else if (success) {
+    avatar.className = 'avatar icon-avatar success-icon';
+    avatar.style.width = avatar.style.height = '';
+    avatar.style.borderRadius = '';
+    avatar.innerHTML = '<i class="fa fa-check" style="font-size:26px;"></i>';
+  } else {
+    avatar.className = 'avatar icon-avatar fail';
+    avatar.style.width = avatar.style.height = '';
+    avatar.style.borderRadius = '';
+    avatar.innerHTML = '<i class="fa fa-times" style="font-size:26px;"></i>';
+  }
+
+  /* ── Title ── */
+  if (success) {
+    okEl.style.display   = 'block';
+    failEl.style.display = 'none';
+    okEl.textContent     = title || '✅ Verified';
+  } else {
+    okEl.style.display   = 'none';
+    failEl.style.display = 'block';
+    failEl.textContent   = title || '❌ Not Recognized';
+  }
+
+  subEl.textContent = sub || '';
+
+  /* ── Left-border accent ── */
+  card.style.borderLeft = success ? '6px solid #2e7d32' : '6px solid #b02a37';
+
+  banner.classList.add('show');
+
+  const dur = durationMs || (success ? BANNER_DURATION_MS : BANNER_DURATION_MS * 2);
+  _bannerTimer = setTimeout(() => {
+    banner.classList.remove('show');
+    _currentBannerId = null;
+  }, dur);
+}
+
+/* ===== Auth Event Poller (drives DENIAL banners only now) ===== */
+let _lastEventSeq = 0;
+
+async function startAuthEventPoller() {
+  while (pageActive) {
+    try {
+      const data = await fastFetch(`/api/thankyou_events?since=${_lastEventSeq}`, {}, 1500);
+      if (data && data.latest_seq !== undefined) _lastEventSeq = data.latest_seq;
+
+      if (data && data.events && data.events.length > 0) {
+        const ev        = data.events[data.events.length - 1];
+        const isDenied  = ev.result === 'denied';
+        const mode      = ev.medium || 'face';
+
+        if (isDenied) {
+          const modeLabel = { face:'Face', fingerprint:'Fingerprint', rfid:'RFID Card' };
+          showUnifiedBanner(
+            false,
+            '❌ Not Recognized',
+            `${modeLabel[mode]||'Identity'} not recognized. Please try again.`,
+            null,
+            BANNER_DURATION_MS * 2
+          );
+        }
+      }
+    } catch(e) { /* silent */ }
+    await sleep(300);
+  }
+}
+
+/* ===== Face Recognition Loop ===== */
+let faceInFlight     = false;
+let lastActivityTime = Date.now();
+let faceFailCounter  = 0;
+
+async function startFaceLoop() {
+  if (faceLoopActive) return;
+  faceLoopActive  = true;
+  faceFailCounter = 0;
+
+  const probeImg = document.getElementById('live-video');
+  const canvas   = document.createElement('canvas');
+  canvas.width = 160; canvas.height = 120;
+  const ctx = canvas.getContext('2d', { willReadFrequently:true, alpha:false, desynchronized:true });
+
+  while (faceLoopActive && currentMode === 'face' && pageActive) {
+    if ((Date.now() - lastActivityTime) > ACTIVITY_TIMEOUT_MS) { navigateTo('/'); return; }
+    if (typeof adminAuthActive !== 'undefined' && adminAuthActive) { await sleep(200); continue; }
+    if (faceInFlight) { await sleep(30); continue; }
+    if (!probeImg.complete || probeImg.naturalWidth === 0) { await sleep(100); continue; }
+
+    faceInFlight = true;
+    try {
+      ctx.drawImage(probeImg, 0, 0, canvas.width, canvas.height);
+      const imgBase64 = canvas.toDataURL('image/jpeg', 0.3);
+      const data = await fastFetch('/api/face_login', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ image:imgBase64 })
+      }, 1500);
+
+      const userId = data && (data.user_id || data.emp_id);
+
+      /* ── SUCCESS: redirect to Order Now page ── */
+      if (data && data.success && userId) {
+        lastActivityTime = Date.now();
+        faceFailCounter  = 0;
+        navigateTo('/check_menu');
+        return;
+      } else if (data && !data.success && data.reason && !['no_face'].includes(data.reason)) {
+        faceFailCounter++;
+        lastActivityTime = Date.now();
+        if (faceFailCounter >= 5) {
+          faceFailCounter = 0;
+          fastFetch('/api/auth_result', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ success:false, mode:'face', reason:'not_recognized' })
+          }, 500);
+        }
+      } else {
+        faceFailCounter = 0;
+      }
+    } catch(e) { console.error('[Face Loop Error]', e); }
+    finally { faceInFlight = false; }
+    await sleep(FACE_POLL_MS);
+  }
+}
+
+/* ===== Fingerprint Loop ===== */
+let fingerInFlight = false;
+async function startFingerLoop() {
+  if (fingerLoopActive) return;
+  fingerLoopActive = true;
+
+  while (fingerLoopActive && currentMode === 'finger' && pageActive) {
+    if ((Date.now() - lastActivityTime) > ACTIVITY_TIMEOUT_MS) { navigateTo('/'); return; }
+    if (typeof adminAuthActive !== 'undefined' && adminAuthActive) { await sleep(200); continue; }
+    if (fingerInFlight) { await sleep(50); continue; }
+
+    fingerInFlight = true;
+    try {
+      const data   = await fastFetch('/api/finger_identify', { method:'POST' }, 2500);
+      const userId = data && (data.user_id || data.emp_id);
+
+      /* ── SUCCESS: redirect to Order Now page ── */
+      if (data && data.success && userId) {
+        lastActivityTime = Date.now();
+        navigateTo('/check_menu');
+        return;
+      } else if (data && !data.success && data.reason === 'not_identified') {
+        lastActivityTime = Date.now();
+        fastFetch('/api/auth_result', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ success:false, mode:'fingerprint', reason:'not_recognized' })
+        }, 500);
+      }
+    } catch(e) { console.error('[Finger Loop Error]', e); }
+    finally { fingerInFlight = false; }
+    await sleep(FINGER_POLL_MS);
+  }
+}
+
+/* ===== RFID Loop ===== */
+let rfidInFlight       = false;
+let lastRfidId         = null;
+let lastRfidTime       = 0;
+let lastRfidDeniedTime = 0;
+
+async function startRfidLoop() {
+  if (rfidLoopActive) return;
+  rfidLoopActive = true;
+
+  while (rfidLoopActive && currentMode === 'rfid' && pageActive) {
+    if ((Date.now() - lastActivityTime) > ACTIVITY_TIMEOUT_MS) { navigateTo('/'); return; }
+    if (typeof adminAuthActive !== 'undefined' && adminAuthActive) { await sleep(200); continue; }
+    if (rfidInFlight) { await sleep(50); continue; }
+
+    rfidInFlight = true;
+    try {
+      const data   = await fastFetch('/api/rfid_login', { method:'POST' }, 1200);
+      const userId = data && (data.user_id || data.emp_id);
+
+      /* ── SUCCESS: redirect to Order Now page ── */
+      if (data && data.success && userId) {
+        const now = Date.now();
+        if (lastRfidId === userId && (now - lastRfidTime) < RFID_DEBOUNCE_MS) {
+          rfidInFlight = false; await sleep(RFID_POLL_MS); continue;
+        }
+        lastRfidId = userId; lastRfidTime = now; lastActivityTime = now;
+        navigateTo('/check_menu');
+        return;
+      } else if (data && !data.success && data.message && data.message !== 'No card detected') {
+        const now = Date.now();
+        if ((now - lastRfidDeniedTime) > RFID_DEBOUNCE_MS) {
+          lastRfidDeniedTime = now; lastActivityTime = now;
+          fastFetch('/api/auth_result', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({ success:false, mode:'rfid', reason:'not_recognized' })
+          }, 500);
+        }
+      }
+    } catch(e) { console.error('[RFID Loop Error]', e); }
+    finally { rfidInFlight = false; }
+
+    if (lastRfidId && (Date.now() - lastRfidTime) > RFID_DEBOUNCE_MS) lastRfidId = null;
+    await sleep(RFID_POLL_MS);
+  }
+}
+
+/* ===== ADMIN LOGIN ===== */
+let adminAuthActive       = false;
+let adminFaceLoopActive   = false;
+let adminFaceInFlight     = false;
+let adminFingerPollActive = false;
+let adminFailCount        = 0;
+
+const adminStage    = document.getElementById('admin-stage');
+const adminLiveImg  = document.getElementById('admin-live-video');
+
+function openModal(id)  { const el=document.getElementById(id); if(el) el.style.display='flex'; }
+function closeModal(id) { const el=document.getElementById(id); if(el) el.style.display='none'; }
+
+function closeAdminAuth() {
+  adminAuthActive = adminFaceLoopActive = adminFingerPollActive = false;
+  adminFailCount  = 0;
+  adminStage.classList.remove('show');
+  fetch('/api/admin_verify_end', { method:'POST' });
+  setTimeout(() => {
+    if      (currentMode === 'face')   startFaceLoop();
+    else if (currentMode === 'finger') startFingerLoop();
+    else if (currentMode === 'rfid')   startRfidLoop();
+  }, 300);
+}
+
+/* ── Shared redirect after any successful admin/super-admin verify ── */
+function adminVerified() {
+  closeAdminAuth();
+  stopAllLoops();
+  setTimeout(() => navigateTo('/menu'), ADMIN_REDIRECT_DELAY_MS);
+}
+
+function openAdminPasswordModal() {
+  adminAuthActive        = true;
+  faceLoopActive         = fingerLoopActive = rfidLoopActive = false;
+  adminFailCount         = 0;
+  adminFingerPollActive  = false;
+  adminStage.classList.add('show');
+  setTimeout(() => { adminFaceLoop(); adminFingerPoll(); adminRfidPoll(); }, ADMIN_BOOT_DELAY_MS);
+}
+
+/* ===== Admin Face Loop ===== */
+async function adminFaceLoop() {
+  if (adminFaceLoopActive) return;
+  adminFaceLoopActive = true;
+
+  const probe = document.createElement('canvas');
+  probe.width = 160; probe.height = 120;
+  const ctx = probe.getContext('2d', { willReadFrequently:true, alpha:false, desynchronized:true });
+
+  while (adminFaceLoopActive && adminAuthActive) {
+    if (adminFaceInFlight) { await sleep(40); continue; }
+    if (!adminLiveImg.complete || adminLiveImg.naturalWidth === 0) { await sleep(80); continue; }
+
+    adminFaceInFlight = true;
+    try {
+      ctx.drawImage(adminLiveImg, 0, 0, probe.width, probe.height);
+      const image = probe.toDataURL('image/jpeg', 0.3);
+
+      const ctrl = new AbortController();
+      const tid  = setTimeout(() => ctrl.abort(), ADMIN_FACE_TIMEOUT_MS);
+      let r, j = null;
+      try {
+        r = await fetch('/api/operator_face_verify', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({ image }),
+          signal: ctrl.signal
+        });
+        j = await r.json().catch(() => null);
+      } catch(fetchErr) {
+        // timeout or network error — silent, continue loop
+      } finally {
+        clearTimeout(tid);
+      }
+
+      /* ── SUCCESS: accept both admin and super_admin roles ── */
+      if (j && j.success && isAdminRole(j.role)) {
+        await fetch('/api/admin_verify_end', { method:'POST' });
+        showUnifiedBanner(
+          true,
+          'Admin Verified',
+          `Emp ID: ${j.emp_id}\nName: ${j.name || ''}`,
+          null,
+          1200
+        );
+        adminVerified();
+        break;
+      }
+
+      /* ── No face / unknown face / bad frame / errors — NOT a failure, keep polling ── */
+      if (!j || j.message !== 'not_admin') {
+        /* no_face, unknown_face, decode_failed, errors — just continue */
+      } else {
+        /* ── Face recognized but NOT an admin — this is an Access Denied ── */
+        adminFailCount++;
+        showUnifiedBanner(
+          false,
+          `Access Denied (${adminFailCount}/2)`,
+          'Admin face not recognized.',
+          null,
+          1800
+        );
+        if (adminFailCount >= 2) {
+          adminFaceLoopActive = adminAuthActive = false;
+          adminStage.classList.remove('show');
+          setTimeout(() => { stopAllLoops(); window.location.href='/'; }, 1200);
+          break;
+        }
+        await sleep(800);  /* pause before retrying after access denied */
+        if (!adminFaceLoopActive || !adminAuthActive) break;
+      }
+    } catch(e) {
+      console.error('[Admin Face Error]', e);
+      /* Don't redirect on errors — just continue polling */
+    } finally {
+      adminFaceInFlight = false;
+    }
+    await sleep(ADMIN_FACE_SLEEP_MS);
+  }
+}
+
+/* ===== Admin Fingerprint Poll ===== */
+async function adminFingerPoll() {
+  if (adminFingerPollActive) return;
+  adminFingerPollActive = true;
+
+  while (adminFingerPollActive && adminAuthActive) {
+    try {
+      const data = await fastFetch('/api/operator_finger_verify', { method: 'POST' }, 2500);
+
+      /* ── SUCCESS: accept both admin and super_admin roles ── */
+      if (data && data.success && isAdminRole(data.role)) {
+        showUnifiedBanner(
+          true,
+          'Admin Verified',
+          `Emp ID: ${data.emp_id}\nName: ${data.name || ''}`,
+          null,
+          1200
+        );
+        adminVerified();
+        return;
+      }
+
+      /* Only 'not_admin' counts as Access Denied — no_finger and other reasons just continue */
+      if (data && data.message === 'not_admin') {
+        adminFailCount++;
+        showUnifiedBanner(
+          false,
+          `Access Denied (${adminFailCount}/2)`,
+          'Admin fingerprint not recognized.',
+          null,
+          1800
+        );
+        if (adminFailCount >= 2) {
+          adminFaceLoopActive   = false;
+          adminFingerPollActive = false;
+          adminAuthActive       = false;
+          adminStage.classList.remove('show');
+          setTimeout(() => { stopAllLoops(); window.location.href = '/'; }, 1200);
+          return;
+        }
+        await sleep(800);  /* pause before retrying after access denied */
+        if (!adminFingerPollActive || !adminAuthActive) return;
+      }
+
+    } catch (e) {
+      console.error('[Admin Finger Poll Error]', e);
+    }
+
+    await sleep(ADMIN_FINGER_SLEEP_MS);
+  }
+}
+
+/* ===== Admin RFID Poll ===== */
+async function adminRfidPoll() {
+  while (adminAuthActive) {
+    try {
+      const r = await fetch('/api/operator_rfid_verify', { method:'POST' });
+      const j = await r.json().catch(() => null);
+
+      /* ── SUCCESS: accept both admin and super_admin roles ── */
+      if (j && j.success && isAdminRole(j.role)) {
+        showUnifiedBanner(
+          true,
+          'Admin Verified',
+          `Emp ID: ${j.emp_id}\nName: ${j.name || ''}`,
+          null,
+          1200
+        );
+        adminVerified();
+        break;
+      }
+
+      /* Only 'not_admin' counts as Access Denied */
+      if (j && j.message === 'not_admin') {
+        adminFailCount++;
+        showUnifiedBanner(
+          false,
+          `Access Denied (${adminFailCount}/2)`,
+          'Card not registered as Admin.',
+          null,
+          1800
+        );
+        if (adminFailCount >= 2) {
+          adminFaceLoopActive   = false;
+          adminFingerPollActive = false;
+          adminAuthActive       = false;
+          adminStage.classList.remove('show');
+          setTimeout(() => { stopAllLoops(); window.location.href = '/'; }, 1200);
+          break;
+        }
+        await sleep(800);  /* pause before retrying after access denied */
+        if (!adminAuthActive) break;
+      }
+    } catch(e) {}
+    await sleep(250);
+  }
+}
+
+/* ===== Password modal wiring ===== */
+const pwInput = document.getElementById('pw-input');
+const pwMsg   = document.getElementById('pw-msg');
+const pwEye   = document.getElementById('pw-eye');
+
+pwEye.addEventListener('click', () => {
+  const isPw = pwInput.type === 'password';
+  pwInput.type = isPw ? 'text' : 'password';
+  pwEye.innerHTML = isPw ? '<i class="fa fa-eye-slash"></i>' : '<i class="fa fa-eye"></i>';
+});
+
+document.getElementById('adminPwBtn').addEventListener('click', () => {
+  openModal('pw-modal');
+  pwMsg.textContent = '';
+  pwInput.value = '';
+  setTimeout(() => pwInput.focus(), 60);
+});
+
+document.getElementById('adminCloseBtn').addEventListener('click', closeAdminAuth);
+
+document.getElementById('pw-cancel').addEventListener('click', () => {
+  closeModal('pw-modal');
+  pwInput.value = '';
+  pwMsg.textContent = '';
+});
+
+document.getElementById('pw-submit').addEventListener('click', async () => {
+  const password = pwInput.value.trim();
+  if (!password) {
+    pwMsg.textContent = 'Please enter a password';
+    pwMsg.style.color = '#b02a37';
+    return;
+  }
+  pwMsg.textContent = 'Verifying...'; pwMsg.style.color = '#667a94';
+  try {
+    const r = await fetch('/api/operator_password_login', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ password })
+    });
+    const j = await r.json();
+
+    /* ── SUCCESS: accept both admin and super_admin roles ── */
+    if (j.success && isAdminRole(j.role)) {
+      pwMsg.textContent = 'Access granted!'; pwMsg.style.color = '#2e7d32';
+      closeModal('pw-modal');
+      showUnifiedBanner(
+        true,
+        'Admin Verified',
+        `Emp ID: ${j.emp_id}\nName: ${j.name || ''}`,
+        null,
+        1200
+      );
+      adminVerified();
+    } else if (j.success && !isAdminRole(j.role)) {
+      /* User exists but is not an admin — deny access */
+      pwMsg.textContent = 'Access denied: insufficient permissions';
+      pwMsg.style.color = '#b02a37';
+      pwInput.value = ''; pwInput.focus();
+    } else {
+      pwMsg.textContent = j.message || 'Invalid password';
+      pwMsg.style.color = '#b02a37';
+      pwInput.value = ''; pwInput.focus();
+    }
+  } catch(err) {
+    pwMsg.textContent = 'Error verifying password';
+    pwMsg.style.color = '#b02a37';
+  }
+});
+
+pwInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') document.getElementById('pw-submit').click();
+});
+
+/* ===== Boot ===== */
+document.addEventListener('DOMContentLoaded', async () => {
+  /* ── Fetch enabled auth modes from settings ── */
+  let enabledModes = { face: true, finger: true, rfid: true };
+  try {
+    const r = await fetch('/api/modes_get');
+    const m = await r.json();
+    enabledModes.face   = !!m.auth_face;
+    enabledModes.finger = !!m.auth_finger;
+    enabledModes.rfid   = !!m.auth_rfid;
+  } catch (e) {
+    console.warn('Failed to load auth modes, all enabled by default', e);
+  }
+
+  /* ── Hide disabled mode buttons and panels ── */
+  const modeMap = { face: 'face', finger: 'finger', rfid: 'rfid' };
+  for (const [mode, enabled] of Object.entries(enabledModes)) {
+    const btn   = document.querySelector(`.mode-btn[data-mode="${mode}"]`);
+    const panel = document.getElementById(`panel-${mode}`);
+    if (btn)   btn.style.display   = enabled ? '' : 'none';
+    if (panel) panel.style.display = enabled ? '' : 'none';
+  }
+
+  /* ── Pick boot mode: prefer URL param if enabled, else first enabled ── */
+  const params    = new URLSearchParams(window.location.search);
+  const requested = params.get('mode');
+  const allModes  = ['face', 'finger', 'rfid'];
+  const available = allModes.filter(m => enabledModes[m]);
+
+  let bootMode;
+  if (requested && available.includes(requested)) {
+    bootMode = requested;
+  } else if (available.length > 0) {
+    bootMode = available[0];
+  } else {
+    /* All modes disabled — nothing to do, show message */
+    document.querySelector('.mode-switcher').style.display = 'none';
+    return;
+  }
+
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === bootMode);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
+  document.getElementById(`panel-${bootMode}`).classList.add('show');
+  currentMode = bootMode;
+
+  startAuthEventPoller();
+
+  setTimeout(() => {
+    if      (bootMode === 'face')   startFaceLoop();
+    else if (bootMode === 'finger') startFingerLoop();
+    else if (bootMode === 'rfid')   startRfidLoop();
+  }, 500);
+});
+
+/* ===== Inactivity Timer ===== */
+function resetActivityTimer() { lastActivityTime = Date.now(); }
+['mousemove','mousedown','keypress','scroll','touchstart','click'].forEach(ev => {
+  document.addEventListener(ev, resetActivityTimer, { passive:true });
+});
+resetActivityTimer();
+</script>
+
+<!-- On-Screen Keyboard Container -->
+<div id="osk" class="simple-keyboard"></div>
+<script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+<script src="/static/js/osk.js" defer></script>
+
+</body>
+</html>

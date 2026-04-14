@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Device Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css" />
+    <style>
+      body { background: #f9f6ef; margin: 0; font-size: 16px; }
+      .header { display: flex; align-items: center; justify-content: space-between; padding: 18px 38px 0; min-height: 60px; box-sizing: border-box; }
+      .logo-main { height: 48px; display: block; }
+      .logo-right { height: 48px; display: block; }
+      .menu-back-btn { background: #eee; color: #205081; padding: 9px 18px; font-size: 1rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.16s; min-width: 92px; }
+      .menu-back-btn:hover { background: #ffa500; color: #fff; }
+
+      .form-section { background: #fff; border-radius: 16px; box-shadow: 0 4px 18px rgba(32,80,129,0.1); max-width: 480px; width: calc(100% - 32px); margin: 20px auto; padding: 24px 20px; box-sizing: border-box; }
+      h2 { color: #205081; font-weight: 700; margin: 0 0 16px; font-size: 1.15rem; text-align: center; }
+
+      .field { margin-bottom: 12px; }
+      .field label { display: block; font-weight: 600; font-size: 0.85rem; color: #333; margin-bottom: 4px; }
+      .field input { width: 100%; height: 38px; padding: 0 12px; border-radius: 8px; border: 1.5px solid #ddd; font-size: 0.9rem; box-sizing: border-box; }
+      .field input:focus { outline: none; border-color: #205081; box-shadow: 0 0 0 2px rgba(32,80,129,0.15); }
+
+      .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+      .toggle-row label { font-weight: 600; font-size: 0.9rem; color: #333; }
+      .toggle-switch { position: relative; width: 48px; height: 26px; }
+      .toggle-switch input { opacity: 0; width: 0; height: 0; }
+      .toggle-slider { position: absolute; inset: 0; background: #ccc; border-radius: 26px; cursor: pointer; transition: 0.3s; }
+      .toggle-slider::before { content: ""; position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px; background: #fff; border-radius: 50%; transition: 0.3s; }
+      .toggle-switch input:checked + .toggle-slider { background: #28a745; }
+      .toggle-switch input:checked + .toggle-slider::before { transform: translateX(22px); }
+
+      .btn-row { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+      .btn { padding: 9px 20px; font-size: 0.9rem; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+      .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+      .btn-test { background: #e9eef7; color: #205081; }
+      .btn-test:hover { background: #d0d8ec; }
+      .btn-save { background: #205081; color: #fff; }
+      .btn-save:hover { background: #ffa500; }
+      .btn-connect { background: #28a745; color: #fff; }
+      .btn-connect:hover { background: #218838; }
+      .btn-stop { background: #dc3545; color: #fff; }
+      .btn-stop:hover { background: #c82333; }
+
+      .msg { margin-top: 8px; font-size: 0.85rem; min-height: 1.2em; text-align: center; }
+      .msg.ok { color: #0c7a3e; }
+      .msg.err { color: #b00020; }
+
+      .status-card { background: #f0f4f8; border-radius: 10px; padding: 12px 16px; margin-top: 14px; font-size: 0.82rem; }
+      .status-card .row { display: flex; justify-content: space-between; padding: 3px 0; }
+      .status-card .row .label { color: #666; }
+      .status-card .row .value { font-weight: 600; color: #205081; }
+      .status-badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; }
+      .status-badge.online { background: #d3f9d8; color: #2b8a3e; }
+      .status-badge.offline { background: #ffe0e0; color: #b02a37; }
+      .status-badge.stopped { background: #fff3cd; color: #856404; }
+
+      .scroll-area { height: calc(100vh - 60px); overflow-y: auto; padding-bottom: 60px; box-sizing: border-box; }
+      html::-webkit-scrollbar, body::-webkit-scrollbar, .scroll-area::-webkit-scrollbar { width: 0 !important; display: none !important; }
+
+      #osk { position:fixed; left:0; right:0; bottom:0; z-index:99999; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div><button class="menu-back-btn" onclick="window.location.href='/config'"><i class="fa fa-arrow-left"></i> back</button></div>
+      <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+        <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo" />
+      </div>
+      <div><img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage" /></div>
+    </div>
+
+    <div class="scroll-area">
+      <div class="form-section">
+        <h2><i class="fa fa-server" style="margin-right:6px;"></i>Device Console</h2>
+
+        <!-- Enable Toggle -->
+        <div class="toggle-row">
+          <label>Enable Console</label>
+          <label class="toggle-switch">
+            <input type="checkbox" id="dc_enabled" onchange="onToggle()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Config Fields -->
+        <div id="config-fields">
+          <div class="field">
+            <label>Console Server IP</label>
+            <input type="text" id="dc_server_ip" placeholder="192.168.1.100" />
+          </div>
+          <div class="field">
+            <label>Console Server Port</label>
+            <input type="text" id="dc_server_port" placeholder="9000" value="9000" />
+          </div>
+          <div class="field">
+            <label>Device Group / Section</label>
+            <input type="text" id="dc_group" placeholder="e.g. Floor-1, Building-A" />
+          </div>
+          <div class="field">
+            <label>Device Name</label>
+            <input type="text" id="dc_name" placeholder="e.g. Main Entrance" />
+          </div>
+        </div>
+
+        <div id="dc-msg" class="msg"></div>
+
+        <!-- Action Buttons -->
+        <div class="btn-row">
+          <button class="btn btn-test" onclick="testConnection()"><i class="fa fa-plug"></i> Test</button>
+          <button class="btn btn-save" onclick="saveConfig()"><i class="fa fa-save"></i> Save</button>
+        </div>
+        <div class="btn-row" style="margin-top:8px;">
+          <button class="btn btn-connect" id="btn-connect" onclick="startAnnounce()"><i class="fa fa-play"></i> Connect</button>
+          <button class="btn btn-stop" id="btn-stop" onclick="stopAnnounce()" style="display:none;"><i class="fa fa-stop"></i> Disconnect</button>
+        </div>
+
+        <!-- Status Card -->
+        <div class="status-card" id="status-card">
+          <div class="row"><span class="label">Status</span><span class="value" id="st-status">--</span></div>
+          <div class="row"><span class="label">HW UUID</span><span class="value" id="st-hw-uuid" style="font-family:monospace;font-size:0.78rem;letter-spacing:0.5px">--</span></div>
+          <div class="row"><span class="label">Device ID</span><span class="value" id="st-device-id">--</span></div>
+          <div class="row"><span class="label">Device IP</span><span class="value" id="st-ip">--</span></div>
+          <div class="row"><span class="label">Registered</span><span class="value" id="st-registered">--</span></div>
+          <div class="row"><span class="label">Last Heartbeat</span><span class="value" id="st-last-ok">--</span></div>
+          <div class="row"><span class="label">Message</span><span class="value" id="st-message">--</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- On-Screen Keyboard -->
+    <div id="osk" class="simple-keyboard"></div>
+    <link rel="stylesheet" href="/static/css/osk.css">
+    <script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+    <script src="/static/js/osk.js" defer></script>
+
+    <script>
+      function setMsg(text, ok) {
+        const el = document.getElementById('dc-msg');
+        el.textContent = text || '';
+        el.className = 'msg' + (ok === true ? ' ok' : ok === false ? ' err' : '');
+      }
+
+      // Full config load — fills form fields. Called ONCE on page load.
+      async function loadConfig() {
+        try {
+          const r = await fetch('/api/device-console/config');
+          const j = await r.json();
+          if (!j.success) return;
+          const c = j.config;
+          document.getElementById('dc_enabled').checked = !!c.enabled;
+          document.getElementById('dc_server_ip').value = c.server_ip || '';
+          document.getElementById('dc_server_port').value = c.server_port || '9000';
+          document.getElementById('dc_group').value = c.device_group || '';
+          document.getElementById('dc_name').value = c.device_name || '';
+          updateStatus(c);
+          updateButtons(c);
+        } catch (e) {
+          console.warn('Load config failed:', e);
+        }
+      }
+
+      // Lightweight status poll — updates ONLY the status card and buttons,
+      // NEVER touches the input fields so the user can type freely.
+      async function pollStatus() {
+        try {
+          const r = await fetch('/api/device-console/config');
+          const j = await r.json();
+          if (!j.success) return;
+          updateStatus(j.config);
+          updateButtons(j.config);
+        } catch (e) {
+          // silent — don't disrupt the user
+        }
+      }
+
+      function updateStatus(c) {
+        const stStatus = document.getElementById('st-status');
+        if (c.worker_started && c.last_ok) {
+          stStatus.innerHTML = '<span class="status-badge online">ONLINE</span>';
+        } else if (c.worker_started) {
+          stStatus.innerHTML = '<span class="status-badge offline">CONNECTING</span>';
+        } else {
+          stStatus.innerHTML = '<span class="status-badge stopped">STOPPED</span>';
+        }
+        document.getElementById('st-hw-uuid').textContent = c.hw_uuid || '--';
+        document.getElementById('st-device-id').textContent = c.device_id || '--';
+        document.getElementById('st-ip').textContent = c.self_ip || '--';
+        document.getElementById('st-registered').textContent = c.registered_this_boot ? 'Yes (this boot)' : 'Not yet';
+        document.getElementById('st-last-ok').textContent = c.last_success_ts
+          ? new Date(c.last_success_ts * 1000).toLocaleTimeString()
+          : '--';
+        document.getElementById('st-message').textContent = c.last_message || '--';
+      }
+
+      function updateButtons(c) {
+        document.getElementById('btn-connect').style.display = c.worker_started ? 'none' : '';
+        document.getElementById('btn-stop').style.display = c.worker_started ? '' : 'none';
+      }
+
+      function onToggle() {
+        // Just visual — save still required
+      }
+
+      async function saveConfig() {
+        setMsg('Saving...');
+        try {
+          const r = await fetch('/api/device-console/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              enabled: document.getElementById('dc_enabled').checked,
+              server_ip: document.getElementById('dc_server_ip').value.trim(),
+              server_port: document.getElementById('dc_server_port').value.trim(),
+              device_group: document.getElementById('dc_group').value.trim(),
+              device_name: document.getElementById('dc_name').value.trim(),
+            })
+          });
+          const j = await r.json();
+          setMsg(j.message || (j.success ? 'Saved' : 'Failed'), !!j.success);
+          if (j.config) { updateStatus(j.config); updateButtons(j.config); }
+        } catch (e) {
+          setMsg('Save failed: ' + e.message, false);
+        }
+      }
+
+      async function testConnection() {
+        setMsg('Testing connection...');
+        try {
+          const r = await fetch('/api/device-console/test', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              server_ip: document.getElementById('dc_server_ip').value.trim(),
+              server_port: document.getElementById('dc_server_port').value.trim(),
+            })
+          });
+          const j = await r.json();
+          setMsg(j.message || (j.success ? 'Connected!' : 'Failed'), !!j.success);
+        } catch (e) {
+          setMsg('Test failed: ' + e.message, false);
+        }
+      }
+
+      async function startAnnounce() {
+        setMsg('Connecting...');
+        try {
+          const r = await fetch('/api/device-console/announce', { method: 'POST' });
+          const j = await r.json();
+          setMsg(j.message || (j.success ? 'Connected!' : 'Failed'), !!j.success);
+          if (j.config) { updateStatus(j.config); updateButtons(j.config); }
+        } catch (e) {
+          setMsg('Connect failed: ' + e.message, false);
+        }
+      }
+
+      async function stopAnnounce() {
+        setMsg('Stopping...');
+        try {
+          const r = await fetch('/api/device-console/stop', { method: 'POST' });
+          const j = await r.json();
+          setMsg(j.message || 'Stopped', true);
+          if (j.config) { updateStatus(j.config); updateButtons(j.config); }
+        } catch (e) {
+          setMsg('Stop failed: ' + e.message, false);
+        }
+      }
+
+      // Init
+      document.addEventListener('DOMContentLoaded', () => {
+        loadConfig();           // fill form fields ONCE on page load
+        setInterval(pollStatus, 5000);  // poll status card only — never overwrites inputs
+      });
+
+      // Inactivity redirect
+      let inactivityTimer = null;
+      function resetInactivityTimer() {
+        if (inactivityTimer) clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => { window.location.href = "/"; }, 60000);
+      }
+      ["mousemove","mousedown","keypress","scroll","touchstart","click"].forEach(evt => {
+        document.addEventListener(evt, resetInactivityTimer, { passive: true });
+      });
+      resetInactivityTimer();
+    </script>
+  </body>
+</html>

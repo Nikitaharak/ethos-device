@@ -1,0 +1,6 @@
+flask
+face_recognition
+numpy
+opencv-python
+faiss-cpu
+requests

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=480, initial-scale=1.0">
+<title>About Device</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Segoe UI", sans-serif ;
+  background: #f9f6ef;
+  color: #e5e7eb;m
+  width: 480px;
+  height: 800px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── ORIGINAL HEADER — NOT CHANGED ── */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 38px 0; min-height: 60px; box-sizing: border-box;
+}
+.logo-main { height: 48px; display: block; }
+.logo-right { height: 48px; display: block; }
+.menu-back-btn {
+  background: #eee; color: #205081; padding: 9px 18px; font-size: 1rem;
+  border: none; border-radius: 8px; font-weight: 600; cursor: pointer;
+  transition: background .16s; min-width: 92px; margin-right: 12px;
+}
+.menu-back-btn:hover { background: #ffa500; color: #fff; }
+
+/* ── CARD ── */
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+  border: 1px solid #e6ebf2;
+
+  width: 460px;
+  margin: 8px auto 0;
+  padding: 16px 14px;
+
+  flex: 1;              /* makes card expand */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  /* fill screen below header */
+}
+
+/* ── SECTION HEADERS ── */
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 12px 0 7px;
+}
+.card-header:first-child { margin-top: 0; }
+.card-header h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #205081;
+}
+
+/* ── REFRESH BTN ── */
+.refresh-btn {
+  background: #eef3f9; color: #205081; border: 1px solid #d0dcea;
+  border-radius: 6px; padding: 3px 10px; font-size: 0.72rem;
+  font-weight: 600; cursor: pointer; transition: background .16s;
+  display: flex; align-items: center; gap: 4px;
+}
+.refresh-btn:hover { background: #205081; color: #fff; }
+.refresh-btn:disabled { opacity: 0.6; cursor: default; }
+
+/* ── GRIDS ── */
+.grid {
+  display: grid;
+  gap: 8px;
+}
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* ── BOXES ── */
+.box {
+  background: #f4f7fb;
+  border-radius: 8px;
+  border: 1px solid #dde5f0;
+  padding: 12px 6px;
+  text-align: center;
+  transition: box-shadow .2s;
+}
+.box:hover { box-shadow: 0 3px 10px rgba(32,80,129,0.10); }
+
+.box p {
+  margin: 0 0 3px;
+  color: #205081;
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.box h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #205081;
+  display: flex;
+   font-weight: 700; 
+  align-items: center;
+  justify-content: center;
+  min-height: 20px;
+}
+
+
+
+/* ── DIVIDER ── */
+.divider {
+  border: none;
+  border-top: 1px solid #e6ebf2;
+  margin: 10px 0;
+}
+
+/* ── SKELETON ── */
+.skeleton {
+  background: linear-gradient(90deg, #e8edf5 25%, #d8e0ed 50%, #e8edf5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite;
+  border-radius: 4px;
+  display: inline-block;
+  width: 32px;
+  height: 15px;
+  vertical-align: middle;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+.status-red   { color: #b02a37; }
+.status-green { color: #157347; }
+
+/* ── FOOTER ── */
+.footer {
+  text-align: center;
+  color: #8a9ab5;
+  font-size: 9px;
+  padding: 5px 0 3px;
+  flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ORIGINAL HEADER — UNTOUCHED -->
+<div class="header">
+  <div class="left">
+    <button class="menu-back-btn" onclick="window.location.href='/menu'">&#8592; Menu</button>
+  </div>
+  <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo">
+  </div>
+  <div class="right">
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+  </div>
+</div>
+
+<div class="card">
+
+  <!-- Device Info -->
+  <div class="card-header">
+    <h2>Device Information</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="box"><p>Device Name</p><h3>IN_001</h3></div>
+    <div class="box"><p>Device ID</p><h3>IN_001</h3></div>
+    <div class="box"><p>Location</p><h3>Pune</h3></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- User Stats -->
+  <div class="card-header">
+    <h2>User Registration Statistics</h2>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadStats()">&#8635; Refresh</button>
+  </div>
+  <div class="grid grid-4">
+    <div class="box"><p>Total Users</p><h3 id="stat-total"><span class="skeleton"></span></h3></div>
+    <div class="box"><p>Face</p><h3 id="stat-face"><span class="skeleton"></span></h3></div>
+    <div class="box"><p>Fingerprint</p><h3 id="stat-finger"><span class="skeleton"></span></h3></div>
+    <div class="box"><p>RFID</p><h3 id="stat-rfid"><span class="skeleton"></span></h3></div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- No Biometric -->
+  <div class="card-header">
+    <h2>Users Without Biometric</h2>
+  </div>
+  <div class="grid grid-4">
+    <div class="box"><p>No Biometrics</p><h3 id="stat-no-any"><span class="skeleton"></span></h3></div>
+    <div class="box"><p>Face</p><h3 id="stat-no-face"><span class="skeleton"></span></h3></div>
+    <div class="box"><p>Fingerprint</p><h3 id="stat-no-finger"><span class="skeleton"></span></h3></div>
+    <div class="box"><p>RFID</p><h3 id="stat-no-rfid"><span class="skeleton"></span></h3></div>
+    
+  </div>
+
+  <hr class="divider">
+
+  <!-- Device Version -->
+  <div class="card-header">
+    <h2>Device Version</h2>
+  </div>
+  <div class="grid grid-3">
+    <div class="box"><p>Version</p><h3>4.0.2</h3></div>
+    <div class="box"><p>Last Update</p><h3>10 Feb 2026</h3></div>
+    <div class="box"><p>Status</p><h3 class="status-green">Up to Date</h3></div>
+  </div>
+
+</div>
+
+<div class="footer" id="lastUpdated">Last updated: &mdash;</div>
+
+<script>
+let autoRefreshTimer = null;
+const AUTO_REFRESH_MS = 60000;
+
+function setText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = value;
+}
+
+function showSkeletons() {
+  ['stat-total','stat-face','stat-finger','stat-rfid',
+   'stat-no-face','stat-no-finger','stat-no-rfid','stat-no-any'].forEach(id => {
+    setText(id, '<span class="skeleton"></span>');
+  });
+}
+
+async function loadStats() {
+  const btn = document.getElementById('refreshBtn');
+  if (btn) btn.disabled = true;
+  showSkeletons();
+
+  try {
+    const response = await fetch('/api/user_stats');
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message || 'API error');
+
+    setText('stat-total',     data.total          ?? '&mdash;');
+    setText('stat-face',      data.face           ?? '&mdash;');
+    setText('stat-finger',    data.fingerprint    ?? '&mdash;');
+    setText('stat-rfid',      data.rfid           ?? '&mdash;');
+    setText('stat-no-face',   data.no_face        ?? '&mdash;');
+    setText('stat-no-finger', data.no_fingerprint ?? '&mdash;');
+    setText('stat-no-rfid',   data.no_rfid        ?? '&mdash;');
+    setText('stat-no-any',    data.no_any         ?? '&mdash;');
+
+    const now = new Date().toLocaleString('en-IN', {
+      day:'2-digit', month:'short', year:'numeric',
+      hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: true
+    });
+    const el = document.getElementById('lastUpdated');
+    if (el) el.textContent = 'Last updated: ' + now;
+
+  } catch (err) {
+    console.error('loadStats error:', err);
+    ['stat-total','stat-face','stat-finger','stat-rfid',
+     'stat-no-face','stat-no-finger','stat-no-rfid','stat-no-any'].forEach(id => {
+      setText(id, '<span class="status-red">Err</span>');
+    });
+  } finally {
+    if (btn) btn.disabled = false;
+    if (autoRefreshTimer) clearTimeout(autoRefreshTimer);
+    autoRefreshTimer = setTimeout(loadStats, AUTO_REFRESH_MS);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadStats);
+</script>
+</body>
+</html>

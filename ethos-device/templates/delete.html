@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>User Delete (Unified)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    body{
+      background:#f9f6ef;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin:0;
+      min-height:100vh;
+    }
+
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:18px 38px 0;
+      min-height:60px;
+      box-sizing:border-box;
+    }
+    .logo-main{ height:48px; }
+    .logo-right{ height:48px; }
+
+    .menu-back-btn{
+      background:#eee;
+      color:#205081;
+      padding:9px 18px;
+      font-size:1rem;
+      border:none;
+      border-radius:8px;
+      font-weight:600;
+      cursor:pointer;
+      min-width:92px;
+      transition:background .16s;
+    }
+    .menu-back-btn:hover{ background:#ffa500; color:#fff; }
+
+    .container{
+      background:#fff;
+      border-radius:16px;
+      box-shadow:0 4px 18px rgba(32,80,129,.10);
+      max-width:460px;
+      margin:46px auto 24px;
+      padding:36px 38px 32px;
+      box-sizing:border-box;
+    }
+
+    h2{
+      text-align:center;
+      color:#205081;
+      margin-bottom:40px;
+    }
+
+    label{ display: block; margin-bottom: 8px; }
+
+    input{
+      padding:10px 16px;
+      font-size:1.05rem;
+      border-radius:7px;
+      border:1.5px solid #eee;
+      width:100%;
+      margin-bottom:14px;
+      box-sizing:border-box;
+    }
+
+    .actions{ display:flex; flex-direction:column; gap:15px; margin:24px 0 16px; }
+
+    input:focus{
+      outline: none;
+      border: 1.5px solid #ff7c00;
+      box-shadow: 0 0 8px rgba(255,124,0,0.5);
+    }
+
+    button{
+      padding:13px 22px;
+      font-size:1.06rem;
+      font-weight:600;
+      border:none;
+      border-radius:8px;
+      background:#ffa500;
+      color:#fff;
+      cursor:pointer;
+      transition:background .16s;
+    }
+    button:hover{ background:#ff7c00; }
+
+    .delete-all{ background:#d12b3c; }
+    .delete-all:hover{ background:#a90b1c; }
+
+    .result{
+      margin-top:10px;
+      font-size:1.1rem;
+      color:#205081;
+      text-align:center;
+      min-height:26px;
+    }
+
+    /* ===== USER PICKER ===== */
+    .emp-row{
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .emp-row label{
+      white-space: nowrap;
+      font-weight: 600;
+      color: #205081;
+      margin: 0;
+    }
+    .user-picker-wrap{
+      flex: 1;
+      position: relative;
+    }
+    #emp_id{ margin: 0; }
+    
+#user-count{
+      display: block;
+      margin-left: auto;
+      margin-right: 0;
+      margin-bottom: 4px;
+      background: #EEF3F9;
+      color: #205081;
+      border: 1px solid #E6EBF2;
+      border-radius: 999px;
+      font-size: .86rem;
+      padding: 4px 10px;
+      white-space: nowrap;
+      width: fit-content;
+      text-align: right;
+    }
+    #user-list{
+      position: absolute;
+      left: 0; right: 0;
+      top: 100%;
+      background: #fff;
+      border: 1px solid #E6EBF2;
+      border-radius: 10px;
+      box-shadow: 0 12px 28px rgba(32,80,129,.14);
+      max-height: 192px;
+      overflow: auto;
+      display: none;
+      z-index: 50;
+      margin-top: 6px;
+    }
+    #user-list.show{ display: block; }
+
+    #user-list .li{
+      padding: 10px 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+    #user-list .li:hover{ background: #f6f9ff; }
+    #user-list .id{ font-weight: 700; color: #205081; min-width: 72px; }
+    #user-list .nm{ color: #4a6487; font-size: .95rem; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #user-list .meta{ display: flex; gap: 8px; align-items: center; color: #546a88; font-size: .84rem; }
+    #user-list .pill{ background: #eef3f9; color: #205081; font-size: .78rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap;   margin-left:auto;  }
+
+    /* ================= PASSWORD MODAL ================= */
+    /* UNCHANGED from original */
+    .pw-modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.35);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:9999;
+    }
+    .pw-modal-backdrop.show{ display:flex; }
+
+    .pw-modal{
+      background:#fff;
+      width:92vw;
+      max-width:420px;
+      border-radius:14px;
+      padding:18px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    .pw-modal h3{ text-align:center; color:#205081; margin-bottom:12px; }
+    .pw-input{
+      width:100%; padding:12px 14px; font-size:1.05rem;
+      border-radius:8px; border:1.5px solid #eaeaea; box-sizing:border-box;
+    }
+    .pw-actions{ display:flex; gap:10px; margin-top:12px; }
+    .pw-btn{ flex:1; padding:12px; border:none; border-radius:10px; font-weight:700; cursor:pointer; background:#ffa500; color:#fff; }
+    .pw-btn.cancel{ background:#e0e0e0; color:#333; }
+
+    /* === Icon Buttons === */
+    .quick-actions{
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 20px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+    .icon-btn{
+      flex: 1;
+      min-width: 52px;
+      height: 70px;
+      border-radius: 12px;
+      background: #ffa500;
+      color: #fff;
+      font-size: 1.8rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .icon-btn:hover{ background:#ff7c00; transform: translateY(-2px); }
+    .icon-btn:active{ transform: scale(0.95); }
+    .delete-all-icon{ background: #d12b3c; }
+    .delete-all-icon:hover{ background: #a90b1c; }
+
+    /* Delete All Fingerprints button — red same as delete user */
+    .delete-all-fp-icon{ background: #d12b3c; }
+    .delete-all-fp-icon:hover{ background: #a90b1c; }
+
+    /* ================= CONFIRM MODAL (NEW — replaces browser confirm()) ================= */
+    .confirm-modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.35);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:10000;
+    }
+    .confirm-modal-backdrop.show{ display:flex; }
+
+    .confirm-modal{
+      background:#fff;
+      width:92vw;
+      max-width:420px;
+      border-radius:14px;
+      padding:28px 24px 20px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      text-align:center;
+    }
+    .confirm-modal .cm-icon{
+      width:54px; height:54px;
+      border-radius:50%;
+      background:#FDECEA;
+      color:#d12b3c;
+      font-size:1.5rem;
+      display:flex; align-items:center; justify-content:center;
+      margin:0 auto 14px;
+    }
+    .confirm-modal h3{
+      color:#205081;
+      margin:0 0 10px;
+      font-size:1.1rem;
+    }
+    .confirm-modal p{
+      color:#4a6487;
+      font-size:.97rem;
+      line-height:1.55;
+      margin:0 0 20px;
+      white-space:pre-line;
+    }
+    .confirm-modal .cm-actions{
+      display:flex;
+      gap:10px;
+    }
+    .confirm-modal .cm-btn{
+      flex:1; padding:12px;
+      border:none; border-radius:10px;
+      font-weight:700; font-size:1rem;
+      cursor:pointer; margin:0;
+      transition:background .15s;
+    }
+    .confirm-modal .cm-btn.cancel{ background:#e0e0e0; color:#333; }
+    .confirm-modal .cm-btn.cancel:hover{ background:#d2d2d2; }
+    .confirm-modal .cm-btn.danger{ background:#d12b3c; color:#fff; }
+    .confirm-modal .cm-btn.danger:hover{ background:#a90b1c; }
+
+    /* ================= ON-SCREEN KEYBOARD ================= */
+    body.osk-open{ padding-bottom: 280px; }
+
+    #osk{
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #f9f6ef;
+      border-top: 2px solid #e2ddd5;
+      padding: 8px 4px 12px;
+      z-index: 10000;
+      box-shadow: 0 -4px 18px rgba(32,80,129,.13);
+      user-select: none;
+      -webkit-user-select: none;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+    #osk.osk-visible{ display: block; }
+
+    .osk-row{
+      display: flex;
+      justify-content: center;
+      gap: 3px;
+      margin-bottom: 4px;
+      flex-wrap: nowrap;
+      width: 100%;
+    }
+
+    .osk-key{
+      flex: 1 1 0;
+      max-width: 46px;
+      min-width: 0;
+      height: 42px;
+      padding: 0 2px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 7px;
+      background: #fff;
+      color: #205081;
+      cursor: pointer;
+      box-shadow: 0 2px 0 #c9c4bb, 0 2px 5px rgba(0,0,0,0.09);
+      transition: background 0.1s, transform 0.08s, box-shadow 0.08s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .osk-key:hover{ background: #fff8ee; color: #ff7c00; }
+    .osk-key:active{
+      background: #ffa500; color: #fff;
+      transform: translateY(2px);
+      box-shadow: 0 0 0 #c9c4bb;
+    }
+    .osk-key.active{ background: #205081; color: #fff; box-shadow: 0 2px 0 #143560; }
+
+    .osk-key.k-bksp  { flex: 2; max-width: 80px; background:#fdecea; color:#c0342d; }
+    .osk-key.k-bksp:hover { background:#f8b8b3; }
+    .osk-key.k-tab   { flex: 1.6; max-width: 68px; }
+    .osk-key.k-caps  { flex: 1.8; max-width: 74px; }
+    .osk-key.k-enter { flex: 2.2; max-width: 88px; background:#e8f5e9; color:#157347; }
+    .osk-key.k-enter:hover { background:#b8dfc3; }
+    .osk-key.k-shift { flex: 2.2; max-width: 88px; background:#eef3f9; color:#205081; }
+    .osk-key.k-shift:hover { background:#d5e4f5; }
+    .osk-key.k-space { flex: 6; max-width: 999px; letter-spacing:1px; }
+    .osk-key.k-hide  { flex: 2; max-width: 80px; background: #eee; color: #555; font-size: 0.76rem; }
+    .osk-key.k-hide:hover{ background:#ddd; }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <button class="menu-back-btn" onclick="location.href='/user_management'">
+    <i class="fa fa-arrow-left"></i> back
+  </button>
+  <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos">
+  <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+</div>
+
+<div class="container">
+  <h2>Delete User Modules</h2>
+
+  <div class="emp-row">
+    <label for="emp_id">Employee ID</label>
+    <div class="user-picker-wrap">
+      <span id="user-count">0 users</span>
+      <input id="emp_id" placeholder="Start typing Emp ID or Name" autocomplete="off">
+      <div id="user-list"></div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <!-- Delete Face -->
+    <button class="icon-btn" onclick="deleteFace()" title="Delete Face">
+      <i class="fa fa-user"></i>
+    </button>
+    <!-- Delete Fingerprint (single) -->
+    <button class="icon-btn" onclick="deleteFingerprint()" title="Delete Fingerprint">
+      <i class="fa fa-fingerprint"></i>
+    </button>
+    <!-- Delete RFID -->
+    <button class="icon-btn" onclick="deleteRFID()" title="Delete RFID">
+      <i class="fa fa-id-card"></i>
+    </button>
+    <!-- Delete ALL Fingerprints -->
+    <button class="icon-btn delete-all-fp-icon" onclick="deleteAllFingerprints()" title="Delete All Fingerprints">
+      <i class="fa fa-fingerprint"></i>
+    </button>
+    <!-- Delete User -->
+    <button class="icon-btn delete-all-icon" onclick="deleteUser()" title="Delete User">
+      <i class="fa fa-trash"></i>
+    </button>
+  </div>
+
+  <div class="result" id="result-msg"></div>
+</div>
+
+<!-- ================= PASSWORD MODAL — UNCHANGED FROM ORIGINAL ================= -->
+<div class="pw-modal-backdrop" id="pwModal">
+  <div class="pw-modal">
+    <h3>Admin Password</h3>
+    <input id="pw-input" class="pw-input" type="password" placeholder="Enter password">
+    <div class="pw-actions">
+      <button class="pw-btn cancel" onclick="closePw()">Cancel</button>
+      <button class="pw-btn" onclick="confirmPw()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= CONFIRM MODAL — replaces browser confirm() ================= -->
+<div class="confirm-modal-backdrop" id="confirmModal">
+  <div class="confirm-modal">
+    <div class="cm-icon"><i id="cm-icon-i" class="fa fa-triangle-exclamation"></i></div>
+    <h3 id="cm-title"></h3>
+    <p  id="cm-msg"></p>
+    <div class="cm-actions">
+      <button class="cm-btn cancel" onclick="cmResolve(false)">Cancel</button>
+      <button class="cm-btn danger" id="cm-confirm-btn" onclick="cmResolve(true)">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div id="osk"></div>
+
+<script>
+  /* ===== RESULT MESSAGE ===== */
+  const resultEl = document.getElementById('result-msg');
+  function setMsg(msg){ resultEl.textContent = msg || ''; }
+
+  /* ===== PASSWORD MODAL — UNCHANGED FROM ORIGINAL ===== */
+  const pwModal = document.getElementById('pwModal');
+  let pwResolve = null;
+
+  function openPw(){
+    pwModal.classList.add('show');
+    document.getElementById('pw-input').value = '';
+    return new Promise(res => pwResolve = res);
+  }
+  function closePw(){
+    pwModal.classList.remove('show');
+    if(pwResolve) pwResolve(null);
+  }
+  function confirmPw(){
+    const val = document.getElementById('pw-input').value.trim();
+    pwModal.classList.remove('show');
+    if(pwResolve) pwResolve(val || null);
+  }
+  document.getElementById('pw-input').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') confirmPw();
+  });
+  async function withPassword(cb){
+    const pw = await openPw();
+    if(!pw) return;
+    await cb(pw);
+  }
+
+  /* ===== CUSTOM CONFIRM MODAL — replaces browser confirm() ===== */
+  let _cmResolve = null;
+
+  function showConfirm(title, msg, confirmLabel) {
+    document.getElementById('cm-title').textContent      = title        || 'Are you sure?';
+    document.getElementById('cm-msg').textContent        = msg          || '';
+    document.getElementById('cm-confirm-btn').textContent = confirmLabel || 'Confirm';
+    document.getElementById('confirmModal').classList.add('show');
+    return new Promise(res => { _cmResolve = res; });
+  }
+  function cmResolve(val) {
+    document.getElementById('confirmModal').classList.remove('show');
+    if (_cmResolve) { _cmResolve(val); _cmResolve = null; }
+  }
+
+  /* ===== API HELPER ===== */
+  async function api(url, body){
+    try {
+      const r = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const text = await r.text();
+      let j;
+      try { j = JSON.parse(text); } catch { j = { success:false, message:text }; }
+      setMsg(j.message || (j.success ? 'Success' : 'Failed'));
+    } catch(e) { setMsg('Network error: ' + e); }
+  }
+
+  function emp_idField(){
+    const v = document.getElementById('emp_id').value.trim();
+    if(!v) setMsg('Enter Employee ID');
+    return v;
+  }
+
+  /* ===== ACTION HANDLERS — only confirm() replaced with showConfirm() ===== */
+  async function deleteFace(){
+    const emp_id = emp_idField(); if(!emp_id) return;
+    await withPassword(pw => api('/api/face_delete', { emp_id, admin_password: pw }));
+  }
+
+  async function deleteFingerprint(){
+    const emp_id = emp_idField(); if(!emp_id) return;
+    const ok = await showConfirm(
+      'Delete Fingerprint',
+      'Delete fingerprint for employee "' + emp_id + '" from sensor slot AND database?\nThis cannot be undone.',
+      'Delete'
+    );
+    if(!ok) return;
+    await withPassword(pw => api('/api/finger_delete', { emp_id, admin_password: pw }));
+  }
+
+  async function deleteRFID(){
+    const emp_id = emp_idField(); if(!emp_id) return;
+    await withPassword(pw => api('/api/rfid_delete', { employee_id: emp_id, admin_password: pw }));
+  }
+
+  async function deleteAllFingerprints(){
+    const ok = await showConfirm(
+      'Delete All Fingerprints',
+      'Delete ALL fingerprints from the sensor?\nThis wipes every slot and cannot be undone.',
+      'Wipe All'
+    );
+    if(!ok) return;
+    await withPassword(pw => api('/api/finger_delete_all', { admin_password: pw }));
+  }
+
+  async function deleteUser(){
+    const emp_id = emp_idField(); if(!emp_id) return;
+    const ok = await showConfirm(
+      'Delete User',
+      'Delete user "' + emp_id + '"?\nThis cannot be undone.',
+      'Delete'
+    );
+    if(!ok) return;
+    await withPassword(pw => api('/api/delete_user', { emp_id, admin_password: pw }));
+  }
+
+  /* ===== USER PICKER ===== */
+  const userListEl = document.getElementById('user-list');
+  const userCount  = document.getElementById('user-count');
+  const empField   = document.getElementById('emp_id');
+  let USERS = [];
+  let usersLoaded = false;
+
+  async function fetchAllUsers() {
+    if (usersLoaded) return;
+    try {
+      const r = await fetch('/api/users_list');
+      const j = await r.json();
+      if (j && j.success && Array.isArray(j.users)) {
+        USERS = j.users
+          .filter(u => u && u.emp_id)
+          .map(u => ({
+            emp_id:    u.emp_id,
+            name:      u.name      || '',
+            role:      u.role      || '',
+            birthdate: u.birthdate || ''
+          }))
+          .sort((a, b) => String(a.emp_id).localeCompare(
+            String(b.emp_id), undefined, { numeric: true, sensitivity: 'base' }
+          ));
+        usersLoaded = true;
+        userCount.textContent = `${USERS.length} user${USERS.length === 1 ? '' : 's'}`;
+      } else {
+        userCount.textContent = '0 users';
+      }
+    } catch(e) { userCount.textContent = '—'; }
+  }
+
+  function applyUserToForm(u) {
+    if (!u) return;
+    empField.value = u.emp_id || '';
+  }
+
+  function renderUserList(items) {
+    if (!items || items.length === 0) {
+      userListEl.classList.remove('show');
+      userListEl.innerHTML = '';
+      return;
+    }
+    userListEl.innerHTML = items.map(u => `
+      <div class="li" role="option"
+           data-id="${u.emp_id}"
+           data-name="${(u.name || '').replace(/"/g, '&quot;')}">
+        <span class="id">${u.emp_id}</span>
+        <span class="nm">${u.name || ''}</span>
+        <span class="meta">
+          ${u.role ? `<span class="pill">${u.role}</span>` : ''}
+        </span>
+      </div>
+    `).join('');
+    userListEl.classList.add('show');
+  }
+
+  function filterUsers(q) {
+    q = (q || '').trim().toLowerCase();
+    if (!q) { renderUserList(USERS); return; }
+    const res = USERS.filter(u => {
+      const id = String(u.emp_id || '').toLowerCase();
+      const nm = String(u.name   || '').toLowerCase();
+      return id.startsWith(q) || id.includes(q) || nm.includes(q);
+    });
+    renderUserList(res);
+  }
+
+  empField.addEventListener('focus', async () => {
+    await fetchAllUsers();
+    filterUsers(empField.value);
+  });
+
+  empField.addEventListener('input', () => { filterUsers(empField.value); });
+
+  function syncFromEmpField() {
+    const id = empField.value.trim();
+    if (!id || !USERS.length) return;
+    const exact = USERS.find(u => String(u.emp_id) === id);
+    if (exact) applyUserToForm(exact);
+  }
+
+  empField.addEventListener('blur', () => {
+    setTimeout(() => {
+      userListEl.classList.remove('show');
+      syncFromEmpField();
+    }, 180);
+  });
+
+  empField.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      syncFromEmpField();
+      userListEl.classList.remove('show');
+    }
+  });
+
+  userListEl.addEventListener('mousedown', (e) => { e.preventDefault(); });
+  userListEl.addEventListener('click', (e) => {
+    const li = e.target.closest('.li');
+    if (!li) return;
+    applyUserToForm({ emp_id: li.getAttribute('data-id') || '' });
+    userListEl.classList.remove('show');
+  });
+
+  /* =====================================================
+     PURE JS ON-SCREEN KEYBOARD — zero dependencies
+  ===================================================== */
+  (function(){
+    var activeEl   = null;
+    var shifted    = false;
+    var capsLocked = false;
+
+    var ROWS_DEF = [
+      [ ['`'],['1'],['2'],['3'],['4'],['5'],['6'],['7'],['8'],['9'],['0'],['-'],['='],['DEL','BKSP','k-bksp'] ],
+      [ ['Tab','TAB','k-tab'],['q'],['w'],['e'],['r'],['t'],['y'],['u'],['i'],['o'],['p'],['['],[ ']'] ],
+      [ ['Caps','CAPS','k-caps'],['a'],['s'],['d'],['f'],['g'],['h'],['j'],['k'],['l'],[';'],["'"],['Enter','ENTER','k-enter'] ],
+      [ ['Shift','SHIFT','k-shift'],['z'],['x'],['c'],['v'],['b'],['n'],['m'],[','],['.'],['/'],['Shift','SHIFT','k-shift'] ],
+      [ ['Space','SPACE','k-space'],['Hide','HIDE','k-hide'] ]
+    ];
+    var ROWS_SHF = [
+      [ ['~'],['!'],['@'],['#'],['$'],['%'],['^'],['&'],['*'],['('],[')'],['\u005f'],['+'],['DEL','BKSP','k-bksp'] ],
+      [ ['Tab','TAB','k-tab'],['Q'],['W'],['E'],['R'],['T'],['Y'],['U'],['I'],['O'],['P'],['{'],[ '}'] ],
+      [ ['Caps','CAPS','k-caps'],['A'],['S'],['D'],['F'],['G'],['H'],['J'],['K'],['L'],[':'],['"'],['Enter','ENTER','k-enter'] ],
+      [ ['Shift','SHIFT','k-shift'],['Z'],['X'],['C'],['V'],['B'],['N'],['M'],['<'],['>'],['\u003f'],['Shift','SHIFT','k-shift'] ],
+      [ ['Space','SPACE','k-space'],['Hide','HIDE','k-hide'] ]
+    ];
+
+    function build(){
+      var osk = document.getElementById('osk');
+      if(!osk) return;
+      osk.innerHTML = '';
+      var rows = (shifted || capsLocked) ? ROWS_SHF : ROWS_DEF;
+      rows.forEach(function(row){
+        var rd = document.createElement('div');
+        rd.className = 'osk-row';
+        row.forEach(function(k){
+          var lbl    = k[0];
+          var action = k.length > 1 ? k[1] : lbl;
+          var cls    = k.length > 2 ? k[2] : '';
+          var btn    = document.createElement('button');
+          btn.setAttribute('type','button');
+          btn.className = 'osk-key' + (cls ? ' '+cls : '');
+          btn.textContent = lbl;
+          if(action==='SHIFT' && shifted && !capsLocked) btn.classList.add('active');
+          if(action==='CAPS'  && capsLocked)             btn.classList.add('active');
+          btn.addEventListener('mousedown', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            press(action);
+          });
+          rd.appendChild(btn);
+        });
+        osk.appendChild(rd);
+      });
+    }
+
+    function press(action){
+      if(!activeEl && action !== 'HIDE') return;
+      if(action === 'BKSP'){
+        var s=activeEl.selectionStart, e=activeEl.selectionEnd, v=activeEl.value;
+        if(s !== e){ activeEl.value = v.slice(0,s)+v.slice(e); setPos(s); }
+        else if(s > 0){ activeEl.value = v.slice(0,s-1)+v.slice(s); setPos(s-1); }
+        notify(); return;
+      }
+      if(action === 'ENTER'){
+        activeEl.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter',keyCode:13,bubbles:true}));
+        activeEl.dispatchEvent(new KeyboardEvent('keypress',{key:'Enter',keyCode:13,bubbles:true}));
+        notify(); return;
+      }
+      if(action === 'TAB')  { ins('\t'); return; }
+      if(action === 'SPACE'){ ins(' ');  return; }
+      if(action === 'HIDE') { hide(); return; }
+      if(action === 'SHIFT'){ shifted=!shifted; build(); return; }
+      if(action === 'CAPS') { capsLocked=!capsLocked; shifted=capsLocked; build(); return; }
+      ins(action);
+      if(shifted && !capsLocked){ shifted=false; build(); }
+    }
+
+    function ins(ch){
+      if(!activeEl) return;
+      var s=activeEl.selectionStart, e=activeEl.selectionEnd, v=activeEl.value;
+      activeEl.value = v.slice(0,s)+ch+v.slice(e);
+      setPos(s+ch.length);
+      notify();
+    }
+    function setPos(p){ activeEl.selectionStart = activeEl.selectionEnd = p; }
+    function notify(){
+      if(!activeEl) return;
+      activeEl.dispatchEvent(new Event('input', {bubbles:true}));
+      activeEl.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+
+    function show(){
+      build();
+      var osk = document.getElementById('osk');
+      osk.classList.add('osk-visible');
+      document.body.classList.add('osk-open');
+    }
+    function hide(){
+      var osk = document.getElementById('osk');
+      osk.classList.remove('osk-visible');
+      document.body.classList.remove('osk-open');
+      activeEl = null;
+    }
+
+    document.addEventListener('focusin', function(e){
+      var t = e.target;
+      if(t.tagName==='INPUT' || t.tagName==='TEXTAREA'){
+        activeEl = t;
+        show();
+        setTimeout(function(){ t.scrollIntoView({block:'center',behavior:'smooth'}); }, 250);
+      }
+    });
+
+    document.addEventListener('focusout', function(e){
+      if(e.target !== activeEl) return;
+      setTimeout(function(){
+        var a = document.activeElement;
+        if(!a || (a.tagName!=='INPUT' && a.tagName!=='TEXTAREA')){
+          hide();
+        }
+      }, 150);
+    });
+
+    document.addEventListener('mousedown', function(e){
+      var osk = document.getElementById('osk');
+      if(osk && osk.contains(e.target)) return;
+      if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+      hide();
+    }, true);
+
+  })();
+</script>
+
+</body>
+</html>

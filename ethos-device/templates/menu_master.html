@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=480, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Menu Master — Ethos</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+    --bg-base:#F5F0E8;--bg-card:#FFFFFF;--bg-input:#F8F6F2;--bg-btn-warm:#EDE7DC;
+    --bg-table-head:#205081;--text-primary:#205081;--text-dark:#1A1A1A;
+    --text-secondary:#6B7D93;--text-muted:#A0ADB8;--text-on-dark:#FFFFFF;
+    --accent:#F5A623;--accent-deep:#E8940A;--accent-glow:rgba(245,166,35,0.12);
+    --blue:#205081;--blue-glow:rgba(32,80,129,0.10);--border:#E0DAD0;
+    --border-input:#D4CFC6;--danger:#D94040;--success:#2E7D32;
+    --font-body:'DM Sans',sans-serif;--font-mono:'JetBrains Mono',monospace;
+}
+html,body{width:480px;height:800px;overflow:hidden;font-family:var(--font-body);background:var(--bg-base);color:var(--text-dark);-webkit-font-smoothing:antialiased;user-select:none;-webkit-user-select:none;}
+
+/* ── Topbar ── */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 16px;background:var(--bg-base);height:50px;flex-shrink:0;}
+.btn-back{height:34px;border-radius:8px;display:inline-flex;align-items:center;gap:6px;padding:0 14px 0 10px;background:var(--bg-btn-warm);border:1px solid var(--border);color:var(--text-primary);font-size:0.78rem;font-weight:600;font-family:var(--font-body);cursor:pointer;text-decoration:none;}
+.btn-back i{font-size:0.74rem;}
+.btn-back:active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.logo-main{height:34px;object-fit:contain;}
+.logo-right{height:26px;object-fit:contain;}
+
+.page-wrap{height:calc(800px - 50px);overflow:hidden;padding:8px 14px 10px;}
+
+/* ── Single Main Card ── */
+.main-card{background:var(--bg-card);border-radius:20px;box-shadow:0 4px 24px rgba(32,80,129,0.06);padding:16px 18px;height:100%;display:flex;flex-direction:column;}
+
+.card-title{font-size:1.05rem;font-weight:700;color:var(--text-primary);text-align:center;margin-bottom:12px;flex-shrink:0;}
+
+.section-label{font-size:0.62rem;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.07em;margin-bottom:6px;}
+
+/* ── Form ── */
+.form-group{margin-bottom:8px;}
+.form-group label{display:block;font-size:0.62rem;font-weight:700;color:var(--text-primary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:3px;}
+.form-row{display:flex;gap:8px;}
+.form-row .form-group{flex:1;}
+.form-group input,.form-group select{width:100%;height:36px;padding:0 10px;font-family:var(--font-body);font-size:0.82rem;background:var(--bg-input);border:1.5px solid var(--border-input);border-radius:9px;color:var(--text-dark);outline:none;transition:border-color 0.15s;user-select:auto;-webkit-user-select:auto;pointer-events:auto;touch-action:manipulation;}
+.form-group select{-webkit-appearance:menulist;appearance:menulist;}
+.form-group input::placeholder{color:var(--text-muted);font-size:0.78rem;}
+.form-group input:focus,.form-group select:focus{border-color:var(--accent);background:#FFF9F0;}
+.form-group input[readonly]{opacity:0.5;cursor:not-allowed;background:var(--bg-btn-warm);}
+
+/* ── Save / Reset buttons ── */
+.btn-action-row{display:flex;gap:8px;margin-top:8px;margin-bottom:10px;flex-shrink:0;}
+.btn-save{flex:1;height:38px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:0.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);}
+.btn-save:active{background:var(--accent-deep);}
+.btn-reset{height:38px;width:90px;border-radius:10px;border:1px solid var(--border);background:var(--bg-btn-warm);color:var(--text-secondary);font-weight:600;font-size:0.82rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font-body);}
+.btn-reset:active{background:var(--border);}
+
+.divider{height:1px;background:#F0ECE5;flex-shrink:0;margin:4px 0;}
+
+/* ── Table ── */
+.table-section{flex-shrink:0;}
+.table-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.table-header-row h3{font-size:0.82rem;font-weight:700;color:var(--text-primary);}
+.table-empty-sm{text-align:center;padding:10px;color:var(--text-muted);font-size:0.78rem;}
+.table-scroll{max-height:118px;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:10px;border:1px solid #F0ECE5;}
+table{width:100%;border-collapse:collapse;}
+thead th{background:var(--bg-table-head);color:var(--text-on-dark);font-size:0.6rem;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;padding:8px 8px;text-align:left;white-space:nowrap;position:sticky;top:0;z-index:2;}
+thead th:first-child{padding-left:12px;}
+thead th:last-child{text-align:right;padding-right:12px;}
+tbody tr{border-bottom:1px solid #F0ECE5;}
+tbody tr:last-child{border-bottom:none;}
+tbody tr:nth-child(even){background:#FAFAF7;}
+tbody tr:active{background:#FFF3E8;}
+tbody td{padding:8px 8px;font-size:0.75rem;color:var(--text-dark);vertical-align:middle;}
+tbody td:first-child{padding-left:12px;}
+tbody td:last-child{text-align:right;padding-right:12px;}
+.cell-code{font-family:var(--font-mono);font-weight:500;font-size:0.68rem;color:var(--blue);background:var(--blue-glow);padding:2px 8px;border-radius:5px;display:inline-block;border:1px solid rgba(32,80,129,0.1);}
+.cell-name{font-weight:600;}
+.cell-slot{font-size:0.65rem;color:var(--text-secondary);background:var(--accent-glow);padding:2px 8px;border-radius:5px;display:inline-block;border:1px solid rgba(245,166,35,0.15);}
+.row-actions{display:flex;gap:4px;justify-content:flex-end;}
+.btn-row{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;border:none;cursor:pointer;font-size:0.65rem;color:#fff;}
+.btn-row.edit{background:var(--accent);}
+.btn-row.del{background:var(--danger);}
+
+/* ── Default Menu ── */
+.default-section{flex:1;min-height:0;display:flex;flex-direction:column;}
+.shift-tab-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;flex-shrink:0;}
+.shift-tab{padding:5px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg-btn-warm);color:var(--text-secondary);font-size:0.72rem;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.shift-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+.shift-tab:active{transform:scale(0.95);}
+.dm-status{display:inline-flex;align-items:center;gap:3px;font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:999px;}
+.dm-status.on{background:#E8F5E9;color:var(--success);}
+
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid #F0ECE5;margin-bottom:8px;flex-shrink:0;}
+.toggle-label{font-size:0.8rem;font-weight:700;color:var(--text-primary);}
+.toggle-switch{position:relative;width:44px;height:24px;cursor:pointer;}
+.toggle-switch input{display:none;}
+.toggle-track{position:absolute;inset:0;border-radius:12px;background:#D4CFC6;transition:background 0.2s;}
+.toggle-switch input:checked + .toggle-track{background:var(--success);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.15);transition:transform 0.2s;}
+.toggle-switch input:checked ~ .toggle-thumb{transform:translateX(20px);}
+
+.dm-items-scroll{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.default-items-empty{text-align:center;padding:12px;color:var(--text-muted);font-size:0.75rem;}
+.default-item-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:#F8FAFC;border:1px solid #EEF2F7;border-radius:8px;margin-bottom:6px;}
+.di-name{flex:1;font-weight:600;color:var(--text-primary);font-size:0.78rem;}
+.di-cat{font-size:0.65rem;color:var(--text-secondary);}
+.di-qty{font-family:var(--font-mono);font-weight:600;font-size:0.75rem;color:var(--blue);background:var(--blue-glow);padding:2px 8px;border-radius:5px;min-width:28px;text-align:center;}
+.di-remove{width:24px;height:24px;border-radius:6px;border:none;background:#FFEBEE;color:var(--danger);cursor:pointer;display:grid;place-items:center;font-size:0.62rem;}
+.di-remove:active{background:#FFCDD2;}
+
+.add-default-row{display:flex;gap:6px;align-items:flex-end;margin-top:6px;flex-shrink:0;}
+.add-default-row .form-group{margin-bottom:0;}
+.add-default-row select{height:34px;font-size:0.78rem;}
+.add-default-row input{width:52px;height:34px;text-align:center;font-size:0.82rem;}
+.btn-add-default{height:34px;padding:0 10px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:0.75rem;cursor:pointer;white-space:nowrap;}
+.btn-add-default:active{background:var(--accent-deep);}
+
+.btn-save-default{width:100%;margin-top:6px;padding:10px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-weight:700;font-size:0.82rem;cursor:pointer;flex-shrink:0;box-sizing:border-box;display:block;}
+.btn-save-default:active{background:var(--accent-deep);}
+
+.dm-no-shift{text-align:center;padding:16px;color:var(--text-muted);font-size:0.8rem;}
+
+/* ── Scrollbars ── */
+.table-scroll::-webkit-scrollbar,.dm-items-scroll::-webkit-scrollbar{width:3px;}
+.table-scroll::-webkit-scrollbar-thumb,.dm-items-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ── Toast ── */
+.toast-wrap{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:9999;pointer-events:none;}
+.toast{background:var(--accent-deep);color:#fff;padding:8px 18px;border-radius:10px;font-size:0.78rem;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,0.2);opacity:0;transform:translateY(8px);transition:opacity 0.2s,transform 0.2s;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;z-index:10000;background:rgba(32,80,129,0.25);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#fff;border-radius:18px;box-shadow:0 16px 48px rgba(0,0,0,0.15);padding:24px 22px 18px;width:320px;text-align:center;animation:modalPop 0.2s ease-out;}
+@keyframes modalPop{from{opacity:0;transform:scale(0.93);}to{opacity:1;transform:scale(1);}}
+.modal-icon{width:44px;height:44px;border-radius:50%;background:#FFEBEE;color:var(--danger);display:inline-grid;place-items:center;font-size:1.1rem;margin-bottom:12px;}
+.modal-title{font-size:0.98rem;font-weight:700;color:var(--text-primary);margin-bottom:5px;}
+.modal-sub{font-size:0.78rem;color:var(--text-secondary);margin-bottom:16px;line-height:1.5;}
+.modal-sub strong{color:var(--blue);font-family:var(--font-mono);}
+.modal-actions{display:flex;gap:8px;justify-content:center;}
+.btn-modal{padding:9px 20px;border-radius:9px;font-weight:600;font-size:0.78rem;cursor:pointer;border:none;}
+.btn-modal.confirm{background:var(--danger);color:#fff;}
+.btn-modal.confirm:active{background:#C0392B;}
+.btn-modal.cancel{background:var(--bg-btn-warm);color:var(--text-secondary);border:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="/shift_config" class="btn-back"><i class="fa fa-arrow-left"></i> back</a>
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Logo">
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+</div>
+
+<div class="page-wrap">
+<div class="main-card">
+
+    <!-- ── TITLE ── -->
+    <div class="card-title" id="card-title">Menu Master</div>
+
+    <!-- ── FORM ── -->
+    <form onsubmit="return false;" id="menu-form" style="flex-shrink:0;">
+        <div class="form-group">
+            <label for="slot_sel">Time Slot</label>
+            <select id="slot_sel"></select>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="menu_code">Menu Code</label>
+                <input id="menu_code" type="text" inputmode="latin" required maxlength="16" placeholder="e.g. MN01" autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label for="menu_name">Menu Name</label>
+                <input id="menu_name" type="text" required placeholder="e.g. Lunch" autocomplete="off">
+            </div>
+        </div>
+        <div class="btn-action-row">
+            <button class="btn-save" onclick="addOrUpdateMenu()" type="button">
+                <i class="fa fa-check"></i> <span id="btn-save-label">Save</span>
+            </button>
+            <button class="btn-reset" onclick="resetForm()" type="button">
+                <i class="fa fa-rotate-left"></i> Reset
+            </button>
+        </div>
+    </form>
+
+    <div class="divider"></div>
+
+    <!-- ── TABLE ── -->
+    <div class="table-section">
+        <div class="table-header-row">
+            <h3><i class="fa fa-utensils" style="margin-right:5px;opacity:0.5;"></i>All Menus</h3>
+        </div>
+        <div class="table-empty-sm" id="table-empty">No menus configured yet</div>
+        <div class="table-scroll">
+            <table id="menu_table" style="display:none;">
+                <thead><tr><th>Code</th><th>Name</th><th>Slot</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="divider" style="margin:6px 0;"></div>
+
+    <!-- ── DEFAULT MENU ── -->
+    <div class="default-section">
+        <div class="section-label"><i class="fa fa-bolt" style="margin-right:4px;color:var(--accent);"></i>Default Menu (Auto-Order)</div>
+        <div class="shift-tab-row" id="shift-tabs"></div>
+
+        <div id="dm-config-area" style="display:none;flex:1;min-height:0;flex-direction:column;overflow:hidden;">
+            <div class="toggle-row">
+                <div class="toggle-label">Enable Default Menu</div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="dm-toggle" onchange="onDmToggle()">
+                    <span class="toggle-track"></span>
+                    <span class="toggle-thumb"></span>
+                </label>
+            </div>
+            <div id="dm-items-list" class="dm-items-scroll">
+                <div class="default-items-empty" id="dm-items-empty">
+                    <i class="fa fa-clipboard-list" style="font-size:1.2rem;opacity:0.3;display:block;margin-bottom:4px;"></i>
+                    No default items configured
+                </div>
+            </div>
+            <div class="add-default-row">
+                <div class="form-group" style="flex:2;">
+                    <label>Add Item</label>
+                    <select id="dm-item-sel"></select>
+                </div>
+                <div class="form-group" style="flex:0 0 52px;">
+                    <label>Qty</label>
+                    <input id="dm-item-qty" type="number" value="1" min="1" max="99">
+                </div>
+                <button class="btn-add-default" onclick="addDefaultItem()"><i class="fa fa-plus"></i> Add</button>
+            </div>
+            <button class="btn-save-default" onclick="saveDefaultMenu()">
+                <i class="fa fa-save" style="margin-right:5px;"></i>Save Default Menu
+            </button>
+        </div>
+
+        <div id="dm-no-shift" class="dm-no-shift">Select a shift above to configure default menu</div>
+    </div>
+
+</div>
+</div>
+
+<!-- ── DELETE MODAL ── -->
+<div class="modal-overlay" id="del-modal">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fa fa-trash"></i></div>
+        <div class="modal-title">Delete Menu</div>
+        <div class="modal-sub" id="del-modal-sub">Are you sure?</div>
+        <div class="modal-actions">
+            <button class="btn-modal confirm" id="del-confirm-btn"><i class="fa fa-trash"></i> Delete</button>
+            <button class="btn-modal cancel" onclick="closeDeleteModal()"><i class="fa fa-times"></i> Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+<script>
+"use strict";
+var menus=[], slots=[], shifts_list=[], edit_code=null, _pendingDelete=null;
+
+function toast(m,t){var e=document.getElementById('toast');e.className='toast '+(t||'success');e.innerHTML='<i class="fa fa-'+(t==='error'?'circle-xmark':'circle-check')+'"></i> '+m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show');},2200);}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function slotName(c){var s=slots.find(function(x){return x.slot_code===c;});return s?s.slot_name:c;}
+
+function load(){
+    fetch('/api/menu_master/list').then(function(r){return r.json();}).then(function(data){
+        menus=data.menus||[];slots=data.slots||[];
+        var sel=document.getElementById('slot_sel');
+        sel.innerHTML=slots.length===0?'<option value="">— No slots —</option>':slots.map(function(s){return '<option value="'+esc(s.slot_code)+'">'+esc(s.slot_name)+' ('+s.from_time+' – '+s.to_time+')</option>';}).join('');
+        var tbl=document.getElementById('menu_table'),emp=document.getElementById('table-empty');
+        if(!menus.length){tbl.style.display='none';emp.style.display='';return;}
+        tbl.style.display='';emp.style.display='none';
+        tbl.querySelector('tbody').innerHTML=menus.map(function(x){return '<tr><td><span class="cell-code">'+esc(x.menu_code)+'</span></td><td class="cell-name">'+esc(x.menu_name)+'</td><td><span class="cell-slot">'+esc(slotName(x.slot_code))+'</span></td><td><div class="row-actions"><button class="btn-row edit" onclick="editMenu(\''+esc(x.menu_code)+'\')"><i class="fa fa-pen"></i></button><button class="btn-row del" onclick="openDeleteModal(\''+esc(x.menu_code)+'\')"><i class="fa fa-trash"></i></button></div></td></tr>';}).join('');
+    }).catch(function(){toast('Failed to load','error');});
+}
+
+function addOrUpdateMenu(){
+    var c=document.getElementById('menu_code').value.trim(),n=document.getElementById('menu_name').value.trim(),s=document.getElementById('slot_sel').value;
+    if(!c||!n||!s){toast('Fill all fields','error');return;}
+    fetch(edit_code?'/api/menu_master/update':'/api/menu_master/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({menu_code:edit_code||c,menu_name:n,slot_code:s})})
+    .then(function(r){return r.json();}).then(function(d){if(d.success===false){toast(d.message||'Failed','error');return;}toast(edit_code?'Updated':'Added','success');edit_code=null;resetForm();load();loadShiftsForDefault();}).catch(function(){toast('Network error','error');});
+}
+
+function editMenu(c){
+    var x=menus.find(function(s){return s.menu_code===c;});if(!x)return;
+    document.getElementById('menu_code').value=x.menu_code;document.getElementById('menu_code').readOnly=true;
+    document.getElementById('menu_name').value=x.menu_name;document.getElementById('slot_sel').value=x.slot_code;
+    edit_code=x.menu_code;document.getElementById('btn-save-label').textContent='Update';
+    document.getElementById('card-title').textContent='Edit Menu \u2014 '+x.menu_code;
+    document.querySelector('.main-card').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openDeleteModal(c){_pendingDelete=c;document.getElementById('del-modal-sub').innerHTML='Delete menu <strong>'+esc(c)+'</strong>?<br>All items will also be removed.';document.getElementById('del-modal').classList.add('show');}
+function closeDeleteModal(){_pendingDelete=null;document.getElementById('del-modal').classList.remove('show');}
+document.getElementById('del-confirm-btn').addEventListener('click',function(){if(!_pendingDelete)return;var c=_pendingDelete;closeDeleteModal();fetch('/api/menu_master/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({menu_code:c})}).then(function(r){return r.json();}).then(function(d){if(d.success===false){toast(d.message||'Failed','error');return;}toast('Deleted','success');if(edit_code===c)resetForm();load();loadShiftsForDefault();}).catch(function(){toast('Network error','error');});});
+document.getElementById('del-modal').addEventListener('click',function(e){if(e.target===this)closeDeleteModal();});
+
+function resetForm(){document.getElementById('menu-form').reset();document.getElementById('menu_code').readOnly=false;edit_code=null;document.getElementById('btn-save-label').textContent='Save';document.getElementById('card-title').textContent='Menu Master';}
+
+/* ── Default Menu ── */
+var dm_selected_shift=null, dm_items=[], dm_available=[], dm_enabled_map={};
+
+function loadShiftsForDefault(){
+    fetch('/api/shift_master/list').then(r=>r.json()).then(data=>{
+        shifts_list=data.shifts||[];
+        fetch('/api/default_menu/status').then(r=>r.json()).then(sdata=>{
+            dm_enabled_map=sdata.status||{};
+            document.getElementById('shift-tabs').innerHTML=shifts_list.map(s=>{
+                var statusHtml=dm_enabled_map[s.shift_code]?' <span class="dm-status on">ON</span>':'';
+                return '<button class="shift-tab'+(dm_selected_shift===s.shift_code?' active':'')+'" onclick="selectShiftForDefault(\''+esc(s.shift_code)+'\')">'+esc(s.shift_name)+statusHtml+'</button>';
+            }).join('');
+            if(dm_selected_shift)selectShiftForDefault(dm_selected_shift);
+        });
+    });
+}
+
+function selectShiftForDefault(shift_code){
+    dm_selected_shift=shift_code;
+    document.querySelectorAll('.shift-tab').forEach(t=>{t.classList.toggle('active',t.getAttribute('onclick').includes("'"+shift_code+"'"));});
+    var ca=document.getElementById('dm-config-area');
+    ca.style.display='flex';
+    document.getElementById('dm-no-shift').style.display='none';
+    fetch('/api/default_menu/get?shift_code='+encodeURIComponent(shift_code)).then(r=>r.json()).then(data=>{
+        dm_items=data.items||[];document.getElementById('dm-toggle').checked=!!data.enabled;renderDmItems();
+    });
+    fetch('/api/default_menu/items_for_shift?shift_code='+encodeURIComponent(shift_code)).then(r=>r.json()).then(data=>{
+        dm_available=data.items||[];
+        var sel=document.getElementById('dm-item-sel');
+        sel.innerHTML=!dm_available.length?'<option value="">— No items —</option>':dm_available.map(i=>'<option value="'+esc(i.item_code)+'">'+esc(i.item_name)+' ('+esc(i.category)+')</option>').join('');
+    });
+}
+
+function renderDmItems(){
+    var list=document.getElementById('dm-items-list'),empty=document.getElementById('dm-items-empty');
+    if(!dm_items.length){list.innerHTML='';list.appendChild(empty);empty.style.display='';return;}
+    empty.style.display='none';
+    list.innerHTML=dm_items.map((it,idx)=>'<div class="default-item-row"><div style="flex:1;"><div class="di-name">'+esc(it.item_name)+'</div><div class="di-cat">'+esc(it.category||'')+'</div></div><span class="di-qty">\xd7'+it.qty+'</span><button class="di-remove" onclick="removeDmItem('+idx+')"><i class="fa fa-xmark"></i></button></div>').join('');
+}
+
+function addDefaultItem(){
+    var sel=document.getElementById('dm-item-sel'),code=sel.value;
+    if(!code){toast('Select an item','error');return;}
+    var qty=Math.max(1,parseInt(document.getElementById('dm-item-qty').value)||1);
+    if(dm_items.find(x=>x.item_code===code)){toast('Item already added','error');return;}
+    var avail=dm_available.find(x=>x.item_code===code);
+    dm_items.push({item_code:code,item_name:avail?avail.item_name:code,category:avail?avail.category:'',qty:qty});
+    renderDmItems();document.getElementById('dm-item-qty').value='1';toast('Item added');
+}
+
+function removeDmItem(idx){dm_items.splice(idx,1);renderDmItems();}
+function onDmToggle(){}
+
+function saveDefaultMenu(){
+    if(!dm_selected_shift){toast('Select a shift first','error');return;}
+    var enabled=document.getElementById('dm-toggle').checked,items=dm_items.map(x=>({item_code:x.item_code,qty:x.qty}));
+    if(enabled&&!items.length){toast('Add at least one item when enabling','error');return;}
+    fetch('/api/default_menu/save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shift_code:dm_selected_shift,enabled:enabled,items:items})}).then(r=>r.json()).then(d=>{
+        if(d.success){toast('Default menu saved','success');loadShiftsForDefault();}else{toast(d.message||'Save failed','error');}
+    }).catch(()=>toast('Network error','error'));
+}
+
+window.onload=function(){load();loadShiftsForDefault();};
+</script>
+
+<div id="osk" class="simple-keyboard"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+<link rel="stylesheet" href="/static/css/osk.css">
+<script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+<script src="/static/js/osk.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,479 @@
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Permissions</title>
+  <meta name="viewport" content="width=480, height=800, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="/static/js/rbac_helpers.js"></script>
+
+  <style>
+    :root {
+      --blue:   #205081;
+      --orange: #ffa500;
+      --bg:     #f9f6ef;
+      --card:   #ffffff;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 480px;
+      height: 800px;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: #1e293b;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .page-frame {
+      display: flex;
+      flex-direction: column;
+      width: 480px;
+      height: 800px;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 14px;
+      flex-shrink: 0;
+      height: 46px;
+    }
+    .logo-main, .logo-right { height: 32px; }
+    .header-back-btn {
+      background: transparent; border: none;
+      display: flex; align-items: center; gap: 4px;
+      color: var(--blue); font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; border-radius: 8px; padding: 0 8px; height: 32px;
+    }
+    .header-back-btn:active { background: #e69500; color: #fff; transform: scale(0.96); }
+    .header-back-btn i { font-size: 1rem; }
+    .header-back-btn .back-text { font-size: 0.82rem; }
+
+    /* ── Permissions card (fills all remaining space) ── */
+    .perm-card-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--card);
+      margin: 0 10px 8px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--blue);
+      padding: 10px 14px 2px;
+      flex-shrink: 0;
+    }
+    .section-label span {
+      color: #94a3b8;
+      font-weight: 400;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+    }
+
+    /* ── Tabs ── */
+    .role-tabs {
+      display: flex;
+      border-bottom: 2px solid #f0ede6;
+      flex-shrink: 0;
+    }
+    .role-tab {
+      flex: 1; padding: 10px 6px; text-align: center;
+      font-size: 0.88rem; font-weight: 600; color: #64748b;
+      cursor: pointer; border: none; background: none;
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .role-tab.active { color: var(--blue); border-bottom-color: var(--orange); }
+    .role-tab i { margin-right: 5px; font-size: 0.82rem; }
+
+    /* ── Perm body ── */
+    .perm-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 12px 4px;
+      gap: 4px;
+      min-height: 0;
+    }
+
+    /* ── Group header ── */
+    .perm-group-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--blue);
+      color: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .perm-group-header input[type="checkbox"] {
+      width: 18px; height: 18px;
+      accent-color: var(--orange); cursor: pointer; flex-shrink: 0;
+    }
+    .perm-group-header i { font-size: 0.88rem; }
+
+    /* ── Children grid ── */
+    .perm-children {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      padding: 4px 0 2px 22px;
+      flex-shrink: 0;
+    }
+
+    .perm-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8f7f4;
+      border: 1.5px solid #e8e4dc;
+      border-radius: 8px;
+      padding: 8px 10px;
+      gap: 6px;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .perm-chip:active { border-color: var(--blue); }
+    .perm-chip-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.2;
+      flex: 1;
+    }
+    .perm-chip input[type="checkbox"] {
+      width: 18px; height: 18px;
+      accent-color: var(--blue); cursor: pointer; flex-shrink: 0;
+    }
+
+    /* ── Standalone ── */
+    .standalone-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #94a3b8; padding: 4px 0 2px 2px; flex-shrink: 0;
+    }
+    .standalone-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    /* ── Bottom bar ── */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-top: 2px solid #f0ede6;
+      flex-shrink: 0;
+    }
+    .role-select-main {
+      flex: 1; border: 1.5px solid #e2e8f0; border-radius: 8px;
+      padding: 8px 10px; font-size: 0.85rem; font-weight: 600;
+      color: var(--blue); background: #fff; cursor: pointer; outline: none;
+    }
+    .role-select-main:focus { border-color: var(--orange); }
+    .btn-update {
+      background: var(--blue); color: #fff; border: none; border-radius: 8px;
+      padding: 8px 16px; font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .btn-update:active { transform: scale(0.96); }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--blue); color: #fff;
+      padding: 10px 22px; border-radius: 20px;
+      font-size: 0.82rem; font-weight: 600; z-index: 9999;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #15803d; }
+    #toast.error   { background: #b91c1c; }
+
+    .skeleton {
+      height: 40px;
+      background: linear-gradient(90deg, #f0ede6 25%, #e8e4dc 50%, #f0ede6 75%);
+      background-size: 200% 100%; animation: shimmer 1.2s infinite;
+      border-radius: 8px; margin: 6px 14px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    .empty-state {
+      padding: 24px 14px; text-align: center;
+      color: #94a3b8; font-size: 0.85rem;
+    }
+    .empty-state i { font-size: 1.6rem; margin-bottom: 8px; display: block; }
+  </style>
+</head>
+<body>
+
+  <div class="page-frame">
+    <div class="header" role="banner">
+      <button class="header-back-btn" onclick="window.location.href='/config'" aria-label="Back">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span class="back-text">Back</span>
+      </button>
+      <img src="/static/img/logo_company.png" class="logo-main" alt="Company" />
+      <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage" />
+    </div>
+
+    <div id="pageContent" style="display:contents;">
+      <div class="skeleton"></div>
+      <div class="skeleton" style="height:30px; margin-top:8px;"></div>
+      <div class="skeleton" style="height:140px; margin-top:4px;"></div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+  const PAGE_GROUPS = {
+    user_page:         { label: 'User Page',         icon: 'fa-user',     children: ['register','delete'] },
+    user_data_page:    { label: 'User Data Page',    icon: 'fa-database', children: ['import','export','logs'] },
+    config_page:       { label: 'Config Page',       icon: 'fa-gear',     children: ['userconfig','device_config','device_console'] },
+    shift_config_page: { label: 'Shift Config',      icon: 'fa-clock',    children: ['shift_master','time_slot_master','menu_master','item_master','item_limits'] },
+  };
+
+  const PAGE_META = {
+    register:        { label: 'Register' },
+    delete:          { label: 'Delete' },
+    import:          { label: 'Import' },
+    export:          { label: 'Export' },
+    logs:            { label: 'Logs' },
+    userconfig:      { label: 'User Config' },
+    device_config:   { label: 'Device Config' },
+    device_console:  { label: 'Dev Console' },
+    shift_master:    { label: 'Shift Master' },
+    time_slot_master:{ label: 'Time Slot' },
+    menu_master:     { label: 'Menu Master' },
+    item_master:     { label: 'Item Master' },
+    item_limits:     { label: 'Item Limits' },
+    settings:        { label: 'Settings' },
+    diagnostic:      { label: 'Diagnostic' },
+    discover:        { label: 'Discovery' },
+    modes:           { label: 'Modes' },
+    permissions:     { label: 'Permissions' },
+    Network:         { label: 'Network' },
+    check_menu:      { label: 'Order Now' },
+  };
+
+  const STANDALONE_PAGES = ['check_menu','settings','diagnostic','discover','modes','permissions','Network'];
+
+  let myRole = null, myEmpId = null, myName = '', activeTab = null, pendingPerms = {};
+
+  let toastTimer = null;
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show' + (type ? ' ' + type : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { t.className = ''; }, 2800);
+  }
+
+  async function apiGet(url) {
+    const r = await fetch(url); if (!r.ok) throw new Error(await r.text()); return r.json();
+  }
+  async function apiPost(url, body) {
+    const r = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    if (!r.ok) throw new Error(await r.text()); return r.json();
+  }
+
+  async function init() {
+    const rbac = await RbacClient.load();
+    myRole  = rbac.role;
+    myEmpId = rbac.emp_id || '';
+    myName  = rbac.name   || myEmpId || 'You';
+
+    if (!rbac.is_super_admin) {
+      document.getElementById('pageContent').innerHTML = `
+        <div class="empty-state"><i class="fa-solid fa-lock"></i>Only Super Admin can manage permissions.</div>`;
+      return;
+    }
+
+    const [adminPerms, userPerms] = await Promise.all([
+      apiGet('/api/rbac/role_permissions?role=Admin'),
+      apiGet('/api/rbac/role_permissions?role=User')
+    ]);
+    pendingPerms['Admin'] = { ...adminPerms.permissions };
+    pendingPerms['User']  = { ...userPerms.permissions };
+    activeTab = 'Admin';
+    render();
+  }
+
+  function render() {
+    const el = document.getElementById('pageContent');
+    el.innerHTML = `
+      <div class="perm-card-wrap">
+        <div class="section-label">
+          <i class="fa-solid fa-shield-halved" style="color:var(--orange)"></i>
+          Role Permissions
+          <span>Super Admin has all access</span>
+        </div>
+        <div class="role-tabs">
+          <button class="role-tab ${activeTab==='Admin'?'active':''}" onclick="switchTab('Admin')">
+            <i class="fa-solid fa-user-shield"></i>Admin
+          </button>
+          <button class="role-tab ${activeTab==='User'?'active':''}" onclick="switchTab('User')">
+            <i class="fa-solid fa-user"></i>User
+          </button>
+        </div>
+        <div class="perm-body" id="permBody">${renderPermBody(activeTab)}</div>
+        <div class="bottom-bar">
+          <select class="role-select-main" id="roleSelectMain" onchange="switchTab(this.value)">
+            <option value="Admin" ${activeTab==='Admin'?'selected':''}>Admin</option>
+            <option value="User"  ${activeTab==='User' ?'selected':''}>User</option>
+          </select>
+          <button class="btn-update" onclick="savePerms()">
+            <i class="fa-solid fa-check"></i>Update Permissions
+          </button>
+        </div>
+      </div>`;
+  }
+
+  function renderPermBody(role) {
+    const perms = pendingPerms[role] || {};
+    let html = '';
+
+    Object.entries(PAGE_GROUPS).forEach(([parentKey, group]) => {
+      const children = group.children;
+      const allChecked = children.every(k => perms[k]);
+      const someChecked = children.some(k => perms[k]);
+
+      html += `
+        <div class="perm-group-header" onclick="toggleParentPerm('${role}','${parentKey}', !this.querySelector('input').checked)">
+          <input type="checkbox" ${allChecked?'checked':''} ${!allChecked&&someChecked?'class="indeterminate"':''}
+            onclick="event.stopPropagation(); toggleParentPerm('${role}','${parentKey}',this.checked)">
+          <i class="fa-solid ${group.icon}"></i>${group.label}
+        </div>
+        <div class="perm-children" id="children-${role}-${parentKey}">`;
+
+      children.forEach(key => {
+        const meta = PAGE_META[key] || { label: key };
+        html += `
+          <label class="perm-chip">
+            <span class="perm-chip-label">${esc(meta.label)}</span>
+            <input type="checkbox" ${perms[key]?'checked':''}
+              onchange="toggleChildPerm('${role}','${parentKey}','${key}',this.checked)">
+          </label>`;
+      });
+      html += '</div>';
+    });
+
+    html += '<div class="standalone-label">Standalone Pages</div><div class="standalone-grid">';
+    STANDALONE_PAGES.forEach(key => {
+      const meta = PAGE_META[key] || { label: key };
+      html += `
+        <label class="perm-chip">
+          <span class="perm-chip-label">${esc(meta.label)}</span>
+          <input type="checkbox" ${perms[key]?'checked':''}
+            onchange="togglePerm('${role}','${key}',this.checked)">
+        </label>`;
+    });
+    html += '</div>';
+
+    setTimeout(() => {
+      document.querySelectorAll('input.indeterminate').forEach(el => {
+        el.indeterminate = true; el.classList.remove('indeterminate');
+      });
+    }, 0);
+
+    return html;
+  }
+
+  window.toggleParentPerm = function(role, parentKey, val) {
+    if (!pendingPerms[role]) pendingPerms[role] = {};
+    const group = PAGE_GROUPS[parentKey]; if (!group) return;
+    pendingPerms[role][parentKey] = val;
+    group.children.forEach(k => { pendingPerms[role][k] = val; });
+    const c = document.getElementById(`children-${role}-${parentKey}`);
+    if (c) c.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = val; });
+    updateParentCheckbox(role, parentKey);
+  };
+
+  window.toggleChildPerm = function(role, parentKey, childKey, val) {
+    if (!pendingPerms[role]) pendingPerms[role] = {};
+    pendingPerms[role][childKey] = val;
+    updateParentCheckbox(role, parentKey);
+  };
+
+  function updateParentCheckbox(role, parentKey) {
+    const group = PAGE_GROUPS[parentKey]; if (!group) return;
+    const perms = pendingPerms[role] || {};
+    const allChecked = group.children.every(k => perms[k]);
+    const someChecked = group.children.some(k => perms[k]);
+    pendingPerms[role][parentKey] = allChecked;
+    document.querySelectorAll('.perm-group-header').forEach(h => {
+      if (h.textContent.trim().includes(group.label)) {
+        const cb = h.querySelector('input[type="checkbox"]');
+        if (cb) { cb.checked = allChecked; cb.indeterminate = !allChecked && someChecked; }
+      }
+    });
+  }
+
+  window.togglePerm = function(role, page, val) {
+    if (!pendingPerms[role]) pendingPerms[role] = {};
+    pendingPerms[role][page] = val;
+  };
+
+  window.switchTab = function(role) {
+    if (!role) return;
+    activeTab = role;
+    document.querySelectorAll('.role-tab').forEach(t => {
+      t.classList.toggle('active', t.textContent.trim().startsWith(role));
+    });
+    const pb = document.getElementById('permBody');
+    if (pb) pb.innerHTML = renderPermBody(role);
+    const sel = document.getElementById('roleSelectMain');
+    if (sel) sel.value = role;
+  };
+
+  window.savePerms = async function() {
+    const role = activeTab || 'Admin';
+    try {
+      await apiPost('/api/rbac/role_permissions', { role, permissions: pendingPerms[role] });
+      showToast(`${role} permissions saved!`, 'success');
+    } catch (e) { showToast('Save failed: ' + (e.message || e), 'error'); }
+  };
+
+  function esc(s) {
+    return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    init().catch(err => {
+      document.getElementById('pageContent').innerHTML = `
+        <div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>
+        Failed to load.<br><small>${err.message}</small></div>`;
+    });
+  });
+  </script>
+</body>
+</html>

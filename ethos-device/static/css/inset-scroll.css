@@ -1,0 +1,55 @@
+:root {
+    --sb-inset-right: 1px;     /* distance from right edge */
+  --sb-width: 19px;          /* scrollbar width */
+  --sb-radius: 12px;     /* corner radius */
+  --is-track-bg: rgba(0,0,0,0.06);
+  --is-thumb-bg: #bfbfbf;
+  --is-min-thumb: 48px;     /* min thumb height for touch */
+}
+/* ==============================
+   CUSTOM INSET SCROLLBAR (GLOBAL)
+   ============================== */
+
+
+/* Scroll container */
+.scroll-area{
+  position: relative;
+  overflow-y: auto;
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* IE / Edge */
+}
+.scroll-area::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+}
+
+/* Scroll track */
+.custom-scroll{
+  position: fixed;
+  right: var(--sb-inset-right);
+  top: 0;                       /* JS adjusts */
+  height: 100vh;                /* JS adjusts */
+  width: var(--sb-width);
+  background: rgba(0,0,0,0.06);
+  border-radius: var(--sb-radius);
+  z-index: 9999;
+  display: none;
+  box-sizing: border-box;
+}
+
+/* Scroll thumb */
+.custom-thumb{
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 0;
+  height: 80px;
+  background: #bfbfbf;
+  border-radius: calc(var(--sb-radius) - 2px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  cursor: grab;
+  touch-action: none;
+}
+.custom-thumb:active{
+  cursor: grabbing;
+}

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Menu</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="/static/js/rbac_helpers.js"></script>
+
+  <style>
+    :root {
+      --sb-inset-right: 1px;
+      --sb-width: 19px;
+      --sb-radius: 12px;
+      --header-max: 800px;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #f9f6ef;
+      overflow: hidden;
+      -webkit-user-select: none;
+      user-select: none;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px 0 32px;
+      width: 100%;
+      max-width: var(--header-max);
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    .logo-main { height: 48px; }
+    .logo-right { height: 48px; }
+
+    .scroll-area {
+      position: relative;
+      height: calc(100vh - 90px);
+      overflow-y: auto;
+      box-sizing: border-box;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .scroll-area::-webkit-scrollbar { width: 0; height: 0; }
+
+    .custom-scroll {
+      position: fixed;
+      right: var(--sb-inset-right);
+      top: 90px;
+      height: calc(100vh - 90px);
+      width: var(--sb-width);
+      background: rgba(0, 0, 0, 0.06);
+      border-radius: var(--sb-radius);
+      z-index: 9999;
+      display: none;
+      box-sizing: border-box;
+    }
+
+    .custom-thumb {
+      position: absolute;
+      left: 2px; right: 2px; top: 0;
+      height: 80px;
+      background: #bfbfbf;
+      border-radius: calc(var(--sb-radius) - 2px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+      cursor: grab;
+      touch-action: none;
+    }
+    .custom-thumb:active { cursor: grabbing; }
+
+    .main-menu {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 30px;
+      padding: 0 12px 20px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      justify-content: center;
+    }
+
+    .menu-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 10px 6px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      aspect-ratio: 1 / 1;
+      transition: transform 0.12s ease, box-shadow 0.15s ease;
+    }
+    .menu-card:active { transform: scale(0.93); }
+    .menu-card:hover {
+      box-shadow: 0 8px 32px rgba(32,80,129,0.13);
+      background: #faf8f3;
+    }
+
+    .menu-title { font-size: 0.90rem; font-weight: 600; color: #205081; line-height: 1.15; }
+    .menu-sub { display: none; }
+    .menu-icon { font-size: 3rem; margin-bottom: 20px; color: #ffa500; line-height: 1; }
+
+    .header-back-btn {
+      background: transparent; border: none; min-width: 42px; height: 34px;
+      display: flex; align-items: center; gap: 4px; color: #205081;
+      font-size: 0.9rem; font-weight: 600; cursor: pointer; border-radius: 8px; padding: 0 8px;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .header-back-btn i { font-size: 1.05rem; }
+    .header-back-btn .back-text { font-size: 0.85rem; }
+    @media (hover: hover) {
+      .header-back-btn:hover { background: #ffa500; color: #ffffff; }
+      .header-back-btn:hover i, .header-back-btn:hover .back-text { color: #ffffff; }
+    }
+    .header-back-btn:active { background: #e69500; transform: scale(0.96); }
+
+    @media (max-width: 480px) {
+      html, body { width: 100%; margin: 0; padding: 0; overflow-x: hidden; }
+      .main-menu { grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 8px; justify-content: center; }
+      .scroll-area { padding-left: 10px; padding-right: 10px; }
+      .menu-card:hover .menu-icon { transform: scale(1.15); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header" id="pageHeader" role="banner" aria-label="Application header">
+    <button class="header-back-btn" onclick="window.location.href='/'" aria-label="Back">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span class="back-text">Back</span>
+    </button>
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Company" />
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage" />
+  </div>
+
+  <div class="scroll-area" id="scrollArea" aria-label="Main content">
+    <div class="main-menu" id="mainMenu" role="navigation" aria-label="Main menu">
+
+      <div class="menu-card" data-rbac-page="check_menu" onclick="location.href='/check_menu'" role="link" tabindex="0" aria-label="Order Now">
+        <div class="menu-icon"><i class="fa fa-utensils"></i></div>
+        <div class="menu-title">Order Now</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="user_page" onclick="location.href='/user_management'" role="link" tabindex="0" aria-label="User">
+        <div class="menu-icon"><i class="fa-solid fa-user"></i></div>
+        <div class="menu-title">User</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="user_data_page" onclick="location.href='/user_data'" role="link" tabindex="0" aria-label="User Data">
+        <div class="menu-icon"><i class="fa-solid fa-database"></i></div>
+        <div class="menu-title">User Data</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="settings" onclick="location.href='/settings'" role="link" tabindex="0" aria-label="Settings">
+        <div class="menu-icon"><i class="fa-solid fa-sliders"></i></div>
+        <div class="menu-title">Settings</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="diagnostic" onclick="location.href='/diagnostic'" role="link" tabindex="0" aria-label="Diagnostic">
+        <div class="menu-icon"><i class="fa-solid fa-stethoscope"></i></div>
+        <div class="menu-title">Diagnostic</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="config_page" onclick="location.href='/config'" role="link" tabindex="0" aria-label="Config">
+        <div class="menu-icon"><i class="fa-solid fa-gear"></i></div>
+        <div class="menu-title">Config</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="Network" onclick="location.href='/Network'" role="link" tabindex="0" aria-label="Network">
+        <div class="menu-icon"><i class="fa-solid fa-network-wired"></i></div>
+        <div class="menu-title">Network</div>
+      </div>
+
+      <div class="menu-card" data-rbac-page="shift_config_page" onclick="location.href='/shift_config'" role="link" tabindex="0" aria-label="Shift Config">
+        <div class="menu-icon"><i class="fa fa-clock"></i></div>
+        <div class="menu-title">Shift Config</div>
+      </div>
+
+      <div class="menu-card" data-rbac-always onclick="location.href='/about'" role="link" tabindex="0" aria-label="About">
+        <div class="menu-icon"><i class="fa-solid fa-circle-info"></i></div>
+        <div class="menu-title">About</div>
+      </div>
+
+       <div class="menu-card" data-rbac-page="report_page" onclick="location.href='/report'" role="link" tabindex="0" aria-label="Report">
+  <div class="menu-icon"><i class="fa-solid fa-file-lines"></i></div>
+  <div class="menu-title">Report</div>
+</div>
+    </div>
+  </div>
+
+  <div class="custom-scroll" id="customScroll" aria-hidden="true">
+    <div class="custom-thumb" id="customThumb"></div>
+  </div>
+
+  <script>
+    const ROLE_RANK = { 'User': 0, 'Admin': 1, 'Super Admin': 2 };
+
+    async function applyRbac() {
+      document.querySelectorAll('.menu-card[data-rbac-page]')
+        .forEach(c => c.style.display = 'none');
+
+      let rbac;
+      try {
+        rbac = await RbacClient.load();
+      } catch (e) {
+        document.querySelectorAll('.menu-card').forEach(c => c.style.display = '');
+        window.dispatchEvent(new Event('rbac-ready'));
+        return;
+      }
+
+      if (!rbac.loggedIn) {
+        /* Not logged in: hide all permission-gated cards, show always-visible ones */
+        document.querySelectorAll('.menu-card').forEach(c => {
+          if (c.hasAttribute('data-rbac-page')) {
+            c.style.display = 'none';
+          } else {
+            c.style.display = '';
+          }
+        });
+        window.dispatchEvent(new Event('rbac-ready'));
+        return;
+      }
+
+      if (rbac.isSuperAdmin) {
+        document.querySelectorAll('.menu-card').forEach(c => c.style.display = '');
+        window.dispatchEvent(new Event('rbac-ready'));
+        return;
+      }
+
+      document.querySelectorAll('.menu-card').forEach(card => {
+        if (card.hasAttribute('data-rbac-always')) {
+          card.style.display = '';
+          return;
+        }
+        const page = card.getAttribute('data-rbac-page');
+        if (page !== null) {
+          card.style.display = rbac.can(page) ? '' : 'none';
+          return;
+        }
+        card.style.display = '';
+      });
+
+      window.dispatchEvent(new Event('rbac-ready'));
+    }
+
+    (function () {
+      const area   = document.getElementById('scrollArea');
+      const header = document.getElementById('pageHeader');
+      const track  = document.getElementById('customScroll');
+      const thumb  = document.getElementById('customThumb');
+      let dragging = false, startY = 0, startScrollTop = 0;
+      const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+      function layout() {
+        const rect = header.getBoundingClientRect();
+        const top  = Math.ceil(rect.bottom);
+        const h    = window.innerHeight - top;
+        track.style.top    = top + 'px';
+        track.style.height = h + 'px';
+        area.style.height  = h + 'px';
+        refreshThumb();
+        toggleTrack();
+      }
+      function toggleTrack() {
+        track.style.display = (area.scrollHeight > area.clientHeight + 1) ? 'block' : 'none';
+      }
+      function refreshThumb() {
+        const trackH    = track.clientHeight;
+        const maxScroll = Math.max(0, area.scrollHeight - area.clientHeight);
+        const ratio     = area.clientHeight / (area.scrollHeight || 1);
+        const minThumb  = 48;
+        const th        = clamp(Math.round(trackH * ratio), minThumb, trackH);
+        thumb.style.height = th + 'px';
+        const maxTop = trackH - th;
+        const tTop   = maxScroll ? (area.scrollTop / maxScroll) * maxTop : 0;
+        thumb.style.transform = 'translateY(' + tTop + 'px)';
+      }
+      thumb.addEventListener('pointerdown', e => {
+        dragging = true; thumb.setPointerCapture(e.pointerId);
+        startY = e.clientY; startScrollTop = area.scrollTop; e.preventDefault();
+      });
+      thumb.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const trackH = track.clientHeight, th = thumb.offsetHeight;
+        const maxTop = Math.max(1, trackH - th);
+        const maxScroll = Math.max(1, area.scrollHeight - area.clientHeight);
+        area.scrollTop = clamp(startScrollTop + (e.clientY - startY) * (maxScroll / maxTop), 0, maxScroll);
+      });
+      function endDrag(e) { if (!dragging) return; dragging = false; try { thumb.releasePointerCapture(e.pointerId); } catch (_) {} }
+      thumb.addEventListener('pointerup', endDrag);
+      thumb.addEventListener('pointercancel', endDrag);
+      thumb.addEventListener('lostpointercapture', () => dragging = false);
+      track.addEventListener('pointerdown', e => {
+        if (e.target !== track) return;
+        const rect = track.getBoundingClientRect();
+        const clickY = e.clientY - rect.top, th = thumb.offsetHeight;
+        const trackH = track.clientHeight, maxTop = Math.max(1, trackH - th);
+        const maxScroll = Math.max(1, area.scrollHeight - area.clientHeight);
+        area.scrollTop = (clamp(clickY - th / 2, 0, maxTop) / maxTop) * maxScroll;
+      });
+      area.addEventListener('scroll', refreshThumb, { passive: true });
+      window.addEventListener('resize', layout);
+      window.addEventListener('load', layout);
+      window.addEventListener('rbac-ready', () => { layout(); setTimeout(layout, 100); });
+      const grid = document.getElementById('mainMenu');
+      if (grid && window.ResizeObserver) new ResizeObserver(() => layout()).observe(grid);
+      setTimeout(layout, 100);
+      setTimeout(layout, 500);
+    })();
+
+    let inactivityTimer = null;
+    const INACTIVITY_TIMEOUT = 60000;
+    function resetInactivityTimer() {
+      if (inactivityTimer) clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => { window.location.href = '/'; }, INACTIVITY_TIMEOUT);
+    }
+    ['mousemove','mousedown','keypress','scroll','touchstart','click'].forEach(event => {
+      document.addEventListener(event, resetInactivityTimer, { passive: true });
+    });
+    resetInactivityTimer();
+
+    document.addEventListener('DOMContentLoaded', applyRbac);
+  </script>
+</body>
+</html>

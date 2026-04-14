@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Report</title>
+  <meta name="viewport" content="width=480, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="/static/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <script src="/static/js/rbac_helpers.js"></script>
+
+  <style>
+    :root {
+      --kiosk-bg: #f9f6ef;
+      --card-bg: #ffffff;
+      --accent: #ffa500;
+      --accent-dark: #e69500;
+      --heading: #205081;
+      --text: #333333;
+      --text-muted: #777777;
+      --border: #e0dcd4;
+      --row-alt: #faf8f3;
+      --sb-inset-right: 1px;
+      --sb-width: 16px;
+      --sb-radius: 10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      width: 480px; height: 800px; margin: 0; padding: 0;
+      background: var(--kiosk-bg);
+      overflow: hidden;
+      -webkit-user-select: none; user-select: none;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    /* ── HEADER 48px ── */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 6px 12px; height: 48px;
+    }
+    .header-back-btn {
+      background: transparent; border: none; height: 32px;
+      display: flex; align-items: center; gap: 3px; color: var(--heading);
+      font-size: 0.8rem; font-weight: 600; cursor: pointer;
+      border-radius: 8px; padding: 0 6px;
+    }
+    .header-back-btn i { font-size: 0.9rem; }
+    .header-back-btn .back-text { font-size: 0.75rem; }
+    .header-back-btn:active { background: var(--accent-dark); color: #fff; transform: scale(0.96); }
+    .logo-main, .logo-right { height: 34px; }
+
+    /* ── SCROLL ── */
+    .scroll-area {
+      height: 752px; /* 800 - 48 */
+      overflow-y: auto; padding: 0 10px 12px;
+      scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .scroll-area::-webkit-scrollbar { width: 0; }
+
+    .custom-scroll {
+      position: fixed; right: var(--sb-inset-right); top: 48px;
+      height: 752px; width: var(--sb-width);
+      background: rgba(0,0,0,0.06); border-radius: var(--sb-radius);
+      z-index: 9999; display: none;
+    }
+    .custom-thumb {
+      position: absolute; left: 2px; right: 2px; top: 0; height: 56px;
+      background: #bfbfbf; border-radius: calc(var(--sb-radius) - 2px);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.25); cursor: grab; touch-action: none;
+    }
+    .custom-thumb:active { cursor: grabbing; }
+
+    /* ── TITLE ── */
+    .page-title {
+      font-size: 0.95rem; font-weight: 700; color: var(--heading);
+      margin: 6px 0; display: flex; align-items: center; gap: 5px;
+    }
+    .page-title i { color: var(--accent); font-size: 0.9rem; }
+
+    /* ── FILTERS ── */
+    .filter-panel {
+      background: var(--card-bg); border-radius: 10px;
+      padding: 8px 10px; margin-bottom: 6px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06);
+    }
+    .filter-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 5px;
+    }
+    .filter-row:last-child { margin-bottom: 0; }
+    .filter-group label {
+      display: block; font-size: 0.58rem; font-weight: 600;
+      color: var(--text-muted); text-transform: uppercase;
+      letter-spacing: 0.3px; margin-bottom: 1px;
+    }
+    .filter-group select,
+    .filter-group input[type="date"] {
+      width: 100%; padding: 6px 7px; font-size: 0.75rem;
+      border: 1.5px solid var(--border); border-radius: 7px;
+      background: var(--kiosk-bg); color: var(--text);
+      font-family: inherit; outline: none;
+      -webkit-appearance: none;
+    }
+    .filter-group select:focus,
+    .filter-group input[type="date"]:focus { border-color: var(--accent); }
+
+    .btn-row { display: flex; gap: 5px; margin-top: 6px; }
+    .btn {
+      flex: 1; padding: 7px 0; border: none; border-radius: 7px;
+      font-size: 0.73rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      font-family: inherit;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 1px 5px rgba(255,165,0,0.25); }
+    .btn-outline { background: var(--card-bg); color: var(--heading); border: 1.5px solid var(--border); }
+    .btn-outline:active { border-color: var(--accent); color: var(--accent); }
+    .btn-outline.printing { opacity: 0.5; pointer-events: none; }
+    .btn i { font-size: 0.7rem; }
+
+    /* ── SUMMARY ── */
+    .summary-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px; margin-bottom: 6px;
+    }
+    .summary-card {
+      background: var(--card-bg); border-radius: 8px;
+      padding: 6px 4px; text-align: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+    .summary-card .sc-value {
+      font-size: 1.1rem; font-weight: 700; color: var(--heading);
+    }
+    .summary-card .sc-label {
+      font-size: 0.52rem; color: var(--text-muted); margin-top: 0;
+      text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600;
+    }
+
+    /* ── TABS ── */
+    .tab-bar {
+      display: flex; margin-bottom: 6px;
+      background: var(--card-bg); border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05); overflow: hidden;
+    }
+    .tab-btn {
+      flex: 1; padding: 7px 0; border: none; background: transparent;
+      font-size: 0.68rem; font-weight: 600; color: var(--text-muted);
+      cursor: pointer; font-family: inherit;
+      display: flex; align-items: center; justify-content: center; gap: 3px;
+    }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+    .tab-btn:not(.active):active { background: var(--row-alt); }
+    .tab-btn i { font-size: 0.7rem; }
+
+    /* ── TABLE ── */
+    .table-card {
+      background: var(--card-bg); border-radius: 10px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.06); overflow: hidden;
+    }
+    .table-card table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+    .table-card thead th {
+      background: var(--heading); color: #fff;
+      padding: 7px 7px; text-align: left;
+      font-size: 0.6rem; text-transform: uppercase;
+      letter-spacing: 0.3px; font-weight: 600;
+      position: sticky; top: 0; z-index: 2;
+    }
+    .table-card tbody td {
+      padding: 6px 7px; border-bottom: 1px solid var(--border); color: var(--text);
+    }
+    .table-card tbody tr:nth-child(even) { background: var(--row-alt); }
+    .table-card tbody tr:last-child td { border-bottom: none; }
+    .count-badge {
+      display: inline-block; background: var(--accent); color: #fff;
+      padding: 1px 7px; border-radius: 14px;
+      font-weight: 700; font-size: 0.7rem;
+      min-width: 22px; text-align: center;
+    }
+
+    /* ── STATES ── */
+    .empty-state { text-align: center; padding: 24px 12px; color: var(--text-muted); }
+    .empty-state i { font-size: 1.8rem; color: var(--border); margin-bottom: 6px; }
+    .empty-state p { font-size: 0.78rem; margin: 3px 0 0; }
+
+    .spinner { display: none; text-align: center; padding: 20px; }
+    .spinner.show { display: block; }
+    .spinner::after {
+      content: ''; display: inline-block; width: 24px; height: 24px;
+      border: 3px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .toast {
+      position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+      background: var(--heading); color: #fff; padding: 7px 18px;
+      border-radius: 7px; font-size: 0.75rem; font-weight: 600;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+      opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 10000;
+    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: #c0392b; }
+  </style>
+</head>
+<body>
+
+  <div class="header" id="pageHeader">
+    <button class="header-back-btn" onclick="window.location.href='/menu'">
+      <i class="fa-solid fa-arrow-left"></i>
+      <span class="back-text">Back</span>
+    </button>
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Company" />
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage" />
+  </div>
+
+  <div class="scroll-area" id="scrollArea">
+    <div class="page-title"><i class="fa-solid fa-file-lines"></i> Consumption Report</div>
+
+    <div class="filter-panel">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Date</label>
+          <input type="date" id="filterDate" />
+        </div>
+        <div class="filter-group">
+          <label>Shift</label>
+          <select id="filterShift"><option value="">All Shifts</option></select>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Time Slot</label>
+          <select id="filterSlot"><option value="">All Slots</option></select>
+        </div>
+        <div class="filter-group">
+          <label>Item</label>
+          <select id="filterItem"><option value="">All Items</option></select>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="fetchReport()">
+          <i class="fa-solid fa-magnifying-glass"></i> Apply
+        </button>
+        <button class="btn btn-outline" onclick="resetFilters()">
+          <i class="fa-solid fa-rotate-left"></i> Reset
+        </button>
+        <button class="btn btn-outline" id="printBtn" onclick="printReport()">
+          <i class="fa-solid fa-print"></i> Print
+        </button>
+      </div>
+    </div>
+
+    <div class="summary-row" id="summaryRow">
+      <div class="summary-card">
+        <div class="sc-value" id="sumTotal">0</div>
+        <div class="sc-label">Total Items</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-value" id="sumUsers">0</div>
+        <div class="sc-label">Unique Users</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-value" id="sumItems">0</div>
+        <div class="sc-label">Item Types</div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="shift" onclick="switchTab('shift')">
+        <i class="fa-solid fa-sun"></i> Shift
+      </button>
+      <button class="tab-btn" data-tab="slot" onclick="switchTab('slot')">
+        <i class="fa-solid fa-clock"></i> Slot
+      </button>
+      <button class="tab-btn" data-tab="day" onclick="switchTab('day')">
+        <i class="fa-solid fa-calendar-day"></i> Day
+      </button>
+    </div>
+
+    <div class="spinner" id="spinner"></div>
+
+    <div class="table-card" id="tableCard">
+      <table>
+        <thead id="tableHead"></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <i class="fa-solid fa-box-open"></i>
+      <p>No records found for selected filters.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="custom-scroll" id="customScroll" aria-hidden="true">
+    <div class="custom-thumb" id="customThumb"></div>
+  </div>
+
+  <script>
+    let currentTab = 'shift';
+    let reportData = null;
+    let filterMeta = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await loadFilterOptions();
+      document.getElementById('filterDate').value = todayStr();
+      await fetchReport();
+    });
+
+    function todayStr() {
+      const d = new Date();
+      return d.getFullYear() + '-' +
+        String(d.getMonth() + 1).padStart(2, '0') + '-' +
+        String(d.getDate()).padStart(2, '0');
+    }
+
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (isError ? ' error' : '');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => { t.className = 'toast'; }, 3000);
+    }
+
+    async function loadFilterOptions() {
+      try {
+        const res = await fetch('/api/report/filters');
+        filterMeta = await res.json();
+        const sSel = document.getElementById('filterShift');
+        const tSel = document.getElementById('filterSlot');
+        const iSel = document.getElementById('filterItem');
+        (filterMeta.shifts || []).forEach(s => { sSel.innerHTML += `<option value="${s}">${s}</option>`; });
+        (filterMeta.slots || []).forEach(s => { tSel.innerHTML += `<option value="${s}">${s}</option>`; });
+        (filterMeta.items || []).forEach(i => { iSel.innerHTML += `<option value="${i}">${i}</option>`; });
+      } catch (e) { console.error('Failed to load filters', e); }
+    }
+
+    async function fetchReport() {
+      const params = new URLSearchParams();
+      const d = document.getElementById('filterDate').value;
+      const s = document.getElementById('filterShift').value;
+      const t = document.getElementById('filterSlot').value;
+      const i = document.getElementById('filterItem').value;
+      if (d) params.set('date', d);
+      if (s) params.set('shift', s);
+      if (t) params.set('slot', t);
+      if (i) params.set('item', i);
+
+      showSpinner(true);
+      try {
+        const res = await fetch('/api/report/consumption?' + params.toString());
+        reportData = await res.json();
+        updateSummary();
+        renderTable();
+      } catch (e) { console.error('Report fetch failed', e); }
+      finally { showSpinner(false); }
+    }
+
+    function updateSummary() {
+      if (!reportData) return;
+      document.getElementById('sumTotal').textContent = reportData.total_count || 0;
+      document.getElementById('sumUsers').textContent = reportData.unique_users || 0;
+      document.getElementById('sumItems').textContent = reportData.unique_items || 0;
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      renderTable();
+    }
+
+    function renderTable() {
+      const thead = document.getElementById('tableHead');
+      const tbody = document.getElementById('tableBody');
+      const empty = document.getElementById('emptyState');
+      const card  = document.getElementById('tableCard');
+      if (!reportData) { empty.style.display = 'block'; card.style.display = 'none'; return; }
+
+      let rows = [];
+      if (currentTab === 'shift') {
+        thead.innerHTML = '<tr><th>Shift</th><th>Item</th><th>Count</th></tr>';
+        rows = reportData.by_shift || [];
+        tbody.innerHTML = rows.map(r =>
+          `<tr><td>${r.shift_name}</td><td>${r.item_name}</td><td><span class="count-badge">${r.count}</span></td></tr>`
+        ).join('');
+      } else if (currentTab === 'slot') {
+        thead.innerHTML = '<tr><th>Slot</th><th>Item</th><th>Count</th></tr>';
+        rows = reportData.by_slot || [];
+        tbody.innerHTML = rows.map(r =>
+          `<tr><td>${r.slot_label}</td><td>${r.item_name}</td><td><span class="count-badge">${r.count}</span></td></tr>`
+        ).join('');
+      } else {
+        thead.innerHTML = '<tr><th>Date</th><th>Item</th><th>Count</th></tr>';
+        rows = reportData.by_day || [];
+        tbody.innerHTML = rows.map(r =>
+          `<tr><td>${r.order_date}</td><td>${r.item_name}</td><td><span class="count-badge">${r.count}</span></td></tr>`
+        ).join('');
+      }
+
+      if (rows.length === 0) { empty.style.display = 'block'; card.style.display = 'none'; }
+      else { empty.style.display = 'none'; card.style.display = ''; }
+      refreshScroll();
+    }
+
+    function resetFilters() {
+      document.getElementById('filterDate').value = todayStr();
+      document.getElementById('filterShift').value = '';
+      document.getElementById('filterSlot').value = '';
+      document.getElementById('filterItem').value = '';
+      fetchReport();
+    }
+
+    /* ── Print via thermal receipt printer ── */
+    function printReport() {
+      if (!reportData) return;
+
+      const btn = document.getElementById('printBtn');
+      btn.classList.add('printing');
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Printing...';
+
+      let rows = [];
+      if (currentTab === 'shift') {
+        rows = (reportData.by_shift || []).map(r => ({ col1: r.shift_name, item: r.item_name, count: r.count }));
+      } else if (currentTab === 'slot') {
+        rows = (reportData.by_slot || []).map(r => ({ col1: r.slot_label, item: r.item_name, count: r.count }));
+      } else {
+        rows = (reportData.by_day || []).map(r => ({ col1: r.order_date, item: r.item_name, count: r.count }));
+      }
+
+      fetch('/api/report/print', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tab: currentTab,
+          rows: rows,
+          filters: {
+            date:  document.getElementById('filterDate').value || '',
+            shift: document.getElementById('filterShift').value || 'All',
+            slot:  document.getElementById('filterSlot').value || 'All',
+            item:  document.getElementById('filterItem').value || 'All',
+          },
+          summary: {
+            total: document.getElementById('sumTotal').textContent,
+            users: document.getElementById('sumUsers').textContent,
+            items: document.getElementById('sumItems').textContent,
+          }
+        })
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.success) showToast('Printed successfully');
+        else showToast('Print failed: ' + (res.message || 'Unknown error'), true);
+      })
+      .catch(err => showToast('Print error: ' + err, true))
+      .finally(() => {
+        btn.classList.remove('printing');
+        btn.innerHTML = '<i class="fa-solid fa-print"></i> Print';
+      });
+    }
+
+    function showSpinner(show) {
+      document.getElementById('spinner').classList.toggle('show', show);
+      document.getElementById('tableCard').style.display = show ? 'none' : '';
+      document.getElementById('emptyState').style.display = 'none';
+    }
+
+    /* ── Custom scrollbar ── */
+    (function () {
+      const area = document.getElementById('scrollArea');
+      const track = document.getElementById('customScroll');
+      const thumb = document.getElementById('customThumb');
+      let dragging = false, startY = 0, startST = 0;
+      const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+      function layout() {
+        const hdr = document.getElementById('pageHeader');
+        const top = Math.ceil(hdr.getBoundingClientRect().bottom);
+        const h = 800 - top;
+        track.style.top = top + 'px'; track.style.height = h + 'px';
+        area.style.height = h + 'px';
+        refreshThumb(); toggleTrack();
+      }
+      function toggleTrack() {
+        track.style.display = (area.scrollHeight > area.clientHeight + 1) ? 'block' : 'none';
+      }
+      function refreshThumb() {
+        const tH = track.clientHeight, max = Math.max(0, area.scrollHeight - area.clientHeight);
+        const ratio = area.clientHeight / (area.scrollHeight || 1);
+        const th = clamp(Math.round(tH * ratio), 40, tH);
+        thumb.style.height = th + 'px';
+        const top = max ? (area.scrollTop / max) * (tH - th) : 0;
+        thumb.style.transform = 'translateY(' + top + 'px)';
+      }
+      window.refreshScroll = () => { layout(); setTimeout(layout, 80); };
+
+      thumb.addEventListener('pointerdown', e => {
+        dragging = true; thumb.setPointerCapture(e.pointerId);
+        startY = e.clientY; startST = area.scrollTop; e.preventDefault();
+      });
+      thumb.addEventListener('pointermove', e => {
+        if (!dragging) return;
+        const tH = track.clientHeight, th = thumb.offsetHeight;
+        const maxT = Math.max(1, tH - th), maxS = Math.max(1, area.scrollHeight - area.clientHeight);
+        area.scrollTop = clamp(startST + (e.clientY - startY) * (maxS / maxT), 0, maxS);
+      });
+      function endDrag(e) { if (!dragging) return; dragging = false; try { thumb.releasePointerCapture(e.pointerId); } catch(_){} }
+      thumb.addEventListener('pointerup', endDrag);
+      thumb.addEventListener('pointercancel', endDrag);
+      track.addEventListener('pointerdown', e => {
+        if (e.target !== track) return;
+        const r = track.getBoundingClientRect(), th = thumb.offsetHeight;
+        const tH = track.clientHeight, maxT = Math.max(1, tH - th);
+        const maxS = Math.max(1, area.scrollHeight - area.clientHeight);
+        area.scrollTop = (clamp(e.clientY - r.top - th/2, 0, maxT) / maxT) * maxS;
+      });
+      area.addEventListener('scroll', refreshThumb, { passive: true });
+      window.addEventListener('resize', layout);
+      window.addEventListener('load', layout);
+      setTimeout(layout, 100);
+    })();
+
+    /* ── Inactivity redirect ── */
+    let inactTimer = null;
+    function resetInactivity() {
+      if (inactTimer) clearTimeout(inactTimer);
+      inactTimer = setTimeout(() => { window.location.href = '/'; }, 60000);
+    }
+    ['mousemove','mousedown','keypress','scroll','touchstart','click'].forEach(e =>
+      document.addEventListener(e, resetInactivity, { passive: true })
+    );
+    resetInactivity();
+  </script>
+</body>
+</html>

@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>System Diagnostic</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root{
+    --sb-inset-right: 0px;     /* distance from right edge */
+  --sb-width: 22px;          /* scrollbar width */
+  --sb-radius: 12px;
+  --sb-track: rgba(0,0,0,0.06);
+  --sb-thumb: #bfbfbf;
+  --sb-min-thumb: 48px;
+    }
+
+    html, body { margin:0; height:100%; background:#f9f6ef; overflow:hidden; }
+
+    /* ---- Shared header (same as other pages) ---- */
+    .header{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 38px 0; min-height:60px; box-sizing:border-box;
+    }
+    .logo-main{ height:48px; display:block; }
+    .logo-right{ height:48px; display:block; }
+    .menu-back-btn{
+      background:#eee; color:#205081; padding:9px 18px; font-size:1rem;
+      border:none; border-radius:8px; font-weight:600; cursor:pointer;
+      transition:background .16s; min-width:92px; margin-right:12px;
+    }
+    .menu-back-btn:hover{ background:#ffa500; color:#fff; }
+
+    /* Scrollable area below header */
+    .scroll-area{
+      position:relative; width:100%; height:calc(100vh - 90px);
+      overflow-y:auto; overscroll-behavior:contain;
+    }
+
+    /* Center your content */
+    .form-section{
+      background:#fff; border-radius:16px; box-shadow:0 4px 18px rgba(32,80,129,0.10);
+      max-width:360px; margin:36px auto 24px auto; padding:32px 28px 28px 28px; text-align:center;
+    }
+
+    .subtitle{ color:#555; margin:-6px 0 14px 0; font-size:1.02rem; }
+
+    /* ====== Diagnostic tiles (same theme, separate buttons) ====== */
+    .diag-grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin:14px 0 10px;
+    }
+    @media (min-width: 560px){
+      .diag-grid{ grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    .diag-tile{
+      width:100%;
+      border:2px solid rgba(32,80,129,0.18);
+      background:#f6f8fc;
+      color:#205081;
+      border-radius:14px;
+      padding:8px 6px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s ease, background .14s ease, border-color .14s ease, box-shadow .14s ease;
+      min-height:50px;
+      font-weight:700;
+      font-size:1.02rem;
+    }
+    .diag-tile i{ font-size:28px; }
+    .diag-tile:active{ transform: scale(0.985); }
+    .diag-tile:hover{ box-shadow:0 6px 18px rgba(32,80,129,0.10); }
+    .diag-tile.busy{ opacity:0.6; pointer-events:none; }
+
+    .diag-tile.ok{
+      border-color:#17a950;
+      color:#17a950;
+      background:rgba(23,169,80,0.07);
+    }
+    .diag-tile.fail{
+      border-color:#d12b3c;
+      color:#d12b3c;
+      background:rgba(209,43,60,0.07);
+    }
+
+    /* Results list */
+    #diag-results{ margin-top:18px; text-align:left; font-size:1.06rem; }
+    .diag-ok{ color:#17a950; font-weight:700; }
+    .diag-fail{ color:#d12b3c; font-weight:700; }
+    .result-row{ margin-bottom:12px; }
+    .result-row small{ color:#666; font-weight:600; }
+
+    /* ===== Inset custom scrollbar ===== */
+    /* ===== Mobile-style single scrollbar ===== */
+
+/* Chrome / Edge / Safari */
+/* ===== CLEAR & VISIBLE SCROLLBAR ===== */
+.sb-track{
+      position:fixed; right:var(--sb-inset-right); width:var(--sb-width);
+      top:90px; height:calc(100vh - 90px); z-index:9998;
+      background:var(--sb-track); border-radius:var(--sb-radius); box-sizing:border-box;
+      display:none;
+    }
+    .sb-thumb{
+      position:absolute; left:2px; right:0px; top:0;
+      height:80px; background:var(--sb-thumb); border-radius:calc(var(--sb-radius) - 2px);
+      box-shadow:0 1px 2px rgba(0,0,0,0.25);
+      cursor:grab; touch-action:none;
+    }
+    .sb-thumb:active{ cursor:grabbing; }
+
+/* Chrome / Edge / Safari */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #f9f6ef;
+  overflow-y: auto;   /* ✅ enable real scrolling */
+}
+
+.header {
+  padding: 18px 38px 0;
+}
+
+.scroll-area {
+  min-height: calc(100vh - 72px); /* header height */
+  overflow-y: auto;
+}
+
+/* Visible scrollbar */
+
+
+
+  </style>
+</head>
+<body>
+  <!-- Header (same pattern as Register/Import/Export/Settings) -->
+  <div class="header" id="pageHeader">
+    <div class="left">
+      <button class="menu-back-btn" onclick="window.location.href='/menu'">← Menu</button>
+    </div>
+    <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+      <img src="/static/img/logo_company.png" class="logo-main" alt="Ethos Logo">
+    </div>
+    <div class="right">
+      <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+    </div>
+  </div>
+
+  <!-- Scrollable area (content stays centered) -->
+  <div class="scroll-area" id="scrollArea">
+    <div class="form-section">
+      <h2 style="margin:0 0 10px;">System Diagnostic</h2>
+      <div class="subtitle">Tap any test below to run it (each test runs independently).</div>
+
+      <div class="diag-grid">
+        <button class="diag-tile" data-kind="rfid" type="button"><i class="fa-solid fa-id-card"></i><span>Card</span></button>
+        <button class="diag-tile" data-kind="finger" type="button"><i class="fa-solid fa-fingerprint"></i><span>Finger</span></button>
+        <button class="diag-tile" data-kind="led" type="button"><i class="fa-solid fa-lightbulb"></i><span>LED</span></button>
+        <button class="diag-tile" data-kind="speaker" type="button"><i class="fa-solid fa-volume-high"></i><span>Speaker</span></button>
+        <button class="diag-tile" data-kind="display" type="button"><i class="fa-solid fa-display"></i><span>Display</span></button>
+        <button class="diag-tile" data-kind="camera" type="button"><i class="fa-solid fa-camera"></i><span>Face</span></button>
+        <button class="diag-tile" data-kind="db" type="button"><i class="fa-solid fa-database"></i><span>Database</span></button>
+      </div>
+
+      <div id="diag-results">
+        <div class="result-row" id="res-rfid"><small>Card:</small> <span>Not tested</span></div>
+        <div class="result-row" id="res-finger"><small>Finger:</small> <span>Not tested</span></div>
+        <div class="result-row" id="res-led"><small>LED:</small> <span>Not tested</span></div>
+        <div class="result-row" id="res-speaker"><small>Speaker:</small> <span>Not tested</span></div>
+        <div class="result-row" id="res-display"><small>Display:</small> <span>Not tested</span></div>
+        <div class="result-row" id="res-camera"><small>Face:</small> <span>Not tested</span></div>
+        <div class="result-row" id="res-db"><small>Database:</small> <span>Not tested</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inset scrollbar UI -->
+ 
+
+  <script>
+    // ===== Inset scrollbar logic (always visible; syncs with scroll) =====
+   /* ===============================
+   INSET SCROLLBAR LOGIC
+   =============================== */
+
+function initInsetScroll(){
+  const area  = document.getElementById('scrollArea');
+  const head  = document.getElementById('pageHeader');
+  const track = document.getElementById('sbTrack');
+  const thumb = document.getElementById('sbThumb');
+  if(!area || !track || !thumb) return;
+
+  let dragging=false, startY=0, startScrollTop=0;
+  const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
+
+  function layout(){
+    const hb = Math.ceil(head.getBoundingClientRect().bottom);
+    const h  = window.innerHeight - hb;
+    track.style.top = hb + 'px';
+    track.style.height = h + 'px';
+    area.style.height = h + 'px';
+    toggleTrack();
+    refreshThumb();
+  }
+
+  function toggleTrack(){
+    track.style.display =
+      area.scrollHeight > area.clientHeight + 1 ? 'block' : 'none';
+  }
+
+  function refreshThumb(){
+    const trackH = track.clientHeight;
+    const maxScroll = area.scrollHeight - area.clientHeight;
+    const ratio = area.clientHeight / (area.scrollHeight || 1);
+
+    const minH = parseInt(
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--sb-min-thumb')
+    ) || 48;
+
+    let th = Math.round(trackH * ratio);
+    th = clamp(th, minH, trackH);
+    thumb.style.height = th + 'px';
+
+    const maxTop = trackH - th;
+    const t = maxScroll ? (area.scrollTop / maxScroll) * maxTop : 0;
+    thumb.style.transform = `translateY(${t}px)`;
+  }
+
+  /* Drag thumb */
+  thumb.addEventListener('pointerdown', e=>{
+    dragging=true;
+    thumb.setPointerCapture(e.pointerId);
+    startY=e.clientY;
+    startScrollTop=area.scrollTop;
+    e.preventDefault();
+  });
+
+  thumb.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    const trackH = track.clientHeight;
+    const th = thumb.offsetHeight;
+    const maxTop = Math.max(1, trackH - th);
+    const maxScroll = Math.max(1, area.scrollHeight - area.clientHeight);
+    const dY = e.clientY - startY;
+    area.scrollTop = clamp(
+      startScrollTop + dY * (maxScroll / maxTop),
+      0,
+      maxScroll
+    );
+  });
+
+  function endDrag(e){
+    dragging=false;
+    try{ thumb.releasePointerCapture(e.pointerId); }catch(_){}
+  }
+  thumb.addEventListener('pointerup', endDrag);
+  thumb.addEventListener('pointercancel', endDrag);
+
+  /* Click on track */
+  track.addEventListener('pointerdown', e=>{
+    if(e.target !== track) return;
+    const rect = track.getBoundingClientRect();
+    const clickY = e.clientY - rect.top;
+    const th = thumb.offsetHeight;
+    const maxTop = Math.max(1, track.clientHeight - th);
+    const maxScroll = Math.max(1, area.scrollHeight - area.clientHeight);
+    area.scrollTop = ((clickY - th/2) / maxTop) * maxScroll;
+  });
+
+  area.addEventListener('scroll', refreshThumb, {passive:true});
+  window.addEventListener('resize', layout);
+  window.addEventListener('load', layout);
+  setTimeout(layout, 200);
+}
+
+/* Call after DOM ready */
+document.addEventListener('DOMContentLoaded', initInsetScroll);
+
+
+    // ===== tiny toast =====
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+      position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+      background: #1f2937; color: #fff; padding: 10px 14px; border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0,0,0,.25); font-weight:700; font-size:14px;
+      opacity: 0; transition: opacity .18s ease; z-index: 9999; white-space: pre-line;
+    `;
+    document.body.appendChild(toast);
+
+    function showToast(msg, ok=true) {
+      toast.textContent = msg || (ok ? 'Success' : 'Failed');
+      toast.style.background = ok ? '#17a950' : '#d12b3c';
+      toast.style.opacity = '1';
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2200);
+    }
+
+    function setBusy(tile, busy=true){
+      if(!tile) return;
+      tile.classList.toggle('busy', !!busy);
+    }
+
+    function setTileResult(kind, ok, message){
+      const tile = document.querySelector(`.diag-tile[data-kind="${kind}"]`);
+      if(tile){
+        tile.classList.remove('ok','fail');
+        if(ok === true) tile.classList.add('ok');
+        if(ok === false) tile.classList.add('fail');
+      }
+
+      const row = document.getElementById(`res-${kind}`);
+      if(row){
+        const span = row.querySelector('span') || row.appendChild(document.createElement('span'));
+        const cls = ok === true ? 'diag-ok' : ok === false ? 'diag-fail' : '';
+        span.className = cls;
+        span.textContent = message || (ok ? 'OK' : 'Failed');
+      }
+    }
+
+    async function postJson(url, timeoutMs = 8000){
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), timeoutMs);
+
+      try{
+        const resp = await fetch(url, {
+          method:'POST',
+          cache:'no-store',
+          signal: controller.signal
+        });
+        const data = await resp.json().catch(()=> ({}));
+        return { resp, data };
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    // ===== Click handlers =====
+    document.querySelectorAll('.diag-tile').forEach(tile => {
+      tile.addEventListener('click', async () => {
+        const kind = tile.getAttribute('data-kind');
+
+        // Display is purely frontend
+        if(kind === 'display'){
+          openDisplayTester();
+          return;
+        }
+
+        setBusy(tile, true);
+        try{
+          if(kind === 'finger'){
+            const { resp, data } = await postJson('/api/diag/fingerprint');
+            if(resp.ok && data && data.success){
+              setTileResult('finger', true, data.message || 'Fingerprint OK');
+              showToast(`Fingerprint OK ✅\n${data.message || ''}`, true);
+            } else {
+              const msg = data?.message || `HTTP ${resp.status}`;
+              setTileResult('finger', false, msg);
+              showToast(`Fingerprint failed ❌\n${msg}`, false);
+            }
+          }
+
+          if(kind === 'rfid'){
+            const { resp, data } = await postJson('/api/diag/rfid');
+            if(resp.ok && data && data.success){
+              const extra = data.uid ? ` (UID: ${data.uid})` : '';
+              setTileResult('rfid', true, (data.message || 'RFID OK') + extra);
+              showToast(`RFID OK ✅${data.uid ? `\nUID: ${data.uid}` : ''}`, true);
+            } else {
+              const msg = data?.message || `HTTP ${resp.status}`;
+              setTileResult('rfid', false, msg);
+              showToast(`RFID failed ❌\n${msg}`, false);
+            }
+          }
+
+          if(kind === 'led'){
+            const { resp, data } = await postJson('/api/diag/led');
+            if(resp.ok && data && data.success){
+              setTileResult('led', true, data.message || 'LED blink command sent');
+              showToast(data.message || 'LED blink ✅', true);
+            } else {
+              const msg = data?.message || `HTTP ${resp.status}`;
+              setTileResult('led', false, msg);
+              showToast(`LED test failed ❌\n${msg}`, false);
+            }
+          }
+
+          if(kind === 'speaker'){
+            // Client-side play (best reliability)
+            const url = '/static/audio/thank_you.wav?ts=' + Date.now();
+            try{
+              const a = new Audio(url);
+              a.volume = 1.0;
+              await a.play(); // click gesture allows playback
+              setTileResult('speaker', true, 'Speaker OK (sound played)');
+              showToast('Speaker OK ✅\nSound played', true);
+            } catch(e){
+              const msg = "Audio play failed: " + e;
+              setTileResult('speaker', false, msg);
+              showToast(`Speaker failed ❌\n${msg}`, false);
+              // backend fallback
+              try{
+                const { resp, data } = await postJson('/api/diag/speaker', 7000);
+                if(resp.ok && data?.success){
+                  setTileResult('speaker', true, data.message || 'Speaker OK (server)');
+                  showToast(data.message || 'Speaker OK ✅', true);
+                }
+              } catch(_) {}
+            }
+          }
+
+          if(kind === 'camera'){
+            // ✅ Camera diagnosis = same /video_feed used in user.html.
+            // Shows REAL live feed for ~2 seconds, and FAILS if:
+            //   - black frames (no signal)
+            //   - frozen frames (camera removed but server keeps serving cached last frame)
+            try{
+              const msg = await openServerCameraPreviewChecked(2000);
+              setTileResult('camera', true, msg || 'Camera OK (live feed)');
+              showToast(`Camera OK ✅\n${msg || ''}`, true);
+            } catch (e){
+              // Fallback: browser camera API (works for USB cams/laptop). CSI camera usually won't work here.
+              try{
+                await openLiveCameraPreview();
+                setTileResult('camera', true, 'Camera OK (browser preview)');
+                showToast('Camera OK ✅\nBrowser preview working', true);
+              } catch (e2){
+                const msg = String((e && e.message) || (e2 && e2.message) || e2 || e);
+                setTileResult('camera', false, msg);
+                showToast(`Camera failed ❌\n${msg}`, false);
+              }
+            }
+          }
+
+          if(kind === 'db'){
+            const { resp, data } = await postJson('/api/diag/db');
+            if(resp.ok && data && data.success){
+              const tbl = (data.tables && data.tables.length) ? ` Tables: ${data.tables.join(', ')}` : '';
+              const ver = (typeof data.user_version === 'number') ? ` (v${data.user_version})` : '';
+              setTileResult('db', true, (data.message || 'DB OK') + ver + (tbl ? ' — ' + tbl : ''));
+              showToast(`Database OK ✅${ver}\n${data.message || ''}`, true);
+            } else {
+              const msg = data?.message || `HTTP ${resp.status}`;
+              setTileResult('db', false, msg);
+              showToast(`Database failed ❌\n${msg}`, false);
+            }
+          }
+
+        } catch(e){
+          setTileResult(kind, false, String(e));
+          showToast(`Request error ❌\n${e}`, false);
+        } finally {
+          setBusy(tile, false);
+        }
+      });
+    });
+
+    // ===== Snapshot preview modal (auto-close after 1s) =====
+    function showSnapshotModal(dataUrl, index){
+      if (document.getElementById('camSnapModal')) return;
+      const ov = document.createElement('div');
+      ov.id = 'camSnapModal';
+      ov.style.cssText = `
+        position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:9999;
+        display:flex; align-items:center; justify-content:center; padding:20px;`;
+      const card = document.createElement('div');
+      card.style.cssText = `
+        background:#0b1220; color:#fff; border-radius:12px; max-width:88vw;
+        box-shadow:0 12px 32px rgba(0,0,0,.35); overflow:hidden;`;
+      card.innerHTML = `
+        <div style="padding:10px 14px; font-weight:800;">Camera Snapshot${index!==undefined ? ` (index ${index})` : ''}</div>
+        <div style="background:#000; display:flex; align-items:center; justify-content:center;">
+          <img src="${dataUrl}" alt="snapshot" style="display:block; max-width:88vw; max-height:72vh; object-fit:contain;">
+        </div>`;
+      ov.appendChild(card);
+      document.body.appendChild(ov);
+
+      setTimeout(() => { if (ov && ov.parentNode) ov.remove(); }, 1000);
+    }
+
+    // ===== DISPLAY DIAGNOSTIC (borrowed from diagnostic1.html) =====
+    function openDisplayTester(){
+      if (document.getElementById('displayTester')) return;
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      try {
+        const el = document.documentElement;
+        if (!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+      } catch (_) {}
+
+      const ov = document.createElement('div');
+      ov.id = 'displayTester';
+      ov.style.cssText = `position:fixed; inset:0; background:#000; z-index:9998; display:flex; flex-direction:column;`;
+
+      const bar = document.createElement('div');
+      bar.style.cssText = `
+        height:48px; display:flex; align-items:center; justify-content:space-between;
+        padding:0 12px; background:rgba(0,0,0,.35); color:#fff; font-weight:800;
+        font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial;`;
+      bar.innerHTML = `
+        <span>Display Test</span>
+        <div style="display:flex; gap:8px;">
+          <button id="dispPrev">◀</button>
+          <button id="dispNext">Next ▶</button>
+          <button id="dispReset" style="background:#64748b;color:#fff;">Reset</button>
+          <button id="dispPass" style="background:#17a950;color:#fff;">Pass</button>
+          <button id="dispFail" style="background:#d12b3c;color:#fff;">Fail</button>
+          <button id="dispClose" style="background:#334155;color:#fff;">Close</button>
+        </div>`;
+      ov.appendChild(bar);
+
+      const stage = document.createElement('div');
+      stage.style.cssText = `flex:1; position:relative; background:#000;`;
+      const cv = document.createElement('canvas');
+      cv.style.cssText = `position:absolute; inset:0; width:100%; height:100%; touch-action:none;`;
+      stage.appendChild(cv);
+
+      const hint = document.createElement('div');
+      hint.style.cssText = `
+        position:absolute; bottom:14px; left:50%; transform:translateX(-50%);
+        color:#fff; background:rgba(0,0,0,.45); padding:6px 10px; border-radius:10px;
+        font:700 12px/1.2 system-ui, -apple-system, Segoe UI, Roboto, Arial;
+        text-align:center; white-space:pre-line;`;
+      hint.textContent = 'Tap Next ▶ to advance. Use ◀ to go back.\nTouch page: drag across all boxes until coverage hits goal.';
+      stage.appendChild(hint);
+
+      ov.appendChild(stage);
+      document.body.appendChild(ov);
+
+      const ctx = cv.getContext('2d');
+
+      const cols = 6, rows = 10;
+      const AUTO_PASS_AT = 96;
+      let visited = new Array(cols*rows).fill(false);
+      let visitedCount = 0;
+      const totalCells = cols*rows;
+      let coveragePct = 0;
+      let gx=0, gy=0, cellW=0, cellH=0;
+
+      const PATTERNS = [
+        {name:'Red', draw:(c,w,h)=>{ c.fillStyle='#f00'; c.fillRect(0,0,w,h); }},
+        {name:'Green', draw:(c,w,h)=>{ c.fillStyle='#0f0'; c.fillRect(0,0,w,h); }},
+        {name:'Blue', draw:(c,w,h)=>{ c.fillStyle='#00f'; c.fillRect(0,0,w,h); }},
+        {name:'White', draw:(c,w,h)=>{ c.fillStyle='#fff'; c.fillRect(0,0,w,h); }},
+        {name:'Black', draw:(c,w,h)=>{ c.fillStyle='#000'; c.fillRect(0,0,w,h); }},
+        {name:'Checker', draw:(c,w,h)=>{
+          const size = Math.max(8, Math.floor(Math.min(w,h)/24));
+          for(let y=0;y<h;y+=size){
+            for(let x=0;x<w;x+=size){
+              const on = ((x/size)+(y/size))%2===0;
+              c.fillStyle = on ? '#fff' : '#000';
+              c.fillRect(x,y,size,size);
+            }
+          }
+        }},
+        {name:'Grid', draw:(c,w,h)=>{
+          c.fillStyle='#000'; c.fillRect(0,0,w,h);
+          c.strokeStyle='#ffffff';
+          c.globalAlpha=0.35;
+          const step = Math.max(16, Math.floor(Math.min(w,h)/20));
+          for(let x=0;x<=w;x+=step){ c.beginPath(); c.moveTo(x,0); c.lineTo(x,h); c.stroke(); }
+          for(let y=0;y<=h;y+=step){ c.beginPath(); c.moveTo(0,y); c.lineTo(w,y); c.stroke(); }
+          c.globalAlpha=1;
+        }},
+        {name:'Touch Grid', touch:true, draw:(c,w,h)=>{
+          c.fillStyle='#111'; c.fillRect(0,0,w,h);
+          for(let r=0;r<rows;r++){
+            for(let col=0; col<cols; col++){
+              const x = gx + col*cellW, y = gy + r*cellH;
+              const hit = visited[r*cols + col];
+              c.fillStyle = hit ? 'rgba(34,197,94,.85)' : 'rgba(255,255,255,.07)';
+              c.fillRect(x+1,y+1,cellW-2,cellH-2);
+            }
+          }
+          c.strokeStyle='rgba(255,255,255,.28)';
+          for(let col=0; col<=cols; col++){ const x = gx + col*cellW; c.beginPath(); c.moveTo(x,gy); c.lineTo(x,gy+rows*cellH); c.stroke(); }
+          for(let r=0; r<=rows; r++){ const y = gy + r*cellH; c.beginPath(); c.moveTo(gx,y); c.lineTo(gx+cols*cellW,y); c.stroke(); }
+          c.fillStyle='#fff'; c.font='16px system-ui';
+          c.fillText(`Coverage: ${coveragePct}% (${visitedCount}/${totalCells})`, 20, 30);
+        }}
+      ];
+
+      let idx = 0;
+
+      function recalcGrid(){
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const w = cv.width / dpr;
+        const h = cv.height / dpr;
+        const pad = Math.round(Math.min(w,h)*0.04);
+        const availW = w-pad*2, availH = h-pad*2;
+        cellW = Math.floor(availW/cols);
+        cellH = Math.floor(availH/rows);
+        gx = Math.round((w-cellW*cols)/2);
+        gy = Math.round((h-cellH*rows)/2);
+      }
+
+      function fit(){
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const w = stage.clientWidth, h = stage.clientHeight;
+        cv.width = Math.round(w * dpr);
+        cv.height = Math.round(h * dpr);
+        cv.style.width = w + 'px';
+        cv.style.height = h + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        recalcGrid();
+        draw();
+      }
+
+      function resetGrid(){ visited.fill(false); visitedCount=0; coveragePct=0; }
+
+      function draw(){
+        const dpr = Math.max(1, window.devicePixelRatio || 1);
+        const w = cv.width / dpr;
+        const h = cv.height / dpr;
+        const p = PATTERNS[idx];
+        p.draw(ctx,w,h);
+        bar.firstElementChild.textContent = `Display Test — ${p.name} (${idx+1}/${PATTERNS.length})`;
+      }
+
+      function markAt(x,y){
+        if (idx !== 7) return;
+        const cx = Math.floor((x-gx)/cellW);
+        const cy = Math.floor((y-gy)/cellH);
+        if (cx<0||cy<0||cx>=cols||cy>=rows) return;
+        const k = cy*cols + cx;
+        if(!visited[k]){
+          visited[k]=true;
+          visitedCount++;
+          coveragePct = Math.round((visitedCount/totalCells)*100);
+          draw();
+          if(coveragePct >= AUTO_PASS_AT){
+            setTileResult('display', true, 'Display touch OK');
+            showToast('Display touch OK ✅', true);
+            close();
+          }
+        }
+      }
+
+      function next(){ idx=(idx+1)%PATTERNS.length; resetGrid(); draw(); }
+      function prev(){ idx=(idx-1+PATTERNS.length)%PATTERNS.length; draw(); }
+
+      function onKey(e){ if (e.key === 'Escape') close(); }
+      window.addEventListener('keydown', onKey);
+      window.addEventListener('resize', fit);
+
+      function close(){
+        document.body.style.overflow = prevOverflow;
+        window.removeEventListener('resize', fit);
+        window.removeEventListener('keydown', onKey);
+        if (document.fullscreenElement && document.exitFullscreen) { document.exitFullscreen().catch(()=>{}); }
+        if(ov.parentNode) ov.parentNode.removeChild(ov);
+      }
+
+      const stop = e => { e.preventDefault?.(); e.stopPropagation?.(); };
+      bar.querySelector('#dispNext').addEventListener('click',(e)=>{ stop(e); next(); });
+      bar.querySelector('#dispPrev').addEventListener('click',(e)=>{ stop(e); prev(); });
+      bar.querySelector('#dispReset').addEventListener('click',(e)=>{ stop(e); resetGrid(); draw(); });
+      bar.querySelector('#dispClose').addEventListener('click',(e)=>{ stop(e); close(); });
+      bar.querySelector('#dispPass').addEventListener('click',(e)=>{ stop(e); setTileResult('display', true, 'Display OK'); showToast('Display OK ✅', true); close(); });
+      bar.querySelector('#dispFail').addEventListener('click',(e)=>{ stop(e); setTileResult('display', false, 'Display failed'); showToast('Display failed ❌', false); close(); });
+
+      stage.addEventListener('click',()=>{ if(idx !== 7) next(); });
+
+      function pos(evt){
+        const rect=cv.getBoundingClientRect();
+        const scaleX=cv.width/rect.width;
+        const scaleY=cv.height/rect.height;
+        if(evt.touches && evt.touches.length){
+          const t=evt.touches[0];
+          return {x:(t.clientX-rect.left)*scaleX, y:(t.clientY-rect.top)*scaleY};
+        }
+        return {x:(evt.clientX-rect.left)*scaleX, y:(evt.clientY-rect.top)*scaleY};
+      }
+
+      cv.addEventListener('pointerdown',(e)=>{ e.preventDefault(); const p=pos(e); markAt(p.x,p.y); });
+      cv.addEventListener('pointermove',(e)=>{ if(e.buttons===0) return; e.preventDefault(); const p=pos(e); markAt(p.x,p.y); });
+
+      fit();
+      draw();
+    }
+
+    // ===== Browser camera preview (USB cams/laptop). CSI usually black =====
+    async function openLiveCameraPreview(){
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error("Browser camera API not available.");
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 640 }, height: { ideal: 480 } },
+        audio: false
+      });
+
+      const ov = document.createElement('div');
+      ov.style.cssText = `
+        position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999;
+        display:flex; align-items:center; justify-content:center; padding:16px;`;
+
+      const box = document.createElement('div');
+      box.style.cssText = `
+        width:min(92vw,720px); background:#0b1220; border-radius:12px; overflow:hidden;
+        box-shadow:0 12px 32px rgba(0,0,0,.35); color:#fff;`;
+
+      const top = document.createElement('div');
+      top.style.cssText = `display:flex; align-items:center; justify-content:space-between; padding:10px 14px; font-weight:800;`;
+      top.innerHTML = `<span>Live Camera Preview (browser)</span>`;
+
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = "Close";
+      closeBtn.style.cssText = `background:#334155; color:#fff; border:none; padding:8px 12px; border-radius:10px; font-weight:800; cursor:pointer;`;
+      top.appendChild(closeBtn);
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = `background:#000; display:flex; align-items:center; justify-content:center;`;
+
+      const video = document.createElement('video');
+      video.autoplay = true;
+      video.playsInline = true;
+      video.muted = true;
+      video.style.cssText = `display:block; width:100%; max-height:70vh; object-fit:contain;`;
+      video.srcObject = stream;
+
+      wrap.appendChild(video);
+      box.appendChild(top);
+      box.appendChild(wrap);
+      ov.appendChild(box);
+      document.body.appendChild(ov);
+
+      function cleanup(){
+        try{ stream.getTracks().forEach(t => t.stop()); }catch(_){}
+        if (ov && ov.parentNode) ov.remove();
+      }
+      closeBtn.onclick = cleanup;
+      ov.addEventListener('click', (e)=>{ if(e.target === ov) cleanup(); });
+
+      await new Promise((res) => {
+        const done = () => { video.onplaying = null; res(); };
+        video.onplaying = done;
+        setTimeout(done, 800);
+      });
+
+      setTimeout(cleanup, 2000);
+    }
+
+    // ===== Server camera preview + REAL health check (same as user.html /video_feed) =====
+    // This samples frames from the MJPEG stream and decides if camera is truly working:
+    // - FAIL if black frames (no signal)
+    // - FAIL if frozen frames (same frame repeated — happens when camera is removed and server serves cached last frame)
+    const _camProbe = { cv:null, ctx:null };
+    function _sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+    function _sampleFrameFromImg(img, w=96, h=72){
+      if(!_camProbe.cv){
+        _camProbe.cv = document.createElement('canvas');
+        _camProbe.ctx = _camProbe.cv.getContext('2d', { willReadFrequently:true });
+      }
+      const cv = _camProbe.cv, ctx = _camProbe.ctx;
+      cv.width = w; cv.height = h;
+      ctx.drawImage(img, 0, 0, w, h);
+      const data = ctx.getImageData(0,0,w,h).data;
+
+      const n = w*h;
+      const gray = new Uint8Array(n);
+      let sum=0, sumsq=0;
+
+      for(let i=0, j=0; i<data.length; i+=4, j++){
+        const g = (data[i] + data[i+1] + data[i+2]) / 3;
+        gray[j] = g;
+        sum += g;
+        sumsq += g*g;
+      }
+
+      const mean = sum / n;
+      const varr = (sumsq / n) - (mean*mean);
+      const std  = Math.sqrt(Math.max(0, varr));
+      return { mean, std, gray };
+    }
+
+    function _frameDiff(a, b){
+      const n = Math.min(a.length, b.length);
+      let s=0;
+      for(let i=0;i<n;i++) s += Math.abs(a[i]-b[i]);
+      return s / n; // average abs pixel diff (0..255)
+    }
+
+    async function openServerCameraPreviewChecked(showMs = 2000){
+      if (document.getElementById('camLiveModal')) throw new Error("Camera preview already open");
+
+      const ov = document.createElement('div');
+      ov.id = 'camLiveModal';
+      ov.style.cssText = `
+        position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999;
+        display:flex; align-items:center; justify-content:center; padding:16px;`;
+
+      const box = document.createElement('div');
+      box.style.cssText = `
+        width:min(92vw,720px); background:#0b1220; border-radius:12px; overflow:hidden;
+        box-shadow:0 12px 32px rgba(0,0,0,.35); color:#fff;`;
+
+      const top = document.createElement('div');
+      top.style.cssText = `display:flex; align-items:center; justify-content:space-between; padding:10px 14px; font-weight:800; gap:10px;`;
+      const title = document.createElement('div');
+      title.innerHTML = `<div style="font-weight:900;">Live Camera Preview (server)</div>
+                         <div id="camDiagStatus" style="font-weight:700; font-size:12px; opacity:.85; margin-top:2px;">Starting…</div>`;
+      top.appendChild(title);
+
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = "Close";
+      closeBtn.style.cssText = `background:#334155; color:#fff; border:none; padding:8px 12px; border-radius:10px; font-weight:800; cursor:pointer;`;
+      top.appendChild(closeBtn);
+
+      const wrap = document.createElement('div');
+      wrap.style.cssText = `background:#000; display:flex; align-items:center; justify-content:center;`;
+
+      const img = document.createElement('img');
+      img.alt = "Live server feed";
+      img.style.cssText = `display:block; width:100%; max-height:70vh; object-fit:contain;`;
+      img.src = "/video_feed?ts=" + Date.now();
+      wrap.appendChild(img);
+
+      box.appendChild(top);
+      box.appendChild(wrap);
+      ov.appendChild(box);
+      document.body.appendChild(ov);
+
+      const statusEl = box.querySelector('#camDiagStatus');
+
+      function cleanup(){
+        try{ img.src = "about:blank"; }catch(_){}
+        if (ov && ov.parentNode) ov.remove();
+      }
+      closeBtn.onclick = cleanup;
+      ov.addEventListener('click', (e)=>{ if(e.target === ov) cleanup(); });
+
+      // 1) Wait until we actually receive frames (naturalWidth becomes >0)
+      statusEl.textContent = "Connecting to /video_feed…";
+      const t0 = Date.now();
+      while(Date.now() - t0 < 1800){
+        if(img.naturalWidth > 0 && img.naturalHeight > 0) break;
+        await _sleep(80);
+      }
+      if(!(img.naturalWidth > 0 && img.naturalHeight > 0)){
+        statusEl.textContent = "❌ No frames received from /video_feed";
+        await _sleep(900);
+        cleanup();
+        throw new Error("No frames received from /video_feed");
+      }
+
+      // 2) Sample a few frames
+      statusEl.textContent = "Sampling frames…";
+      await _sleep(150); // warm-up
+      const samples = [];
+      for(let k=0;k<4;k++){
+        samples.push(_sampleFrameFromImg(img));
+        await _sleep(220);
+      }
+
+      const meanAvg = samples.reduce((s,x)=>s+x.mean,0) / samples.length;
+      const stdAvg  = samples.reduce((s,x)=>s+x.std,0)  / samples.length;
+
+      const diffs = [];
+      for(let i=1;i<samples.length;i++){
+        diffs.push(_frameDiff(samples[i-1].gray, samples[i].gray));
+      }
+      const diffAvg = diffs.reduce((s,x)=>s+x,0) / diffs.length;
+
+      // 3) Decide health
+      // Black/no-signal: very low brightness and very low variance
+      const isBlack = (meanAvg < 4.0 && stdAvg < 2.5);
+
+      // Frozen: almost no pixel changes across samples (cached frame when camera is removed)
+      const isFrozen = (diffAvg < 0.35);
+
+      if(isBlack){
+        statusEl.textContent = `❌ Feed is black (no signal) — mean=${meanAvg.toFixed(1)}, std=${stdAvg.toFixed(1)}`;
+        await _sleep(900);
+        cleanup();
+        throw new Error("Camera feed is black (no signal)");
+      }
+
+      if(isFrozen){
+        statusEl.textContent = `❌ Feed is frozen (no changes) — diff=${diffAvg.toFixed(2)}`;
+        await _sleep(900);
+        cleanup();
+        throw new Error("Camera feed frozen (camera removed or stuck)");
+      }
+
+      // 4) Success: keep preview open for requested time
+      statusEl.textContent = `✅ Live feed OK — closing in ${Math.round(showMs/1000)}s`;
+      await _sleep(Math.max(500, showMs));
+      cleanup();
+      return "Live feed OK (non-black + changing frames)";
+    }
+  </script>
+</body>
+</html>

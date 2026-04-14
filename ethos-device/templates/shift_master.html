@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=480, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shift Master — Ethos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/clock-picker.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root {
+    --bg-base: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-input: #F7F8FA;
+    --bg-btn-warm: #F0F1F4;
+    --bg-table-head: #205081;
+    --text-primary: #205081;
+    --text-dark: #1A1A1A;
+    --text-secondary: #6B7D93;
+    --text-muted: #A0ADB8;
+    --text-on-dark: #FFFFFF;
+    --accent: #F5A623;
+    --accent-deep: #E8940A;
+    --accent-glow: rgba(245,166,35,0.12);
+    --blue: #205081;
+    --blue-glow: rgba(32,80,129,0.10);
+    --border: #E4E7EC;
+    --border-input: #D8DCE3;
+    --danger: #D94040;
+    --font-body: 'DM Sans', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+html, body {
+    width: 480px; height: 800px; overflow: hidden;
+    font-family: var(--font-body); background: var(--bg-base);
+    color: var(--text-dark); -webkit-font-smoothing: antialiased;
+    user-select: none; -webkit-user-select: none;
+}
+
+.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px; background: var(--bg-base);
+    height: 56px; flex-shrink: 0;
+}
+.btn-back {
+    height: 38px; border-radius: 8px;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 0 16px 0 12px;
+    background: var(--bg-btn-warm); border: 1px solid var(--border);
+    color: var(--text-primary); font-size: 0.82rem; font-weight: 600;
+    font-family: var(--font-body); cursor: pointer; text-decoration: none;
+}
+.btn-back i { font-size: 0.78rem; }
+.btn-back:active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.logo-main { height: 38px; object-fit: contain; }
+.logo-right { height: 30px; object-fit: contain; }
+
+.page-wrap {
+    height: calc(800px - 56px); overflow-y: auto;
+    -webkit-overflow-scrolling: touch; padding: 10px 16px 20px;
+}
+
+/* ── Single Combined Card ── */
+.main-card {
+    background: var(--bg-card); border-radius: 22px;
+    box-shadow: 0 6px 28px rgba(0,0,0,0.08);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+.card-form-section { padding: 24px 22px 0; }
+.card-title {
+    font-size: 1.25rem; font-weight: 700;
+    color: var(--text-primary); text-align: center; margin-bottom: 20px;
+}
+
+/* ── Form ── */
+.form-group { margin-bottom: 14px; }
+.form-group label {
+    display: block; font-size: 0.72rem; font-weight: 700;
+    color: var(--text-primary); text-transform: uppercase;
+    letter-spacing: 0.05em; margin-bottom: 5px;
+}
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; margin-bottom: 14px; }
+.form-group input {
+    width: 100%; height: 42px; padding: 0 14px;
+    font-family: var(--font-body); font-size: 0.88rem;
+    background: var(--bg-input); border: 1.5px solid var(--border-input);
+    border-radius: 10px; color: var(--text-dark);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    user-select: auto; -webkit-user-select: auto;
+    pointer-events: auto; touch-action: manipulation;
+}
+.form-group input::placeholder { color: var(--text-muted); font-size: 0.82rem; }
+.form-group input:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); background: #FFF9F0;
+}
+.form-group input[readonly] { opacity: 0.5; cursor: not-allowed; background: var(--bg-btn-warm); }
+.form-group input[data-clock-picker] { opacity: 1; cursor: pointer !important; background: var(--bg-input); }
+
+/* ── Action Buttons ── */
+.action-row {
+    display: flex; gap: 12px; justify-content: center;
+    margin-top: 16px; padding-top: 14px; padding-bottom: 20px;
+    border-top: 1px solid #F0ECE5;
+}
+.action-col { text-align: center; }
+.action-btn {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: grid; place-items: center; border: none; cursor: pointer;
+    font-size: 1.25rem; color: #fff;
+    transition: transform 0.12s; box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+.action-btn:active { transform: scale(0.93); }
+.action-btn.save { background: linear-gradient(135deg, var(--accent), var(--accent-deep)); box-shadow: 0 3px 12px rgba(245,166,35,0.3); }
+.action-btn.reset { background: linear-gradient(135deg, #F0A030, #D4880A); box-shadow: 0 3px 12px rgba(245,166,35,0.3); }
+.action-label { font-size: 0.6rem; font-weight: 600; color: var(--text-secondary); margin-top: 4px; }
+
+/* ── Divider ── */
+.card-divider { height: 1px; background: var(--border); margin: 0; }
+
+/* ── Table Section ── */
+.table-section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 22px 12px;
+}
+.table-section-header h2 { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+.table-empty {
+    padding: 30px 16px; text-align: center;
+    color: var(--text-muted); font-size: 0.88rem;
+}
+.table-empty i { display: block; font-size: 2rem; margin-bottom: 10px; color: var(--accent); opacity: 0.35; }
+
+.table-scroll { max-height: 280px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+    background: var(--bg-table-head); color: var(--text-on-dark);
+    font-size: 0.65rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.07em; padding: 11px 10px; text-align: left;
+    white-space: nowrap; position: sticky; top: 0; z-index: 2;
+}
+thead th:first-child { padding-left: 20px; }
+thead th:last-child { text-align: right; padding-right: 20px; }
+tbody tr { border-bottom: 1px solid #F0ECE5; transition: background 0.1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:nth-child(even) { background: #F9FAFB; }
+tbody tr:active { background: #FFF3E8; }
+tbody td { padding: 12px 10px; font-size: 0.82rem; color: var(--text-dark); vertical-align: middle; }
+tbody td:first-child { padding-left: 20px; }
+tbody td:last-child { text-align: right; padding-right: 20px; }
+
+.cell-code {
+    font-family: var(--font-mono); font-weight: 500; font-size: 0.75rem;
+    color: var(--blue); background: var(--blue-glow);
+    padding: 3px 10px; border-radius: 6px; display: inline-block;
+    border: 1px solid rgba(32,80,129,0.1);
+}
+.cell-name { font-weight: 600; }
+.cell-time {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--text-secondary);
+    display: inline-flex; align-items: center; gap: 4px;
+}
+.cell-time i { font-size: 0.6rem; color: var(--accent); opacity: 0.6; }
+
+.row-actions { display: flex; gap: 6px; justify-content: flex-end; }
+.btn-row {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: grid; place-items: center; border: none; cursor: pointer;
+    font-size: 0.72rem; color: #fff; transition: transform 0.1s;
+}
+.btn-row:active { transform: scale(0.9); }
+.btn-row.edit { background: var(--accent); }
+.btn-row.del { background: var(--danger); }
+
+/* ── Toast ── */
+.toast-wrap { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; }
+.toast {
+    background: var(--accent-deep); color: #fff; padding: 10px 22px; border-radius: 12px;
+    font-size: 0.82rem; font-weight: 600; box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+    opacity: 0; transform: translateY(10px); transition: opacity 0.2s, transform 0.2s;
+    display: flex; align-items: center; gap: 8px; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success i { color: #4CAF50; }
+.toast.error i { color: #FF5252; }
+
+/* ── Modal ── */
+.modal-overlay {
+    position: fixed; inset: 0; z-index: 10000;
+    background: rgba(32,80,129,0.25); backdrop-filter: blur(2px);
+    display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+    background: #fff; border-radius: 20px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.15);
+    padding: 28px 24px 22px; width: 340px; text-align: center;
+    animation: modalPop 0.2s ease-out;
+}
+@keyframes modalPop { from{opacity:0;transform:scale(0.93);}to{opacity:1;transform:scale(1);} }
+.modal-icon { width: 50px; height: 50px; border-radius: 50%; background: #FFEBEE; color: var(--danger); display: inline-grid; place-items: center; font-size: 1.2rem; margin-bottom: 14px; }
+.modal-title { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+.modal-sub { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+.modal-sub strong { color: var(--blue); font-family: var(--font-mono); }
+.modal-actions { display: flex; gap: 10px; justify-content: center; }
+.btn-modal { padding: 10px 22px; border-radius: 10px; font-weight: 600; font-size: 0.82rem; cursor: pointer; border: none; }
+.btn-modal.confirm { background: var(--danger); color: #fff; }
+.btn-modal.confirm:active { background: #C0392B; }
+.btn-modal.cancel { background: var(--bg-btn-warm); color: var(--text-secondary); border: 1px solid var(--border); }
+
+.table-scroll::-webkit-scrollbar, .page-wrap::-webkit-scrollbar { width: 3px; }
+.table-scroll::-webkit-scrollbar-thumb, .page-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <a href="/shift_config" class="btn-back"><i class="fa fa-arrow-left"></i> back</a>
+    <img src="/static/img/logo_company.png" class="logo-main" alt="Logo">
+    <img src="/static/img/logo_epitage.png" class="logo-right" alt="Epitage">
+</div>
+
+<div class="page-wrap">
+    <div class="main-card">
+        <!-- Form Section -->
+        <div class="card-form-section">
+            <div class="card-title" id="card-title">Shift Master</div>
+            <form onsubmit="return false;" id="shift-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="shift_code">Shift Code</label>
+                        <input id="shift_code" type="text" inputmode="latin" required maxlength="12" placeholder="e.g. SH01" autocomplete="off">
+                    </div>
+                    <div class="form-group">
+                        <label for="shift_name">Shift Name</label>
+                        <input id="shift_name" type="text" required placeholder="e.g. Morning" autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="from_time">From Time</label>
+                        <input id="from_time" type="text" readonly data-clock-picker required autocomplete="off" placeholder="HH:MM" style="cursor:pointer;">
+                    </div>
+                    <div class="form-group">
+                        <label for="to_time">To Time</label>
+                        <input id="to_time" type="text" readonly data-clock-picker required autocomplete="off" placeholder="HH:MM" style="cursor:pointer;">
+                    </div>
+                </div>
+                <div class="action-row">
+                    <div class="action-col">
+                        <button class="action-btn save" onclick="addOrUpdateShift()" type="button"><i class="fa fa-check"></i></button>
+                        <div class="action-label" id="btn-save-label">Save</div>
+                    </div>
+                    <div class="action-col">
+                        <button class="action-btn reset" onclick="resetForm()" type="button"><i class="fa fa-rotate-left"></i></button>
+                        <div class="action-label">Reset</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Divider -->
+        <div class="card-divider"></div>
+
+        <!-- Table Section -->
+        <div class="table-section-header"><h2><i class="fa fa-clock" style="margin-right:6px;opacity:0.5;"></i>All Shifts</h2></div>
+        <div class="table-empty" id="table-empty"><i class="fa fa-clock"></i>No shifts configured yet</div>
+        <div class="table-scroll">
+            <table id="shift_table" style="display:none;">
+                <thead><tr><th>Code</th><th>Name</th><th>From</th><th>To</th><th>Actions</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="del-modal">
+    <div class="modal-box">
+        <div class="modal-icon"><i class="fa fa-trash"></i></div>
+        <div class="modal-title">Delete Shift</div>
+        <div class="modal-sub" id="del-modal-sub">Are you sure?</div>
+        <div class="modal-actions">
+            <button class="btn-modal confirm" id="del-confirm-btn"><i class="fa fa-trash"></i> Delete</button>
+            <button class="btn-modal cancel" onclick="closeDeleteModal()"><i class="fa fa-times"></i> Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast-wrap"><div class="toast" id="toast"></div></div>
+
+<script>
+"use strict";
+var shifts=[], edit_code=null, _pendingDelete=null;
+
+function toast(m,t){var e=document.getElementById('toast');e.className='toast '+(t||'success');e.innerHTML='<i class="fa fa-'+(t==='error'?'circle-xmark':'circle-check')+'"></i> '+m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(function(){e.classList.remove('show');},2200);}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+function load(){
+    fetch('/api/shift_master/list').then(function(r){return r.json();}).then(function(data){
+        shifts=data.shifts||[];
+        var tbl=document.getElementById('shift_table'),emp=document.getElementById('table-empty');
+        if(!shifts.length){tbl.style.display='none';emp.style.display='';return;}
+        tbl.style.display='';emp.style.display='none';
+        tbl.querySelector('tbody').innerHTML=shifts.map(function(x){return '<tr><td><span class="cell-code">'+esc(x.shift_code)+'</span></td><td class="cell-name">'+esc(x.shift_name)+'</td><td><span class="cell-time"><i class="fa fa-right-to-bracket"></i>'+x.from_time+'</span></td><td><span class="cell-time"><i class="fa fa-right-from-bracket"></i>'+x.to_time+'</span></td><td><div class="row-actions"><button class="btn-row edit" onclick="editShift(\''+esc(x.shift_code)+'\')"><i class="fa fa-pen"></i></button><button class="btn-row del" onclick="openDeleteModal(\''+esc(x.shift_code)+'\')"><i class="fa fa-trash"></i></button></div></td></tr>';}).join('');
+    }).catch(function(){toast('Failed to load','error');});
+}
+
+function addOrUpdateShift(){
+    var c=document.getElementById('shift_code').value.trim(),n=document.getElementById('shift_name').value.trim(),f=document.getElementById('from_time').value,t=document.getElementById('to_time').value;
+    if(!c||!n||!f||!t){toast('Fill all fields','error');return;}
+    fetch(edit_code?'/api/shift_master/update':'/api/shift_master/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shift_code:edit_code||c,shift_name:n,from_time:f,to_time:t})})
+    .then(function(r){return r.json();}).then(function(d){if(d.success===false){toast(d.message||'Failed','error');return;}toast(edit_code?'Updated':'Added','success');edit_code=null;resetForm();load();}).catch(function(){toast('Network error','error');});
+}
+
+function editShift(c){
+    var x=shifts.find(function(s){return s.shift_code===c;});if(!x)return;
+    document.getElementById('shift_code').value=x.shift_code;document.getElementById('shift_code').readOnly=true;
+    document.getElementById('shift_name').value=x.shift_name;
+    document.getElementById('from_time').value=x.from_time;document.getElementById('to_time').value=x.to_time;
+    edit_code=x.shift_code;document.getElementById('btn-save-label').textContent='Update';
+    document.getElementById('card-title').textContent='Edit Shift \u2014 '+x.shift_code;
+    document.querySelector('.card-form-section').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function openDeleteModal(c){_pendingDelete=c;document.getElementById('del-modal-sub').innerHTML='Delete shift <strong>'+esc(c)+'</strong>?<br>Time slots, menus & items will also be removed.';document.getElementById('del-modal').classList.add('show');}
+function closeDeleteModal(){_pendingDelete=null;document.getElementById('del-modal').classList.remove('show');}
+document.getElementById('del-confirm-btn').addEventListener('click',function(){if(!_pendingDelete)return;var c=_pendingDelete;closeDeleteModal();fetch('/api/shift_master/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({shift_code:c})}).then(function(r){return r.json();}).then(function(d){if(d.success===false){toast(d.message||'Failed','error');return;}toast('Deleted','success');if(edit_code===c)resetForm();load();}).catch(function(){toast('Network error','error');});});
+document.getElementById('del-modal').addEventListener('click',function(e){if(e.target===this)closeDeleteModal();});
+
+function resetForm(){document.getElementById('shift-form').reset();document.getElementById('shift_code').readOnly=false;edit_code=null;document.getElementById('btn-save-label').textContent='Save';document.getElementById('card-title').textContent='Shift Master';}
+
+window.onload=load;
+</script>
+<script src="/static/js/clock-picker.js"></script>
+<div id="osk" class="simple-keyboard"></div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/css/index.css">
+<link rel="stylesheet" href="/static/css/osk.css">
+<script src="https://cdn.jsdelivr.net/npm/simple-keyboard@latest/build/index.min.js"></script>
+<script src="/static/js/osk.js" defer></script>
+</body>
+</html>
